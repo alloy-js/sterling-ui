@@ -4,6 +4,7 @@
 @import '~@blueprintjs/core/lib/scss/variables.scss';
 @import 'navbar';
 @import 'sidebar';
+@import 'view';
 
 html, body {
   display: flex;
@@ -14,4 +15,9 @@ html, body {
 
 body {
   padding-top: $pt-navbar-height;
+}
+
+.sterling {
+  width: 100%;
+  height: 100%;
 }
