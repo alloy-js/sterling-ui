@@ -1,0 +1,13 @@
+@import 'variables';
+
+.sidebar {
+
+  height: 100%;
+  min-width: $sidebar-width;
+
+  .bp3-card {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+}
