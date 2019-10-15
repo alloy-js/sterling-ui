@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
     Alignment, Button, Classes,
     Navbar,
-    NonIdealState, Popover, Text, Tooltip
+    NonIdealState, Tooltip
 } from '@blueprintjs/core';
 
 export interface GraphViewProps {

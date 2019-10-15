@@ -9,8 +9,11 @@ import {
 } from '@blueprintjs/core';
 
 interface INavBarProps {
-    view: string,
-    onRequestView: Function
+    connected: boolean,
+    onRequestNext: Function,
+    onRequestView: Function,
+    ready: boolean,
+    view: string
 }
 
 class NavBar extends React.Component<INavBarProps> {
@@ -54,7 +57,13 @@ class NavBar extends React.Component<INavBarProps> {
                         onClick={() => this.props.onRequestView('source')}/>
                 </Navbar.Group>
                 <Navbar.Group align={Alignment.RIGHT}>
-                    <Button large={true} disabled={true} intent='success' rightIcon='circle-arrow-right' text='Next'/>
+                    <Button
+                        large={true}
+                        disabled={!this.props.ready}
+                        intent={this.props.connected ? 'success' : 'danger'}
+                        rightIcon='circle-arrow-right'
+                        text='Next'
+                        onClick={() => this.props.onRequestNext()}/>
                 </Navbar.Group>
             </Navbar>
         )
