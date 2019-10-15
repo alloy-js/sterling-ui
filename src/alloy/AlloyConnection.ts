@@ -1,3 +1,5 @@
+import { AlloyInstance } from 'alloy-ts';
+
 export class AlloyConnection {
 
     _ws: WebSocket | null;
@@ -140,9 +142,11 @@ export class AlloyConnection {
 
             case 'XML:':
                 if (data.length) {
-                    // let instance = Instance.fromXML(data);
-                    // if (this._on_instance_cb) this._on_instance_cb(instance);
-                    if (this._on_instance_cb) this._on_instance_cb(data);
+                    let parser = new DOMParser();
+                    let doc = parser.parseFromString(data, 'application/xml');
+                    let instance = new AlloyInstance(doc);
+                    instance.atoms().map(atom => atom.name()).forEach(atom => console.log(atom));
+                    if (this._on_instance_cb) this._on_instance_cb(instance);
                 }
                 break;
 

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {
     NonIdealState
 } from '@blueprintjs/core';
+import TableViewSideBar from '../bars/TableViewSideBar';
 
 export interface TableViewProps {
     instance?: object
@@ -18,8 +19,7 @@ class TableView extends React.Component<TableViewProps> {
 
         return (
             <div className='sterling-view'>
-                <div className='sidebar'>
-                </div>
+                <TableViewSideBar/>
                 {this._renderStage()}
             </div>
         );

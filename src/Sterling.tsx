@@ -50,7 +50,7 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
 
     }
 
-    _initialize_alloy () {
+    private _initialize_alloy () {
 
         this.alloy
             .on_connected(() => {
@@ -67,7 +67,7 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
 
     }
 
-    _renderView () {
+    private _renderView () {
         const view = this.state.view;
         if (view === 'graph') return <GraphView/>;
         if (view === 'table') return <TableView/>;
@@ -79,14 +79,14 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
             description='Something has gone horribly wrong.'/>;
     }
 
-    _requestNext () {
+    private _requestNext () {
         this.setState({
             ready: false
         });
         this.alloy.request_next();
     }
 
-    _setView (view: string) {
+    private _setView (view: string) {
         this.setState({ view: view });
     }
 }

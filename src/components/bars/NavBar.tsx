@@ -21,7 +21,7 @@ class NavBar extends React.Component<INavBarProps> {
     render (): React.ReactNode {
 
         return (
-            <Navbar fixedToTop className='bp3-dark'>
+            <Navbar fixedToTop className='nav bp3-dark'>
                 <Navbar.Group>
                     <NavbarHeading className='nav-heading'>
                         Sterling
