@@ -1,4 +1,5 @@
 @import '~@blueprintjs/core/lib/scss/variables';
+@import 'variables';
 
 .sterling-view {
 
@@ -8,8 +9,10 @@
 
   .sidebar {
 
+    flex: 1 1 auto;
     height: 100%;
-    min-width: 300px;
+    min-width: $sidebar-min-width;
+    max-width: $sidebar-max-width;
     border-right: 1px solid rgba($black, $pt-dark-drop-shadow-opacity);
 
     .bp3-navbar {

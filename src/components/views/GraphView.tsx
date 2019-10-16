@@ -1,32 +1,24 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { NonIdealState } from '@blueprintjs/core';
 import GraphViewSideBar from '../bars/GraphViewSideBar';
+import { AlloyInstance } from 'alloy-ts';
+import View from './View';
 
 export interface GraphViewProps {
-    instance?: object
+    instance: AlloyInstance | null,
+    visible: boolean
 }
 
 class GraphView extends React.Component<GraphViewProps> {
 
-    static propTypes = {
-        instance: PropTypes.object
-    };
-
     render (): React.ReactNode {
 
+        if (!this.props.visible) return null;
+
         return (
-            <div className='sterling-view'>
+            <View icon='graph' showPlaceholder={!this.props.instance}>
                 <GraphViewSideBar/>
-                <div className='stage'>
-                    {this.props.instance
-                        ? <svg id='stage'/>
-                        : <NonIdealState
-                            icon='graph'
-                            title='Welcome to Sterling'
-                            description='Use Alloy to generate an instance.'/>}
-                </div>
-            </div>
+                <svg id='stage'/>
+            </View>
         );
 
     }

@@ -1,41 +1,24 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import {
-    NonIdealState
-} from '@blueprintjs/core';
+import View from './View';
+import { AlloyInstance } from 'alloy-ts';
 
 export interface TreeViewProps {
-    instance?: object
+    instance: AlloyInstance | null,
+    visible: boolean
 }
 
 class TreeView extends React.Component<TreeViewProps> {
 
-    static propTypes = {
-        instance: PropTypes.object
-    };
-
     render (): React.ReactNode {
 
+        if (!this.props.visible) return null;
+
         return (
-            <div className='sterling-view'>
-                <div className='sidebar'>
-                </div>
-                {this._renderStage()}
-            </div>
+            <View icon='diagram-tree' showPlaceholder={!this.props.instance}>
+                <div className='sidebar'></div>
+                <svg id='stage'></svg>
+            </View>
         );
-
-    }
-
-    _renderStage () {
-
-        return (<div className='stage'>
-            {this.props.instance
-                ? <svg id='stage'/>
-                : <NonIdealState
-                    icon='diagram-tree'
-                    title='Welcome to Sterling'
-                    description='Use Alloy to generate an instance.'/>}
-        </div>);
 
     }
 

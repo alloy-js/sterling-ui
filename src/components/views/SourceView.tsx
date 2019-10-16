@@ -1,32 +1,76 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import {
-    NonIdealState
-} from '@blueprintjs/core';
+import { NonIdealState } from '@blueprintjs/core';
+import SourceViewSideBar from '../bars/SourceViewSideBar';
+import { AlloyInstance, AlloySource } from 'alloy-ts';
+import View from './View';
+import SourceViewStage from '../stages/SourceViewStage';
 
-export interface SourceViewProps {
-    instance?: object
+export interface ISourceViewProps {
+    instance: AlloyInstance | null,
+    visible: boolean
 }
 
-class SourceView extends React.Component<SourceViewProps> {
+export interface ISourceViewState {
+    lastRequested: AlloySource | null
+}
 
-    static propTypes = {
-        instance: PropTypes.object
+class SourceView extends React.Component<ISourceViewProps, ISourceViewState> {
+
+    state = {
+        lastRequested: null
     };
 
     render (): React.ReactNode {
 
+        if (!this.props.visible) return null;
+
+        const instance = this.props.instance;
+
         return (
-            <div className='sterling-view'>
-                <div className='sidebar'>
-                </div>
-                {this._renderStage()}
-            </div>
+            <View icon='document' showPlaceholder={!this.props.instance}>
+                <SourceViewSideBar
+                    active={this._getActive()}
+                    files={instance
+                        ? instance.sources()
+                        : []}
+                    xml={instance ? instance.xml() : null }
+                    onChooseSource={this._onChooseSource.bind(this)}/>
+                <SourceViewStage
+                    source={this._getActive()}/>
+            </View>
         );
 
     }
 
-    _renderStage () {
+    private _getActive (): AlloySource | null {
+
+        const instance: AlloyInstance | null = this.props.instance;
+        const lastRequested: AlloySource | null = this.state.lastRequested;
+
+        if (!instance) return null;
+        let sources = instance.sources().concat(instance.xml());
+
+        if (!sources.length) return null;
+        if (!lastRequested) return sources[0];
+
+        // Because TypeScript is getting confused...
+        const lR: AlloySource = lastRequested;
+        let samefile = sources.find(s => s.filename() === (lR.filename()));
+
+        return samefile || sources[0];
+
+
+    }
+
+    private _onChooseSource (source: AlloySource) {
+
+        this.setState({
+            lastRequested: source
+        });
+
+    }
+
+    private _renderStage () {
 
         return (<div className='stage'>
             {this.props.instance

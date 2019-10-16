@@ -1,41 +1,25 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import {
-    NonIdealState
-} from '@blueprintjs/core';
 import TableViewSideBar from '../bars/TableViewSideBar';
+import View from './View';
+import { AlloyInstance } from 'alloy-ts';
 
 export interface TableViewProps {
-    instance?: object
+    instance: AlloyInstance | null,
+    visible: boolean
 }
 
 class TableView extends React.Component<TableViewProps> {
 
-    static propTypes = {
-        instance: PropTypes.object
-    };
-
     render (): React.ReactNode {
 
+        if (!this.props.visible) return null;
+
         return (
-            <div className='sterling-view'>
+            <View icon='th' showPlaceholder={!this.props.instance}>
                 <TableViewSideBar/>
-                {this._renderStage()}
-            </div>
+                <svg id='stage'/>
+            </View>
         );
-
-    }
-
-    _renderStage () {
-
-        return (<div className='stage'>
-            {this.props.instance
-                ? <svg id='stage'/>
-                : <NonIdealState
-                    icon='th'
-                    title='Welcome to Sterling'
-                    description='Use Alloy to generate an instance.'/>}
-        </div>);
 
     }
 
