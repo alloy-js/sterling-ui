@@ -1,7 +1,8 @@
-import React from 'react';
-import TableViewSideBar from '../bars/TableViewSideBar';
-import View from './View';
 import { AlloyInstance } from 'alloy-ts';
+import React from 'react';
+import View from '../View';
+import TableViewSideBar from './TableViewSideBar';
+import TableViewStage from './TableViewStage';
 
 export interface TableViewProps {
     instance: AlloyInstance | null,
@@ -17,7 +18,7 @@ class TableView extends React.Component<TableViewProps> {
         return (
             <View icon='th' showPlaceholder={!this.props.instance}>
                 <TableViewSideBar/>
-                <svg id='stage'/>
+                <TableViewStage/>
             </View>
         );
 

@@ -1,7 +1,8 @@
-import React from 'react';
-import GraphViewSideBar from '../bars/GraphViewSideBar';
 import { AlloyInstance } from 'alloy-ts';
-import View from './View';
+import React from 'react';
+import View from '../View';
+import GraphViewSideBar from './GraphViewSideBar';
+import GraphViewStage from './GraphViewStage';
 
 export interface GraphViewProps {
     instance: AlloyInstance | null,
@@ -17,7 +18,7 @@ class GraphView extends React.Component<GraphViewProps> {
         return (
             <View icon='graph' showPlaceholder={!this.props.instance}>
                 <GraphViewSideBar/>
-                <svg id='stage'/>
+                <GraphViewStage/>
             </View>
         );
 

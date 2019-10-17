@@ -1,15 +1,17 @@
-import React from 'react';
 import {
     Alignment,
     Button,
     Classes,
     Navbar,
     NavbarDivider,
-    NavbarHeading
+    NavbarHeading,
+    Tag
 } from '@blueprintjs/core';
+import React from 'react';
 
 interface INavBarProps {
     connected: boolean,
+    command: string,
     onRequestNext: Function,
     onRequestView: Function,
     ready: boolean,
@@ -57,6 +59,17 @@ class NavBar extends React.Component<INavBarProps> {
                         onClick={() => this.props.onRequestView('source')}/>
                 </Navbar.Group>
                 <Navbar.Group align={Alignment.RIGHT}>
+                    {
+                        this.props.command.length > 0 &&
+                        <Tag
+                            minimal={true}>
+                            {this.props.command}
+                        </Tag>
+                    }
+                    {
+                        this.props.command.length > 0 &&
+                        <Navbar.Divider />
+                    }
                     <Button
                         large={true}
                         disabled={!this.props.ready}

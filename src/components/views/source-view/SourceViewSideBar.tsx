@@ -1,7 +1,7 @@
-import React from 'react';
-import SideBar from './SideBar';
-import { AlloySource } from 'alloy-ts';
 import { ITreeNode, Position, Tooltip, Tree } from '@blueprintjs/core';
+import { AlloySource } from 'alloy-ts';
+import React from 'react';
+import SideBar from '../SideBar';
 
 export interface ISourceViewSideBarProps {
     active: AlloySource | null,

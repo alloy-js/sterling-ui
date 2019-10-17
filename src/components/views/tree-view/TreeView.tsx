@@ -1,6 +1,8 @@
-import React from 'react';
-import View from './View';
 import { AlloyInstance } from 'alloy-ts';
+import React from 'react';
+import View from '../View';
+import TreeViewSideBar from './TreeViewSideBar';
+import TreeViewStage from './TreeViewStage';
 
 export interface TreeViewProps {
     instance: AlloyInstance | null,
@@ -15,8 +17,8 @@ class TreeView extends React.Component<TreeViewProps> {
 
         return (
             <View icon='diagram-tree' showPlaceholder={!this.props.instance}>
-                <div className='sidebar'></div>
-                <svg id='stage'></svg>
+                <TreeViewSideBar/>
+                <TreeViewStage/>
             </View>
         );
 

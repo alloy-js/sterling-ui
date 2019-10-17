@@ -1,8 +1,8 @@
-import React from 'react';
 import { AlloySource } from 'alloy-ts';
+import { COMMENT } from 'highlight.js';
+import React from 'react';
 import { LightAsync as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { githubGist } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-import { COMMENT } from 'highlight.js';
 
 const style = githubGist;
 const commentStyle = style['hljs-comment'];
@@ -22,7 +22,7 @@ class SourceViewStage extends React.Component<ISourceViewStageProps> {
         const source = this.props.source.source();
 
         return <SyntaxHighlighter
-                className='source-stage'
+                className='stage'
                 language={file === 'XML' ? 'xml' : 'alloy'}
                 showLineNumbers={true}
                 lineNumberStyle={{

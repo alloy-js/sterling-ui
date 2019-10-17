@@ -1,16 +1,16 @@
-import React from 'react';
-import SideBar from './SideBar';
 import { Navbar } from '@blueprintjs/core';
+import React from 'react';
+import SideBar from '../SideBar';
 
-class TableViewSideBar extends React.Component {
+class TreeViewSideBar extends React.Component {
 
-    render (): React.ReactNode {
+    render(): React.ReactNode {
 
         return (
             <SideBar>
                 <SideBar.Navbar>
                     <Navbar.Group>
-                        Table
+                        Tree
                     </Navbar.Group>
                 </SideBar.Navbar>
             </SideBar>
@@ -20,4 +20,4 @@ class TableViewSideBar extends React.Component {
 
 }
 
-export default TableViewSideBar;
+export default TreeViewSideBar;

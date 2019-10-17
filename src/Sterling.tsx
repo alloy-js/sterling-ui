@@ -1,9 +1,9 @@
 import React from 'react';
-import NavBar from './components/bars/NavBar';
-import GraphView from './components/views/GraphView';
-import TableView from './components/views/TableView';
-import TreeView from './components/views/TreeView';
-import SourceView from './components/views/SourceView';
+import NavBar from './components/NavBar';
+import GraphView from './components/views/graph-view/GraphView';
+import TableView from './components/views/table-view/TableView';
+import TreeView from './components/views/tree-view/TreeView';
+import SourceView from './components/views/source-view/SourceView';
 import { AlloyConnection } from './alloy/AlloyConnection';
 import { AlloyInstance } from 'alloy-ts';
 
@@ -26,7 +26,7 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
         connected: false,
         instance: null,
         ready: false,
-        view: 'graph'
+        view: 'table'
     };
 
     constructor (props: ISterlingProps) {
@@ -36,13 +36,15 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
 
     render(): React.ReactNode {
 
-        const instance = this.state.instance;
-        const view = this.state.view;
+        const instance: AlloyInstance | null = this.state.instance;
+        const view: string = this.state.view;
+        const command: string = instance ? instance!.command() : '';
 
         return (
             <div className='sterling'>
                 <NavBar
                     connected={this.state.connected}
+                    command={command}
                     ready={this.state.ready}
                     view={this.state.view}
                     onRequestNext={() => this._requestNext()}

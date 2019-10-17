@@ -1,5 +1,5 @@
+import { IconName, NonIdealState } from '@blueprintjs/core';
 import React from 'react';
-import { NonIdealState, IconName } from '@blueprintjs/core';
 
 export interface IViewProps {
     icon: IconName,

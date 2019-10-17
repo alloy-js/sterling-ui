@@ -1,6 +1,6 @@
-import React from 'react';
-import SideBar from './SideBar';
 import { Alignment, Button, Classes, Navbar, Tooltip } from '@blueprintjs/core';
+import React from 'react';
+import SideBar from '../SideBar';
 
 class GraphViewSideBar extends React.Component {
 

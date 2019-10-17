@@ -1,9 +1,9 @@
-import React from 'react';
 import { NonIdealState } from '@blueprintjs/core';
-import SourceViewSideBar from '../bars/SourceViewSideBar';
 import { AlloyInstance, AlloySource } from 'alloy-ts';
-import View from './View';
-import SourceViewStage from '../stages/SourceViewStage';
+import React from 'react';
+import View from '../View';
+import SourceViewSideBar from './SourceViewSideBar';
+import SourceViewStage from './SourceViewStage';
 
 export interface ISourceViewProps {
     instance: AlloyInstance | null,
