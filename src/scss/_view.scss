@@ -1,5 +1,6 @@
 @import '~@blueprintjs/core/lib/scss/variables';
 @import 'variables';
+@import 'table_stage';
 
 .sterling-view {
 
@@ -39,7 +40,7 @@
     .sidebar-section-contents {
       padding: 10px 10px 0 10px;
       display: grid;
-      grid-auto-rows: minmax(35px, auto);
+      grid-auto-rows: minmax(40px, auto);
       > * {
         margin: auto 0;
       }

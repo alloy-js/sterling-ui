@@ -1,0 +1,67 @@
+@import '~@blueprintjs/core/lib/scss/variables';
+
+.stage.table-stage {
+
+  display: flex;
+  flex-direction: column;
+  align-content: flex-start;
+  justify-content: flex-start;
+  align-items: flex-start;
+  //flex-wrap: wrap;
+  overflow: auto;
+
+  padding: 10px;
+
+  .group {
+    display: flex;
+    align-content: flex-start;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  table {
+    font-family: monospace;
+    font-size: 12px;
+    border-top: 1px solid $pt-divider-black;
+    border-left: 1px solid $pt-divider-black;
+
+    td, th {
+      box-shadow: none !important;
+      text-align: center;
+      border-right: 1px solid $pt-divider-black;
+      border-bottom: 1px solid $pt-divider-black;
+    }
+
+  }
+
+  .bp3-card {
+    margin: 10px;
+    padding: 10px 10px 5px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    > * {
+      margin-bottom: 5px;
+    }
+  }
+
+  .bp3-table-container {
+
+    min-height: 0;
+    box-shadow: none;
+    border-top: 1px solid rgba(16, 22, 26, 0.15);
+    border-left: 1px solid rgba(16, 22, 26, 0.15);
+
+    &.signature .bp3-table-quadrant.bp3-table-quadrant-top,
+    &.signature .bp3-table-top-container {
+      display: none;
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+  }
+
+}
