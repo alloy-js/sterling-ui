@@ -13,7 +13,8 @@ export interface ITableViewState {
     show_builtin: boolean,
     show_empty: boolean,
     show_groups: boolean,
-    layout: 'grid' | 'list'
+    last_alpha_sort: 'asc' | 'desc',
+    last_num_sort: 'asc' | 'desc'
 }
 
 class TableView extends React.Component<ITableViewProps, ITableViewState> {
@@ -22,30 +23,28 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
         show_builtin: false,
         show_empty: false,
         show_groups: true,
-        layout: 'grid'
+        last_alpha_sort: 'asc',
+        last_num_sort: 'asc'
     };
 
     render (): React.ReactNode {
 
         if (!this.props.visible) return null;
 
+        const state = this.state;
+
         return (
             <View icon='th' showPlaceholder={!this.props.instance}>
                 <TableViewSideBar
-                    show_builtin={this.state.show_builtin}
-                    show_empty={this.state.show_empty}
-                    show_groups={this.state.show_groups}
-                    layout={this.state.layout}
+                    {...state}
                     onToggleBuiltin={this._onToggleBuiltin}
                     onToggleEmpty={this._onToggleEmpty}
                     onToggleGroups={this._onToggleGroups}
-                    onChooseLayout={this._onChooseLayout}/>
+                    onChooseAlphaSort={this._onChooseSortAlpha}
+                    onChooseNumSort={this._onChooseSortNum}/>
                 <TableViewStage
-                    instance={this.props.instance}
-                    show_builtin={this.state.show_builtin}
-                    show_empty={this.state.show_empty}
-                    show_groups={this.state.show_groups}
-                    layout={this.state.layout}/>
+                    {...state}
+                    instance={this.props.instance}/>
             </View>
         );
 
@@ -66,9 +65,13 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
         this.setState({show_groups: !curr});
     };
 
-    private _onChooseLayout = (layout: 'grid' | 'list') => {
-        this.setState({layout: layout});
-    }
+    private _onChooseSortAlpha = (sort: 'asc' | 'desc') => {
+        this.setState({last_alpha_sort: sort});
+    };
+
+    private _onChooseSortNum = (sort: 'asc' | 'desc') => {
+        this.setState({last_num_sort: sort});
+    };
 
 }
 

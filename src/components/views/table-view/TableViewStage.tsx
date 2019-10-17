@@ -10,17 +10,15 @@ import {
     Breadcrumb,
     Breadcrumbs,
     Card,
+    Divider,
     HTMLTable,
     IBreadcrumbProps,
     Tag
 } from '@blueprintjs/core';
+import { ITableViewState } from './TableView';
 
-export interface ITableViewStageProps {
-    instance: AlloyInstance | null,
-    show_builtin: boolean,
-    show_empty: boolean,
-    show_groups: boolean,
-    layout: 'grid' | 'list'
+export interface ITableViewStageProps extends ITableViewState {
+    instance: AlloyInstance | null
 }
 
 class TableViewStage extends React.Component<ITableViewStageProps> {
@@ -58,13 +56,15 @@ class TableViewStage extends React.Component<ITableViewStageProps> {
             });
 
         const groups = this.props.show_groups
-            ? [sigs, fields]
+            ? [sigs, [], fields]
             : [sigs.concat(fields)];
 
         return <div className='stage table-stage' id='stage'>
             {
                 groups.map((group, i) => (
-                    <div className='group' key={i}>{group}</div>
+                    group.length
+                        ? <div className='group' key={i}>{group}</div>
+                        : <Divider/>
                 ))
             }
         </div>

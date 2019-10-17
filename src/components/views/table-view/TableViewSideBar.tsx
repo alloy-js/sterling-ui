@@ -7,16 +7,14 @@ import {
 } from '@blueprintjs/core';
 import React from 'react';
 import SideBar from '../SideBar';
+import { ITableViewState } from './TableView';
 
-export interface ITableViewSideBarProps {
-    show_builtin: boolean,
-    show_empty: boolean,
-    show_groups: boolean,
-    layout: 'grid' | 'list',
+export interface ITableViewSideBarProps extends ITableViewState{
     onToggleBuiltin: () => void,
     onToggleEmpty: () => void,
     onToggleGroups: () => void,
-    onChooseLayout: (layout: 'grid' | 'list') => void
+    onChooseAlphaSort: (sort: 'asc' | 'desc') => void,
+    onChooseNumSort: (sort: 'asc' | 'desc') => void
 }
 
 class TableViewSideBar extends React.Component<ITableViewSideBarProps> {
@@ -46,35 +44,20 @@ class TableViewSideBar extends React.Component<ITableViewSideBarProps> {
                     <FormGroup
                         className='spread'
                         inline={true}
-                        label='Layout'>
-                        <ButtonGroup>
-                            <Button
-                                active={this.props.layout === 'grid'}
-                                onClick={() => this.props.onChooseLayout('grid')}
-                                icon='grid-view'>
-                                Grid
-                            </Button>
-                            <Button
-                                active={this.props.layout === 'list'}
-                                onClick={() => this.props.onChooseLayout('list')}
-                                icon='list'>
-                                List
-                            </Button>
-                        </ButtonGroup>
-                    </FormGroup>
-                    <FormGroup
-                        className='spread'
-                        inline={true}
                         label='Sort'>
                         <ButtonGroup>
                             <Button
-                                icon='sort-alphabetical'/>
+                                icon='sort-alphabetical'
+                                onClick={() => this.props.onChooseAlphaSort('asc')}/>
                             <Button
-                                icon='sort-alphabetical-desc'/>
+                                icon='sort-alphabetical-desc'
+                                onClick={() => this.props.onChooseAlphaSort('desc')}/>
                             <Button
-                                icon='sort-numerical'/>
+                                icon='sort-numerical'
+                                onClick={() => this.props.onChooseNumSort('asc')}/>
                             <Button
-                                icon='sort-numerical-desc'/>
+                                icon='sort-numerical-desc'
+                                onClick={() => this.props.onChooseNumSort('desc')}/>
                         </ButtonGroup>
                     </FormGroup>
                 </SideBar.Section>
