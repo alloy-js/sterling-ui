@@ -13,6 +13,7 @@ export interface ITableViewSideBarProps extends ITableViewState{
     onToggleBuiltin: () => void,
     onToggleEmpty: () => void,
     onToggleGroups: () => void,
+    onToggleRemoveThis: () => void,
     onChooseAlphaSort: (sort: 'asc' | 'desc') => void,
     onChooseNumSort: (sort: 'asc' | 'desc') => void
 }
@@ -34,6 +35,11 @@ class TableViewSideBar extends React.Component<ITableViewSideBarProps> {
                         onChange={this.props.onToggleEmpty}
                         alignIndicator={Alignment.RIGHT}
                         label='Show Empty Tables'/>
+                    <Switch
+                        checked={this.props.remove_this}
+                        onChange={this.props.onToggleRemoveThis}
+                        alignIndicator={Alignment.RIGHT}
+                        label={'Remove "this" from Signature Names'}/>
                 </SideBar.Section>
                 <SideBar.Section label='Layout Options'>
                     <Switch

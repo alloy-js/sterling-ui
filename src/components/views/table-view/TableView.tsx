@@ -10,21 +10,25 @@ export interface ITableViewProps {
 }
 
 export interface ITableViewState {
+    remove_this: boolean,
+    last_alpha_sort: 'asc' | 'desc',
+    last_num_sort: 'asc' | 'desc',
+    last_sort: 'alpha' | 'num',
     show_builtin: boolean,
     show_empty: boolean,
-    show_groups: boolean,
-    last_alpha_sort: 'asc' | 'desc',
-    last_num_sort: 'asc' | 'desc'
+    show_groups: boolean
 }
 
 class TableView extends React.Component<ITableViewProps, ITableViewState> {
 
     public state: ITableViewState = {
+        remove_this: true,
+        last_alpha_sort: 'asc',
+        last_num_sort: 'asc',
+        last_sort: 'alpha',
         show_builtin: false,
         show_empty: false,
-        show_groups: true,
-        last_alpha_sort: 'asc',
-        last_num_sort: 'asc'
+        show_groups: true
     };
 
     render (): React.ReactNode {
@@ -40,6 +44,7 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
                     onToggleBuiltin={this._onToggleBuiltin}
                     onToggleEmpty={this._onToggleEmpty}
                     onToggleGroups={this._onToggleGroups}
+                    onToggleRemoveThis={this._onToggleRemoveThis}
                     onChooseAlphaSort={this._onChooseSortAlpha}
                     onChooseNumSort={this._onChooseSortNum}/>
                 <TableViewStage
@@ -65,12 +70,17 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
         this.setState({show_groups: !curr});
     };
 
+    private _onToggleRemoveThis = () => {
+        const curr: boolean = this.state.remove_this;
+        this.setState({remove_this: !curr});
+    };
+
     private _onChooseSortAlpha = (sort: 'asc' | 'desc') => {
-        this.setState({last_alpha_sort: sort});
+        this.setState({last_alpha_sort: sort, last_sort: 'alpha'});
     };
 
     private _onChooseSortNum = (sort: 'asc' | 'desc') => {
-        this.setState({last_num_sort: sort});
+        this.setState({last_num_sort: sort, last_sort: 'num'});
     };
 
 }
