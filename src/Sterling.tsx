@@ -54,6 +54,7 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
                     visible={view === 'graph'}/>
                 <TableView
                     instance={instance}
+                    sidebarLocation='left'
                     visible={view === 'table'}/>
                 <TreeView
                     instance={instance}

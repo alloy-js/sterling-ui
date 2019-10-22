@@ -4,8 +4,8 @@ import {
     Classes,
     Navbar,
     NavbarDivider,
-    NavbarHeading,
-    Tag
+    NavbarHeading, Position,
+    Tag, Tooltip
 } from '@blueprintjs/core';
 import React from 'react';
 
@@ -57,6 +57,15 @@ class NavBar extends React.Component<INavBarProps> {
                         icon='document'
                         text='Source'
                         onClick={() => this.props.onRequestView('source')}/>
+                    <NavbarDivider/>
+                    <Tooltip
+                        content='Sterling Settings'
+                        position={Position.BOTTOM}>
+                        <Button
+                            className={Classes.MINIMAL}
+                            large={true}
+                            icon='cog'/>
+                    </Tooltip>
                 </Navbar.Group>
                 <Navbar.Group align={Alignment.RIGHT}>
                     {

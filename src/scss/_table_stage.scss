@@ -10,10 +10,13 @@
 
   padding: 10px;
 
+  &.left .group { justify-content: flex-start }
+  &.center .group { justify-content: center }
+  &.right .group { justify-content: flex-end }
+
   .group {
     display: flex;
     align-content: flex-start;
-    justify-content: flex-start;
     align-items: flex-start;
     flex-wrap: wrap;
   }
