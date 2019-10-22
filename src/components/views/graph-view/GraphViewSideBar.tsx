@@ -1,40 +1,38 @@
-import { Alignment, Button, Classes, Navbar, Tooltip } from '@blueprintjs/core';
 import React from 'react';
-import SideBar from '../SideBar';
+import SterlingSidebar from '../SterlingSidebar';
+import { AlloyInstance } from 'alloy-ts';
 
-class GraphViewSideBar extends React.Component {
+export interface IGraphViewSidebarProps {
+    instance: AlloyInstance | null,
+    side: 'left' | 'right'
+}
+
+export interface IGraphViewSidebarState {
+    collapseSidebar: boolean
+}
+
+class GraphViewSideBar extends React.Component<IGraphViewSidebarProps, IGraphViewSidebarState> {
+
+    public state: IGraphViewSidebarState = {
+        collapseSidebar: false
+    };
 
     render (): React.ReactNode {
 
         return (
-            <SideBar>
-                <SideBar.Navbar>
-                    <Navbar.Group align={Alignment.RIGHT}>
-                        <Tooltip position='bottom' content='Force Layout'>
-                            <Button
-                                className={Classes.MINIMAL}
-                                icon='layout-auto'/>
-                        </Tooltip>
-                        <Tooltip position='bottom' content='Dagre Layout'>
-                            <Button
-                                className={Classes.MINIMAL}
-                                icon='layout-hierarchy'/>
-                        </Tooltip>
-                        <Tooltip position='bottom' content='Balloon Layout'>
-                            <Button
-                                className={Classes.MINIMAL}
-                                icon='layout-balloon'/>
-                        </Tooltip>
-                        <Tooltip position='bottom' content='Circular Layout'>
-                            <Button
-                                className={Classes.MINIMAL}
-                                icon='layout-circle'/>
-                        </Tooltip>
-                    </Navbar.Group>
-                </SideBar.Navbar>
-            </SideBar>
+            <SterlingSidebar
+                collapsed={this.state.collapseSidebar}
+                onToggleCollapse={this.onToggleCollapse}
+                side={this.props.side}
+                title='Graph View Settings'>
+            </SterlingSidebar>
         )
 
+    }
+
+    private onToggleCollapse = () => {
+        const curr = this.state.collapseSidebar;
+        this.setState({collapseSidebar: !curr});
     }
 
 }

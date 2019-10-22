@@ -6,6 +6,7 @@ import TreeViewStage from './TreeViewStage';
 
 export interface TreeViewProps {
     instance: AlloyInstance | null,
+    sidebarLocation: 'left' | 'right',
     visible: boolean
 }
 
@@ -17,7 +18,9 @@ class TreeView extends React.Component<TreeViewProps> {
 
         return (
             <View icon='diagram-tree' showPlaceholder={!this.props.instance}>
-                <TreeViewSideBar/>
+                <TreeViewSideBar
+                    instance={this.props.instance}
+                    side={this.props.sidebarLocation}/>
                 <TreeViewStage/>
             </View>
         );

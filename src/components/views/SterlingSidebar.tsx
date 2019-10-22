@@ -1,80 +1,67 @@
-import { Button } from '@blueprintjs/core';
+import { Button, Collapse } from '@blueprintjs/core';
 import * as React from 'react';
 
 export interface ISterlingSidebarSectionProps {
+    collapsed: boolean,
+    onToggleCollapse: () => void
     title?: string
 }
 
-export interface ISterlingSidebarSectionState {
-    collapsed: boolean
-}
-
-class Section extends React.Component<ISterlingSidebarSectionProps, ISterlingSidebarSectionState> {
-
-    public state = {
-        collapsed: false
-    };
+class Section extends React.Component<ISterlingSidebarSectionProps> {
 
     render (): React.ReactNode {
 
-        const collapseIcon = this.state.collapsed ? 'expand-all' : 'collapse-all';
+        const collapseIcon = this.props.collapsed ? 'expand-all' : 'collapse-all';
 
         return (
-            <div className={`section ${this.state.collapsed ? 'collapsed' : ''}`}>
+            <div className={`section ${this.props.collapsed ? 'collapsed' : ''}`}>
                 {
                     !!this.props.title &&
                     <div className='section-header'>
                         <div className='title'>
                             {this.props.title.toUpperCase()}
                         </div>
-                        <Button icon={collapseIcon} minimal={true} onClick={this.toggle}/>
+                        <Button
+                            icon={collapseIcon}
+                            minimal={true}
+                            onClick={this.props.onToggleCollapse}/>
                     </div>
                 }
-                {
-                    !this.state.collapsed &&
+                <Collapse
+                    isOpen={!this.props.collapsed}
+                    keepChildrenMounted={true}>
                     <div className='section-body'>
-                        { this.props.children }
+                        {this.props.children}
                     </div>
-                }
+                </Collapse>
             </div>
-        )
+        );
 
-    }
-
-    toggle = () => {
-        const curr = this.state.collapsed;
-        this.setState({collapsed: !curr});
     }
 
 }
 
 export interface ISterlingSidebarProps {
+    collapsed: boolean,
+    onToggleCollapse: () => void,
     side: 'left' | 'right',
     title: string
 }
 
-export interface ISterlingSidebarState {
-    collapsed: boolean
-}
-
-class SterlingSidebar extends React.Component<ISterlingSidebarProps, ISterlingSidebarState> {
+class SterlingSidebar extends React.Component<ISterlingSidebarProps> {
 
     static Section = Section;
-
-    public state = {
-        collapsed: false
-    };
 
     render(): React.ReactNode {
 
         const openIcon = this.props.side === 'left' ? 'menu-open' : 'menu-closed';
         const closeIcon = this.props.side === 'left' ? 'menu-closed' : 'menu-open';
 
-        if (this.state.collapsed) {
+        if (this.props.collapsed) {
             return (
                 <div className={`sterling-sidebar ${this.props.side} collapsed`}>
                     <div className='header'>
-                        <Button icon={openIcon} minimal={true} onClick={this.toggle}/>
+                        <Button icon={openIcon} minimal={true} onClick={this.props.onToggleCollapse}/>
                     </div>
                 </div>
             )
@@ -86,16 +73,11 @@ class SterlingSidebar extends React.Component<ISterlingSidebarProps, ISterlingSi
                     <div className='title'>
                         {this.props.title}
                     </div>
-                    <Button icon={closeIcon} minimal={true} onClick={this.toggle}/>
+                    <Button icon={closeIcon} minimal={true} onClick={this.props.onToggleCollapse}/>
                 </div>
                 {this.props.children}
             </div>
         )
-    }
-
-    toggle = () => {
-        const curr = this.state.collapsed;
-        this.setState({collapsed: !curr});
     }
 
 }

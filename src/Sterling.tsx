@@ -51,6 +51,7 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
                     onRequestView={(view: string) => this._setView(view)}/>
                 <GraphView
                     instance={instance}
+                    sidebarLocation='left'
                     visible={view === 'graph'}/>
                 <TableView
                     instance={instance}
@@ -58,9 +59,11 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
                     visible={view === 'table'}/>
                 <TreeView
                     instance={instance}
+                    sidebarLocation='left'
                     visible={view === 'tree'}/>
                 <SourceView
                     instance={instance}
+                    sidebarLocation='left'
                     visible={view === 'source'}/>
             </div>
         )

@@ -6,6 +6,7 @@ import GraphViewStage from './GraphViewStage';
 
 export interface GraphViewProps {
     instance: AlloyInstance | null,
+    sidebarLocation: 'left' | 'right',
     visible: boolean
 }
 
@@ -17,7 +18,9 @@ class GraphView extends React.Component<GraphViewProps> {
 
         return (
             <View icon='graph' showPlaceholder={!this.props.instance}>
-                <GraphViewSideBar/>
+                <GraphViewSideBar
+                    instance={this.props.instance}
+                    side={this.props.sidebarLocation}/>
                 <GraphViewStage/>
             </View>
         );

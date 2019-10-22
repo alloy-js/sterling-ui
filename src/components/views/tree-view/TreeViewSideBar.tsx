@@ -1,21 +1,38 @@
-import { Navbar } from '@blueprintjs/core';
 import React from 'react';
-import SideBar from '../SideBar';
+import { AlloyInstance } from 'alloy-ts';
+import SterlingSidebar from '../SterlingSidebar';
 
-class TreeViewSideBar extends React.Component {
+export interface ITreeViewSidebarProps {
+    instance: AlloyInstance | null,
+    side: 'left' | 'right'
+}
+
+export interface ITreeViewSidebarState {
+    collapseSidebar: boolean
+}
+
+class TreeViewSideBar extends React.Component<ITreeViewSidebarProps, ITreeViewSidebarState> {
+
+    public state = {
+        collapseSidebar: false
+    };
 
     render(): React.ReactNode {
 
         return (
-            <SideBar>
-                <SideBar.Navbar>
-                    <Navbar.Group>
-                        Tree
-                    </Navbar.Group>
-                </SideBar.Navbar>
-            </SideBar>
+            <SterlingSidebar
+                collapsed={this.state.collapseSidebar}
+                onToggleCollapse={this.onToggleCollapse}
+                side={this.props.side}
+                title='Tree View Settings'>
+            </SterlingSidebar>
         )
 
+    }
+
+    private onToggleCollapse = () => {
+        const curr = this.state.collapseSidebar;
+        this.setState({collapseSidebar: !curr});
     }
 
 }

@@ -41,6 +41,39 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
         tables: 'all'
     };
 
+    componentDidUpdate (
+        prevProps: Readonly<ITableViewProps>,
+        prevState: Readonly<ITableViewState>): void {
+
+        if (this.props.instance !== prevProps.instance) {
+
+            // If no instance, clear the selected table
+            if (this.props.instance === null) {
+                this.setState({
+                    table: null,
+                    tables: 'all'
+                });
+                return;
+            }
+
+            // Otherwise, if a table was selected, look for it in the
+            // new instance
+            if (this.state.table !== null) {
+                const id = this.state.table.id();
+                const items = ([] as Array<ASigField>)
+                    .concat(this.props.instance.signatures())
+                    .concat(this.props.instance.fields());
+                const same = items.find(item => item.id() === id);
+                if (same) {
+                    this.setState({table: same});
+                } else {
+                    this.setState({table: null, tables: 'all'});
+                }
+            }
+        }
+
+    }
+
     render (): React.ReactNode {
 
         if (!this.props.visible) return null;

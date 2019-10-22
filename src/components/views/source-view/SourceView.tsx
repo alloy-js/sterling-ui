@@ -1,4 +1,3 @@
-import { NonIdealState } from '@blueprintjs/core';
 import { AlloyInstance, AlloySource } from 'alloy-ts';
 import React from 'react';
 import View from '../View';
@@ -7,79 +6,71 @@ import SourceViewStage from './SourceViewStage';
 
 export interface ISourceViewProps {
     instance: AlloyInstance | null,
+    sidebarLocation: 'left' | 'right',
     visible: boolean
 }
 
 export interface ISourceViewState {
-    lastRequested: AlloySource | null
+    active: AlloySource | null
 }
 
 class SourceView extends React.Component<ISourceViewProps, ISourceViewState> {
 
-    state = {
-        lastRequested: null
+    state: ISourceViewState = {
+        active: null
     };
+
+    componentDidUpdate (
+        prevProps: Readonly<ISourceViewProps>,
+        prevState: Readonly<ISourceViewState>): void {
+
+        if (this.props.instance !== prevProps.instance) {
+
+            // If no instance, clear active source
+            if (this.props.instance === null) {
+                this.setState({
+                    active: null
+                });
+                return;
+            }
+
+            // Otherwise, look for a source with the same filename
+            if (this.state.active !== null) {
+                const oldname = this.state.active.filename();
+                const sources = this.props.instance.sources().concat(this.props.instance.xml());
+                const same = sources.find(source => {
+                    return source.filename() === oldname;
+                });
+                this.setState({active: same || null});
+            }
+
+        }
+
+    }
 
     render (): React.ReactNode {
 
         if (!this.props.visible) return null;
 
-        const instance = this.props.instance;
-
         return (
             <View icon='document' showPlaceholder={!this.props.instance}>
                 <SourceViewSideBar
-                    active={this._getActive()}
-                    files={instance
-                        ? instance.sources()
-                        : []}
-                    xml={instance ? instance.xml() : null }
-                    onChooseSource={this._onChooseSource.bind(this)}/>
+                    active={this.state.active}
+                    instance={this.props.instance}
+                    onChooseSource={this._onChooseSource.bind(this)}
+                    side={this.props.sidebarLocation}/>
                 <SourceViewStage
-                    source={this._getActive()}/>
+                    source={this.state.active}/>
             </View>
         );
-
-    }
-
-    private _getActive (): AlloySource | null {
-
-        const instance: AlloyInstance | null = this.props.instance;
-        const lastRequested: AlloySource | null = this.state.lastRequested;
-
-        if (!instance) return null;
-        let sources = instance.sources().concat(instance.xml());
-
-        if (!sources.length) return null;
-        if (!lastRequested) return sources[0];
-
-        // Because TypeScript is getting confused...
-        const lR: AlloySource = lastRequested;
-        let samefile = sources.find(s => s.filename() === (lR.filename()));
-
-        return samefile || sources[0];
-
 
     }
 
     private _onChooseSource (source: AlloySource) {
 
         this.setState({
-            lastRequested: source
+            active: source
         });
-
-    }
-
-    private _renderStage () {
-
-        return (<div className='stage'>
-            {this.props.instance
-                ? <svg id='stage'/>
-                : <NonIdealState
-                    icon='document'
-                    title='Welcome to Sterling'
-                    description='Use Alloy to generate an instance.'/>}
-        </div>);
 
     }
 
