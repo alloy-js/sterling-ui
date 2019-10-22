@@ -1,7 +1,7 @@
 import { ITreeNode, Position, Tooltip, Tree } from '@blueprintjs/core';
 import { AlloyInstance, AlloySource } from 'alloy-ts';
 import React from 'react';
-import SterlingSidebar from '../SterlingSidebar';
+import SterlingSidebar from '../../SterlingSidebar';
 
 export interface ISourceViewSideBarProps {
     active: AlloySource | null

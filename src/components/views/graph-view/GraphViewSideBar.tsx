@@ -1,5 +1,5 @@
 import React from 'react';
-import SterlingSidebar from '../SterlingSidebar';
+import SterlingSidebar from '../../SterlingSidebar';
 import { AlloyInstance } from 'alloy-ts';
 
 export interface IGraphViewSidebarProps {

@@ -20,7 +20,7 @@ import {
 } from '@blueprintjs/select';
 import { AlloyField, AlloyInstance, AlloySignature } from 'alloy-ts';
 import React from 'react';
-import SterlingSidebar from '../SterlingSidebar';
+import SterlingSidebar from '../../SterlingSidebar';
 import { alphaSort, ASigField, builtinSort } from './TableUtil';
 import { ITableViewState } from './TableView';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { AlloyInstance } from 'alloy-ts';
-import SterlingSidebar from '../SterlingSidebar';
+import SterlingSidebar from '../../SterlingSidebar';
 
 export interface ITreeViewSidebarProps {
     instance: AlloyInstance | null,

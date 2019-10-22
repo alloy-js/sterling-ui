@@ -1,17 +1,20 @@
 import React from 'react';
-import NavBar from './components/NavBar';
+import SterlingNavbar from './components/SterlingNavbar';
 import GraphView from './components/views/graph-view/GraphView';
 import TableView from './components/views/table-view/TableView';
 import TreeView from './components/views/tree-view/TreeView';
 import SourceView from './components/views/source-view/SourceView';
 import { AlloyConnection } from './alloy/AlloyConnection';
 import { AlloyInstance } from 'alloy-ts';
+import SterlingSettingsDialog
+    from './components/settings/SterlingSettingsDialog';
 
 interface ISterlingState {
     connected: boolean,
     instance: AlloyInstance | null,
     ready: boolean,
-    view: string
+    showSettings: boolean,
+    view: 'graph' | 'table' | 'tree' | 'source'
 }
 
 interface ISterlingProps {
@@ -22,16 +25,17 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
 
     alloy = new AlloyConnection();
 
-    state = {
+    state: ISterlingState = {
         connected: false,
         instance: null,
         ready: false,
+        showSettings: false,
         view: 'table'
     };
 
     constructor (props: ISterlingProps) {
         super(props);
-        this._initialize_alloy();
+        this.initializeAlloy();
     }
 
     render(): React.ReactNode {
@@ -42,13 +46,14 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
 
         return (
             <div className='sterling'>
-                <NavBar
+                <SterlingNavbar
                     connected={this.state.connected}
                     command={command}
                     ready={this.state.ready}
                     view={this.state.view}
-                    onRequestNext={() => this._requestNext()}
-                    onRequestView={(view: string) => this._setView(view)}/>
+                    onRequestNext={this.requestNext}
+                    onRequestView={(view: 'graph' | 'table' | 'tree' | 'source') => this.setView(view)}
+                    onRequestSettings={this.openSettingsDialog}/>
                 <GraphView
                     instance={instance}
                     sidebarLocation='left'
@@ -65,12 +70,19 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
                     instance={instance}
                     sidebarLocation='left'
                     visible={view === 'source'}/>
+                <SterlingSettingsDialog
+                    onClose={this.closeSettingsDialog}
+                    isOpen={this.state.showSettings}/>
             </div>
         )
 
     }
 
-    private _initialize_alloy () {
+    private closeSettingsDialog = () => {
+        this.setState({showSettings: false});
+    };
+
+    private initializeAlloy = () => {
 
         this.alloy
             .on_connected(() => {
@@ -85,18 +97,22 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
             })
             .connect();
 
-    }
+    };
 
-    private _requestNext () {
+    private openSettingsDialog = () => {
+        this.setState({showSettings: true});
+    };
+
+    private requestNext = () => {
         this.setState({
             ready: false
         });
         this.alloy.request_next();
-    }
+    };
 
-    private _setView (view: string) {
+    private setView = (view: 'graph' | 'table' | 'tree' | 'source') => {
         this.setState({ view: view });
-    }
+    };
 }
 
 export default Sterling;

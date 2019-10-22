@@ -12,13 +12,14 @@ import React from 'react';
 interface INavBarProps {
     connected: boolean,
     command: string,
-    onRequestNext: Function,
-    onRequestView: Function,
+    onRequestNext: () => void,
+    onRequestView: (view: 'graph' | 'table' | 'tree' | 'source') => void,
+    onRequestSettings: () => void,
     ready: boolean,
     view: string
 }
 
-class NavBar extends React.Component<INavBarProps> {
+class SterlingNavbar extends React.Component<INavBarProps> {
 
     render (): React.ReactNode {
 
@@ -64,7 +65,8 @@ class NavBar extends React.Component<INavBarProps> {
                         <Button
                             className={Classes.MINIMAL}
                             large={true}
-                            icon='cog'/>
+                            icon='cog'
+                            onClick={this.props.onRequestSettings}/>
                     </Tooltip>
                 </Navbar.Group>
                 <Navbar.Group align={Alignment.RIGHT}>
@@ -94,4 +96,4 @@ class NavBar extends React.Component<INavBarProps> {
 
 }
 
-export default NavBar;
+export default SterlingNavbar;
