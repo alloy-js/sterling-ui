@@ -1,20 +1,21 @@
-import React from 'react';
-import SterlingNavbar from './components/SterlingNavbar';
-import GraphView from './components/views/graph-view/GraphView';
-import TableView from './components/views/table-view/TableView';
-import TreeView from './components/views/tree-view/TreeView';
-import SourceView from './components/views/source-view/SourceView';
-import { AlloyConnection } from './alloy/AlloyConnection';
 import { AlloyInstance } from 'alloy-ts';
+import React from 'react';
+import { AlloyConnection } from './alloy/AlloyConnection';
 import SterlingSettingsDialog
     from './components/settings/SterlingSettingsDialog';
+import SterlingNavbar from './components/SterlingNavbar';
+import GraphView from './components/views/graph-view/GraphView';
+import SourceView from './components/views/source-view/SourceView';
+import TableView from './components/views/table-view/TableView';
+import TreeView from './components/views/tree-view/TreeView';
+import SterlingSettings, { ViewType } from './SterlingSettings';
 
 interface ISterlingState {
     connected: boolean,
     instance: AlloyInstance | null,
     ready: boolean,
     showSettings: boolean,
-    view: 'graph' | 'table' | 'tree' | 'source'
+    view: ViewType
 }
 
 interface ISterlingProps {
@@ -24,13 +25,14 @@ interface ISterlingProps {
 class Sterling extends React.Component<ISterlingProps, ISterlingState> {
 
     alloy = new AlloyConnection();
+    settings = new SterlingSettings();
 
     state: ISterlingState = {
         connected: false,
         instance: null,
         ready: false,
         showSettings: false,
-        view: 'table'
+        view: this.settings.defaultView
     };
 
     constructor (props: ISterlingProps) {
@@ -72,7 +74,8 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
                     visible={view === 'source'}/>
                 <SterlingSettingsDialog
                     onClose={this.closeSettingsDialog}
-                    isOpen={this.state.showSettings}/>
+                    isOpen={this.state.showSettings}
+                    settings={this.settings}/>
             </div>
         )
 
@@ -110,9 +113,13 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
         this.alloy.request_next();
     };
 
-    private setView = (view: 'graph' | 'table' | 'tree' | 'source') => {
+    private setView = (view: ViewType) => {
         this.setState({ view: view });
     };
+
+    private watchSettings () {
+
+    }
 }
 
 export default Sterling;
