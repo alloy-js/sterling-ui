@@ -4,10 +4,10 @@ import View from '../View';
 import { ASigField, nameFunction } from './TableUtil';
 import TableViewSideBar from './TableViewSideBar';
 import TableViewStage from './TableViewStage';
+import SterlingSettings, { ViewSide } from '../../../SterlingSettings';
 
 export interface ITableViewProps {
     instance: AlloyInstance | null,
-    sidebarLocation: 'left' | 'right',
     visible: boolean
 }
 
@@ -21,25 +21,35 @@ export interface ITableViewState {
     showBuiltin: boolean,
     showEmpty: boolean,
     showGroups: boolean,
+    sidebarSide: ViewSide,
     table: ASigField | null,
     tables: 'all' | 'signatures' | 'fields' | 'one'
 }
 
 class TableView extends React.Component<ITableViewProps, ITableViewState> {
 
-    public state: ITableViewState = {
-        align: 'left',
-        removeThis: true,
-        lastAlphaSort: 'asc',
-        lastNumSort: 'asc',
-        lastSort: 'alpha',
-        nameFunction: nameFunction(true),
-        showBuiltin: false,
-        showEmpty: false,
-        showGroups: true,
-        table: null,
-        tables: 'all'
-    };
+    constructor (props: ITableViewProps) {
+
+        super(props);
+
+        this.state = {
+            align: 'left',
+            removeThis: true,
+            lastAlphaSort: 'asc',
+            lastNumSort: 'asc',
+            lastSort: 'alpha',
+            nameFunction: nameFunction(true),
+            showBuiltin: false,
+            showEmpty: false,
+            showGroups: true,
+            sidebarSide: SterlingSettings.get('tableViewSidebarSide'),
+            table: null,
+            tables: 'all'
+        };
+
+        this._watchSettings();
+
+    }
 
     componentDidUpdate (
         prevProps: Readonly<ITableViewProps>,
@@ -97,13 +107,13 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
                 onToggleEmpty={this._onToggleEmpty}
                 onToggleGroups={this._onToggleGroups}
                 onToggleRemoveThis={this._onToggleRemoveThis}
-                side={this.props.sidebarLocation}/>
+                side={this.state.sidebarSide}/>
         );
 
         return (
             <View icon='th' showPlaceholder={!this.props.instance}>
                 {
-                    this.props.sidebarLocation === 'left'
+                    this.state.sidebarSide === 'left'
                         ? <>{sidebar}{stage}</>
                         : <>{stage}{sidebar}</>
                 }
@@ -150,6 +160,14 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
 
     private _onChooseTables = (tables: 'all' | 'signatures' | 'fields' | 'one') => {
         this.setState({tables: tables});
+    }
+
+    private _watchSettings () {
+
+        SterlingSettings.watch('tableViewSidebarSide', (value: ViewSide) => {
+            this.setState({sidebarSide: value});
+        });
+
     }
 
 }

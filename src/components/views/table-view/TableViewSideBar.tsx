@@ -78,13 +78,13 @@ class TableViewSideBar extends React.Component<ITableViewSideBarProps, ITableVie
         return (
             <SterlingSidebar
                 collapsed={this.state.collapseSidebar}
-                onToggleCollapse={this.onToggleCollapse}
+                onToggleCollapse={this._onToggleCollapse}
                 side={this.props.side}
                 title='Table View Settings'>
                 <SterlingSidebar.Section
                     title='Tables'
                     collapsed={this.state.collapseTableOptions}
-                    onToggleCollapse={this.onToggleTablesOptions}>
+                    onToggleCollapse={this._onToggleTablesOptions}>
                     <RadioGroup
                         selectedValue={this.props.tables}
                         onChange={(event) => this.props.onChooseTables(event.currentTarget.value as 'all' | 'signatures' | 'fields' | 'one')}>
@@ -94,10 +94,10 @@ class TableViewSideBar extends React.Component<ITableViewSideBarProps, ITableVie
                         <Radio value='one'>
                             <AlloySelect
                                 items={this.state.items}
-                                itemPredicate={this.filterItem}
-                                itemRenderer={this.renderItem}
-                                itemListRenderer={this.renderMenu}
-                                onItemSelect={this.onMenuItemChange}
+                                itemPredicate={this._filterItem}
+                                itemRenderer={this._renderItem}
+                                itemListRenderer={this._renderMenu}
+                                onItemSelect={this._onMenuItemChange}
                                 resetOnClose={true}>
                                 <Button
                                     fill={true}
@@ -120,7 +120,7 @@ class TableViewSideBar extends React.Component<ITableViewSideBarProps, ITableVie
                 <SterlingSidebar.Section
                     title='Data Options'
                     collapsed={this.state.collapseDataOptions}
-                    onToggleCollapse={this.onToggleDataOptions}>
+                    onToggleCollapse={this._onToggleDataOptions}>
                     <Switch
                         checked={this.props.showBuiltin}
                         disabled={this.props.tables === 'one'}
@@ -142,7 +142,7 @@ class TableViewSideBar extends React.Component<ITableViewSideBarProps, ITableVie
                 <SterlingSidebar.Section
                     title='Layout Options'
                     collapsed={this.state.collapseLayoutOptions}
-                    onToggleCollapse={this.onToggleLayoutOptions}>
+                    onToggleCollapse={this._onToggleLayoutOptions}>
                     <FormGroup>
                         <FormGroup inline={true} label='Align'>
                             <ButtonGroup>
@@ -193,7 +193,7 @@ class TableViewSideBar extends React.Component<ITableViewSideBarProps, ITableVie
 
     }
 
-    private filterItem: ItemPredicate<ASigField> = (query: string, item: ASigField): boolean => {
+    private _filterItem: ItemPredicate<ASigField> = (query: string, item: ASigField): boolean => {
 
         const name = item.expressionType() === 'signature'
             ? this.props.nameFunction(item)
@@ -203,32 +203,32 @@ class TableViewSideBar extends React.Component<ITableViewSideBarProps, ITableVie
 
     };
 
-    private onMenuItemChange = (item: ASigField) => {
+    private _onMenuItemChange = (item: ASigField) => {
         this.props.onChooseTable(item);
         this.props.onChooseTables('one');
     };
 
-    private onToggleCollapse = () => {
+    private _onToggleCollapse = () => {
         const curr = this.state.collapseSidebar;
         this.setState({collapseSidebar: !curr});
     };
 
-    private onToggleDataOptions = () => {
+    private _onToggleDataOptions = () => {
         const curr = this.state.collapseDataOptions;
         this.setState({collapseDataOptions: !curr});
     };
 
-    private onToggleLayoutOptions = () => {
+    private _onToggleLayoutOptions = () => {
         const curr = this.state.collapseLayoutOptions;
         this.setState({collapseLayoutOptions: !curr});
     };
 
-    private onToggleTablesOptions = () => {
+    private _onToggleTablesOptions = () => {
         const curr = this.state.collapseTableOptions;
         this.setState({collapseTableOptions: !curr});
     };
 
-    private renderMenu = (props: IItemListRendererProps<ASigField>) => {
+    private _renderMenu = (props: IItemListRendererProps<ASigField>) => {
         const sigs = props.items.filter(item => item.expressionType() === 'signature');
         const flds = props.items.filter(item => item.expressionType() === 'field');
         const alpha = alphaSort(this.props.nameFunction);
@@ -246,14 +246,14 @@ class TableViewSideBar extends React.Component<ITableViewSideBarProps, ITableVie
         );
     };
 
-    private renderItem = (item: ASigField, props: IItemRendererProps) => {
+    private _renderItem = (item: ASigField, props: IItemRendererProps) => {
         if (!props.modifiers.matchesPredicate) return null;
         return item.expressionType() === 'signature'
-            ? this.renderSignature(item as AlloySignature, props)
-            : this.renderField(item as AlloyField, props);
+            ? this._renderSignature(item as AlloySignature, props)
+            : this._renderField(item as AlloyField, props);
     };
 
-    private renderSignature = (item: AlloySignature, props: IItemRendererProps) => {
+    private _renderSignature = (item: AlloySignature, props: IItemRendererProps) => {
         return (
             <MenuItem
                 active={props.modifiers.active}
@@ -265,7 +265,7 @@ class TableViewSideBar extends React.Component<ITableViewSideBarProps, ITableVie
         )
     };
 
-    private renderField = (item: AlloyField, props: IItemRendererProps) => {
+    private _renderField = (item: AlloyField, props: IItemRendererProps) => {
         const name = this.props.nameFunction(item);
         const tokens = name.split('<:');
         return (

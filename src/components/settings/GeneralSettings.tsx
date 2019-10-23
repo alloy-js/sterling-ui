@@ -1,27 +1,52 @@
-import { FormGroup, HTMLSelect } from '@blueprintjs/core';
+import { HTMLSelect } from '@blueprintjs/core';
 import * as React from 'react';
-import SterlingSettings from '../../SterlingSettings';
+import SterlingSettings, { ViewType } from '../../SterlingSettings';
+import { InlineFormGroup } from './InlineFormGroup';
+import { capitalize } from './SettingsUtil';
 
-export interface IGeneralSettingsProps {
-    settings: SterlingSettings
+export interface IGeneralSettingsState {
+    defaultView: ViewType
 }
 
-class GeneralSettings extends React.Component<IGeneralSettingsProps> {
+class GeneralSettings extends React.Component<{}, IGeneralSettingsState> {
+
+    constructor (props: {}) {
+
+        super(props);
+
+        this.state = {
+            defaultView: SterlingSettings.get('defaultView')
+        };
+
+        this.watchSettings();
+
+    }
 
     render (): React.ReactNode {
 
-        const settings: SterlingSettings = this.props.settings;
-
         return (
-            <div>
-                <FormGroup
-                    label='Default View'>
+            <>
+                <InlineFormGroup
+                    label='Default View'
+                    helperText='The view to display when Sterling opens'>
                     <HTMLSelect
-                        options={['graph', 'table', 'tree', 'source']}
-                        onChange={(event) => {settings.set('defaultView', event.target.value)}}
-                        value={settings.defaultView}/>
-                </FormGroup>
-            </div>);
+                        options={['Graph', 'Table', 'Tree', 'Source']}
+                        onChange={this.onSelectDefaultView}
+                        value={capitalize(this.state.defaultView)}/>
+                </InlineFormGroup>
+            </>);
+    }
+
+    private onSelectDefaultView = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        SterlingSettings.set('defaultView', event.currentTarget.value.toLowerCase());
+    };
+
+    private watchSettings () {
+
+        SterlingSettings.watch('defaultView', (value: ViewType) => {
+            this.setState({defaultView: value})
+        });
+
     }
 
 }

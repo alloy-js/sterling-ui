@@ -3,6 +3,7 @@ import { COMMENT } from 'highlight.js';
 import React from 'react';
 import { LightAsync as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { githubGist } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { NonIdealState } from '@blueprintjs/core';
 
 const style = githubGist;
 const commentStyle = style['hljs-comment'];
@@ -16,7 +17,9 @@ class SourceViewStage extends React.Component<ISourceViewStageProps> {
 
     render (): React.ReactNode {
 
-        if (!this.props.source) return null;
+        if (!this.props.source) return <NonIdealState
+            icon='document'
+            title='Choose a File'/>;
 
         const file = this.props.source.filename();
         const source = this.props.source.source();

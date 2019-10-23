@@ -2,13 +2,16 @@ import * as React from 'react';
 import { Callout, Classes, Dialog, Intent, Tab, Tabs } from '@blueprintjs/core';
 import SterlingSettings from '../../SterlingSettings';
 import GeneralSettings from './GeneralSettings';
+import GraphViewSettings from './GraphViewSettings';
+import TableViewSettings from './TableViewSettings';
+import TreeViewSettings from './TreeViewSettings';
+import SourceViewSettings from './SourceViewSettings';
 
 const STORAGE_API_LINK = 'https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API';
 
 export interface ISterlingSettingsProps {
     onClose: () => void,
-    isOpen: boolean,
-    settings: SterlingSettings
+    isOpen: boolean
 }
 
 class SterlingSettingsDialog extends React.Component<ISterlingSettingsProps> {
@@ -36,15 +39,13 @@ class SterlingSettingsDialog extends React.Component<ISterlingSettingsProps> {
                     }
                     <Tabs
                         animate={true}
-                        renderActiveTabPanelOnly={true}
+                        id='settings'
                         vertical={true}>
-                        <Tab id='views' title='General' panel={
-                            <GeneralSettings settings={this.props.settings}/>
-                        }/>
-                        <Tab id='graph' title='Graph View' panel={<div/>}/>
-                        <Tab id='table' title='Table View' panel={<div/>}/>
-                        <Tab id='tree' title='Tree View' panel={<div/>}/>
-                        <Tab id='source' title='Source View' panel={<div/>}/>
+                        <Tab id='general' title='General' panel={<GeneralSettings/>}/>
+                        <Tab id='graph' title='Graph View' panel={<GraphViewSettings/>}/>
+                        <Tab id='table' title='Table View' panel={<TableViewSettings/>}/>
+                        <Tab id='tree' title='Tree View' panel={<TreeViewSettings/>}/>
+                        <Tab id='source' title='Source View' panel={<SourceViewSettings/>}/>
                     </Tabs>
                 </div>
             </Dialog>

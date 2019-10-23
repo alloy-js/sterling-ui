@@ -3,22 +3,32 @@ import React from 'react';
 import View from '../View';
 import SourceViewSideBar from './SourceViewSideBar';
 import SourceViewStage from './SourceViewStage';
+import SterlingSettings, { ViewSide } from '../../../SterlingSettings';
 
 export interface ISourceViewProps {
     instance: AlloyInstance | null,
-    sidebarLocation: 'left' | 'right',
     visible: boolean
 }
 
 export interface ISourceViewState {
-    active: AlloySource | null
+    active: AlloySource | null,
+    sidebarSide: ViewSide
 }
 
 class SourceView extends React.Component<ISourceViewProps, ISourceViewState> {
 
-    state: ISourceViewState = {
-        active: null
-    };
+    constructor (props: ISourceViewProps) {
+
+        super(props);
+
+        this.state = {
+            active: null,
+            sidebarSide: SterlingSettings.get('sourceViewSidebarSide')
+        };
+
+        this._watchSettings();
+
+    }
 
     componentDidUpdate (
         prevProps: Readonly<ISourceViewProps>,
@@ -52,15 +62,26 @@ class SourceView extends React.Component<ISourceViewProps, ISourceViewState> {
 
         if (!this.props.visible) return null;
 
+        const sidebar = (
+            <SourceViewSideBar
+                active={this.state.active}
+                instance={this.props.instance}
+                onChooseSource={this._onChooseSource.bind(this)}
+                side={this.state.sidebarSide}/>
+        );
+
+        const stage = (
+            <SourceViewStage
+                source={this.state.active}/>
+        );
+
         return (
             <View icon='document' showPlaceholder={!this.props.instance}>
-                <SourceViewSideBar
-                    active={this.state.active}
-                    instance={this.props.instance}
-                    onChooseSource={this._onChooseSource.bind(this)}
-                    side={this.props.sidebarLocation}/>
-                <SourceViewStage
-                    source={this.state.active}/>
+                {
+                    this.state.sidebarSide === 'left'
+                        ? <>{sidebar}{stage}</>
+                        : <>{stage}{sidebar}</>
+                }
             </View>
         );
 
@@ -70,6 +91,14 @@ class SourceView extends React.Component<ISourceViewProps, ISourceViewState> {
 
         this.setState({
             active: source
+        });
+
+    }
+
+    private _watchSettings () {
+
+        SterlingSettings.watch('sourceViewSidebarSide', (side: ViewSide) => {
+            this.setState({sidebarSide: side});
         });
 
     }

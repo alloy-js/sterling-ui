@@ -1,34 +1,39 @@
 import store from 'store';
 import defaultsPlugin from 'store/plugins/defaults';
+import eventsPlugin from 'store/plugins/events';
 
 export type ViewSide = 'left' | 'right';
 export type ViewType = 'graph' | 'table' | 'tree' | 'source';
 
 export interface ISterlingSettings {
     defaultView: ViewType,
-    graphViewSidebarSide: ViewSide
+    graphViewSidebarSide: ViewSide,
+    sourceViewSidebarSide: ViewSide,
+    tableViewSidebarSide: ViewSide,
+    treeViewSidebarSide: ViewSide,
 }
 
 const DEFAULT_SETTINGS: ISterlingSettings = {
     defaultView: 'graph',
-    graphViewSidebarSide: 'left'
+    graphViewSidebarSide: 'left',
+    sourceViewSidebarSide: 'left',
+    tableViewSidebarSide: 'left',
+    treeViewSidebarSide: 'left'
 };
 
 store.addPlugin(defaultsPlugin);
+store.addPlugin(eventsPlugin);
 // @ts-ignore
 store.defaults(DEFAULT_SETTINGS);
 
-export default class SterlingSettings implements ISterlingSettings {
+export default class SterlingSettings {
 
-    defaultView: ViewType;
-    graphViewSidebarSide: ViewSide;
-
-    constructor () {
-        this.defaultView = store.get('defaultView');
-        this.graphViewSidebarSide = store.get('graphViewSidebarSide');
-    }
-
-    public set = store.set.bind(store);
+    static get = store.get.bind(store);
+    static set = store.set.bind(store);
+    // @ts-ignore
+    static watch = store.watch.bind(store);
+    // @ts-ignore
+    static unwatch = store.unwatch.bind(store);
 
     static supportsPersistentStorage(): boolean {
         return storageAvailable('localStorage')

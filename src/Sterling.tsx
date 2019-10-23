@@ -18,11 +18,7 @@ interface ISterlingState {
     view: ViewType
 }
 
-interface ISterlingProps {
-
-}
-
-class Sterling extends React.Component<ISterlingProps, ISterlingState> {
+class Sterling extends React.Component<{}, ISterlingState> {
 
     alloy = new AlloyConnection();
     settings = new SterlingSettings();
@@ -32,12 +28,12 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
         instance: null,
         ready: false,
         showSettings: false,
-        view: this.settings.defaultView
+        view: SterlingSettings.get('defaultView')
     };
 
-    constructor (props: ISterlingProps) {
+    constructor (props: {}) {
         super(props);
-        this.initializeAlloy();
+        this._initializeAlloy();
     }
 
     render(): React.ReactNode {
@@ -53,40 +49,34 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
                     command={command}
                     ready={this.state.ready}
                     view={this.state.view}
-                    onRequestNext={this.requestNext}
-                    onRequestView={(view: 'graph' | 'table' | 'tree' | 'source') => this.setView(view)}
-                    onRequestSettings={this.openSettingsDialog}/>
+                    onRequestNext={this._requestNext}
+                    onRequestView={(view: ViewType) => this._setView(view)}
+                    onRequestSettings={this._openSettingsDialog}/>
                 <GraphView
                     instance={instance}
-                    sidebarLocation='left'
                     visible={view === 'graph'}/>
                 <TableView
                     instance={instance}
-                    sidebarLocation='left'
                     visible={view === 'table'}/>
                 <TreeView
                     instance={instance}
-                    sidebarLocation='left'
                     visible={view === 'tree'}/>
                 <SourceView
                     instance={instance}
-                    sidebarLocation='left'
                     visible={view === 'source'}/>
                 <SterlingSettingsDialog
-                    onClose={this.closeSettingsDialog}
-                    isOpen={this.state.showSettings}
-                    settings={this.settings}/>
+                    onClose={this._closeSettingsDialog}
+                    isOpen={this.state.showSettings}/>
             </div>
         )
 
     }
 
-    private closeSettingsDialog = () => {
+    private _closeSettingsDialog = () => {
         this.setState({showSettings: false});
     };
 
-    private initializeAlloy = () => {
-
+    private _initializeAlloy = () => {
         this.alloy
             .on_connected(() => {
                 this.setState({connected: true});
@@ -99,27 +89,22 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
                 this.setState({ready: this.state.connected, instance: instance});
             })
             .connect();
-
     };
 
-    private openSettingsDialog = () => {
+    private _openSettingsDialog = () => {
         this.setState({showSettings: true});
     };
 
-    private requestNext = () => {
+    private _requestNext = () => {
         this.setState({
             ready: false
         });
         this.alloy.request_next();
     };
 
-    private setView = (view: ViewType) => {
+    private _setView = (view: ViewType) => {
         this.setState({ view: view });
     };
-
-    private watchSettings () {
-
-    }
 }
 
 export default Sterling;
