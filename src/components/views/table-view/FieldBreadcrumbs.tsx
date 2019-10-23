@@ -27,7 +27,8 @@ export default function FieldBreadcrumbs (props: IFieldBreadcrumbsProps) {
 
 function FieldBreadcrumb (props: IBreadcrumbProps) {
     return (
-        <Breadcrumb {...props}
-                    className={'bp3-tag ' + (props.current ? '' : 'bp3-minimal')}/>
+        <Breadcrumb
+            className={'bp3-tag ' + (props.current ? '' : 'bp3-minimal')}
+            {...props}/>
     )
 }

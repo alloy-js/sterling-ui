@@ -3,16 +3,25 @@
 .stage.table-stage {
 
   display: flex;
-  flex-direction: column;
   align-content: flex-start;
-  align-items: stretch;
+  align-items: flex-start;
+  flex-wrap: wrap;
   overflow: auto;
 
   padding: 10px;
 
-  &.left .group { justify-content: flex-start }
-  &.center .group { justify-content: center }
-  &.right .group { justify-content: flex-end }
+  &.row {
+    flex-direction: row;
+    &.left { justify-content: flex-start }
+    &.center { justify-content: center }
+    &.right { justify-content: flex-end }
+  }
+  &.column {
+    flex-direction: column;
+    &.left { align-content: flex-start }
+    &.center { align-content: center }
+    &.right { align-content: flex-end }
+  }
 
   .group {
     display: flex;
@@ -41,7 +50,7 @@
     padding: 10px 10px 5px 10px;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     > * {
       margin-bottom: 5px;
     }

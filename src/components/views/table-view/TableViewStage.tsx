@@ -1,11 +1,18 @@
-import { Card, Tag } from '@blueprintjs/core';
-import { AlloyField, AlloyInstance, AlloySignature } from 'alloy-ts';
+import { Card } from '@blueprintjs/core';
+import {
+    AlloyField,
+    AlloyInstance,
+    AlloySignature,
+    AlloySkolem
+} from 'alloy-ts';
 import React, { ReactNode } from 'react';
 import FieldBreadcrumbs from './FieldBreadcrumbs';
 import FieldHTMLTable from './FieldHTMLTable';
 import SignatureHTMLTable from './SignatureHTMLTable';
-import { alphaSort, ASigField, numSort } from './TableUtil';
+import { alphaSort, numSort, SigFieldSkolem } from './TableUtil';
 import { ITableViewState } from './TableView';
+import SkolemHTMLTable from './SkolemHTMLTable';
+import { SignatureTag, SkolemTag } from './TableTags';
 
 export interface ITableViewStageProps extends ITableViewState {
     instance: AlloyInstance | null,
@@ -20,63 +27,87 @@ class TableViewStage extends React.Component<ITableViewStageProps> {
 
         if (!this.props.instance) return null;
 
-        const groups = this._getGroups();
-
-        const elementgroups: Array<Array<ReactNode>> = groups.map(group => {
-
-            return group.map(sigorfield => {
-
-                if (sigorfield.expressionType() === 'signature') {
-                    return (
-                        <Card
-                            key={sigorfield.id()}
-                            elevation={2}>
-                            <Tag>{this.props.nameFunction(sigorfield)}</Tag>
-                            {SignatureHTMLTable(sigorfield as AlloySignature)}
-                        </Card>
-                    );
-
-                } else {
-
-                    const props = {
-                        field: (sigorfield as AlloyField),
-                        nameFunction: this.props.nameFunction
-                    };
-
-                    return (
-                        <Card
-                            key={sigorfield.id()}
-                            elevation={2}>
-                            {FieldBreadcrumbs(props)}
-                            {FieldHTMLTable(props)}
-                        </Card>
-                    );
-
-                }
-
-            });
-
-        });
-
-
-        return <div className={`stage table-stage ${this.props.align}`} id='stage'>
-            {
-                elementgroups.map((group, i) => (
-                    <div className='group' key={i}>{group}</div>
-                ))
-            }
+        return <div className={`stage table-stage ${this.props.align} ${this.props.layout}`} id='stage'>
+            { this._getElements() }
         </div>
 
     }
 
-    private _getGroups (): Array<Array<ASigField>> {
+    private _getElements (): ReactNode[] {
 
-        if (this.props.tables === 'one') {
-            return [[this.props.table!]];
+        return this._getItems().map((item: SigFieldSkolem) => {
+
+            const itemType = item.expressionType();
+
+            if (itemType === 'signature') {
+
+                const props = {
+                    signature: item as AlloySignature
+                };
+
+                return (
+                    <Card
+                        key={item.id()}
+                        elevation={2}>
+                        <SignatureTag
+                            signature={item as AlloySignature}
+                            nameFunction={this.props.nameFunction}/>
+                        {SignatureHTMLTable(props)}
+                    </Card>
+                );
+
+            } else if (itemType === 'field') {
+
+                const props = {
+                    field: (item as AlloyField),
+                    nameFunction: this.props.nameFunction
+                };
+
+                return (
+                    <Card
+                        key={item.id()}
+                        elevation={2}>
+                        {FieldBreadcrumbs(props)}
+                        {FieldHTMLTable(props)}
+                    </Card>
+                );
+
+            } else if (itemType === 'skolem') {
+
+                const props = {
+                    color: 'red',
+                    skolem: (item as AlloySkolem),
+                    nameFunction: this.props.nameFunction
+                };
+
+                return (
+                    <Card
+                        key={item.id()}
+                        elevation={2}>
+                        <SkolemTag
+                            skolem={item as AlloySkolem}
+                            nameFunction={this.props.nameFunction}/>
+                        {SkolemHTMLTable(props)}
+                    </Card>
+                )
+
+            }
+
+            return null;
+
+        });
+
+    }
+
+    private _getItems (): SigFieldSkolem[] {
+
+        if (this.props.tables === 'select') {
+            return this.props.selectedTables;
         }
 
         const showSigs = this.props.tables === 'all' || this.props.tables === 'signatures';
         const showFlds = this.props.tables === 'all' || this.props.tables === 'fields';
+        const showSkls = this.props.tables === 'all' || this.props.tables === 'skolems';
 
         const sigs: Array<AlloySignature> = showSigs
             ? this.props.instance!.signatures()
@@ -90,27 +121,26 @@ class TableViewStage extends React.Component<ITableViewStageProps> {
                 .filter(fld => this.props.showEmpty || fld.size() !== 0)
             : [];
 
-        const groups: Array<Array<AlloyField|AlloySignature>> = this.props.showGroups
-            ? [sigs, fields]
-            : [([] as Array<AlloySignature|AlloyField>).concat(sigs).concat(fields)];
+        const skolems: Array<AlloySkolem> = showSkls
+            ? this.props.instance!.skolems()
+            : [];
 
-        const alphaAsc = this.props.lastAlphaSort === 'asc';
-        const numAsc = this.props.lastNumSort === 'asc';
-        const primarySort = this.props.lastSort === 'alpha'
-            ? alphaSort(this.props.nameFunction, alphaAsc)
-            : numSort(numAsc);
-        const secondarySort = this.props.lastSort === 'alpha'
-            ? numSort(numAsc)
-            : alphaSort(this.props.nameFunction, alphaAsc);
+        return [...sigs, ...fields, ...skolems]
+            .sort(this._secondarySort())
+            .sort(this._primarySort());
 
-        groups.forEach(group => {
-            group
-                .sort(secondarySort)
-                .sort(primarySort);
-        });
+    }
 
-        return groups;
+    private _primarySort () {
+        return this.props.lastSort === 'alpha'
+            ? alphaSort(this.props.nameFunction, this.props.lastAlphaSort === 'asc')
+            : numSort(this.props.lastNumSort === 'asc');
+    }
 
+    private _secondarySort () {
+        return this.props.lastSort === 'alpha'
+            ? numSort(this.props.lastNumSort === 'asc')
+            : alphaSort(this.props.nameFunction, this.props.lastAlphaSort === 'asc');
     }
 
 }

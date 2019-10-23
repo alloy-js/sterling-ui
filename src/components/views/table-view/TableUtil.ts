@@ -1,11 +1,12 @@
-import { AlloyField, AlloySignature } from 'alloy-ts';
+import { AlloyField, AlloySignature, AlloySkolem } from 'alloy-ts';
 
 export type ASigField = AlloySignature | AlloyField;
-export type ASortFunction = (a: ASigField, b: ASigField) => number;
+export type SigFieldSkolem = AlloySignature | AlloyField | AlloySkolem;
+export type ASortFunction = (a: SigFieldSkolem, b: SigFieldSkolem) => number;
 
-function alphaSort (getName: (item: ASigField) => string, asc: boolean = true): ASortFunction {
+function alphaSort (getName: (item: SigFieldSkolem) => string, asc: boolean = true): ASortFunction {
     const one = asc ? 1 : -1;
-    return (a: ASigField, b: ASigField) => {
+    return (a: SigFieldSkolem, b: SigFieldSkolem) => {
         const aname = getName(a);
         const bname = getName(b);
         if (aname < bname) return -one;
@@ -26,23 +27,25 @@ function builtinSort (a: AlloySignature, b: AlloySignature): number {
 
 function numSort (asc: boolean = true): ASortFunction {
     const one = asc ? 1 : -1;
-    return (a: ASigField, b: ASigField) => {
+    return (a: SigFieldSkolem, b: SigFieldSkolem) => {
         const alen = getLength(a);
         const blen = getLength(b);
         return (alen - blen)*one;
     }
 }
 
-function getLength (item: ASigField) {
+function getLength (item: SigFieldSkolem) {
     if (item.expressionType() === 'field')
         return (item as AlloyField).tuples().length;
     if (item.expressionType() === 'signature')
         return (item as AlloySignature).atoms().length;
-    throw Error('Item is not a signature or field');
+    if (item.expressionType() === 'skolem')
+        return (item as AlloySkolem).tuples().length;
+    throw Error('Item is not a signature, field, or skolem');
 }
 
-function nameFunction (remove_this: boolean): (item: ASigField) => string {
-    return (item: ASigField) => {
+function nameFunction (remove_this: boolean): (item: SigFieldSkolem) => string {
+    return (item: SigFieldSkolem) => {
         return remove_this
             ? removeThis(item.id())
             : item.id();
@@ -53,4 +56,8 @@ function removeThis (name: string): string {
     return name.replace(/^this\//, '');
 }
 
-export { alphaSort, builtinSort, nameFunction, numSort };
+function itemsEqual (a: SigFieldSkolem, b: SigFieldSkolem): boolean {
+    return a.id() === b.id();
+}
+
+export { alphaSort, builtinSort, itemsEqual, nameFunction, numSort };

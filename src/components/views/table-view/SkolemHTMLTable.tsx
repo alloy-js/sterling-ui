@@ -1,18 +1,18 @@
+import { AlloyAtom, AlloySignature, AlloySkolem, AlloyTuple } from 'alloy-ts';
 import { HTMLTable } from '@blueprintjs/core';
-import { AlloyAtom, AlloyField, AlloySignature, AlloyTuple } from 'alloy-ts';
 import React from 'react';
 import { ASigField } from './TableUtil';
 
-
-interface IFieldHTMLTableProps {
-    field: AlloyField,
-    nameFunction: (item: ASigField) => string
+interface ISkolemHTMLTableProps {
+    color: string,
+    nameFunction: (item: ASigField) => string,
+    skolem: AlloySkolem
 }
 
-export default function FieldHTMLTable (props: IFieldHTMLTableProps) {
+export default function SkolemHTMLTable (props: ISkolemHTMLTableProps) {
 
-    const types: AlloySignature[] = props.field.types();
-    const tuples: AlloyTuple[] = props.field.tuples();
+    const types: AlloySignature[] = props.skolem.types();
+    const tuples: AlloyTuple[] = props.skolem.tuples();
 
     return (
         <HTMLTable
@@ -30,7 +30,7 @@ export default function FieldHTMLTable (props: IFieldHTMLTableProps) {
             }
             </tr>
             </thead>
-            <tbody>
+            <tbody style={{borderColor: props.color}}>
             {
                 tuples.map((tuple: AlloyTuple) => (
                     <tr key={tuple.id()}>

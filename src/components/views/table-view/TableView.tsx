@@ -1,7 +1,7 @@
 import { AlloyInstance } from 'alloy-ts';
 import React from 'react';
 import View from '../View';
-import { ASigField, nameFunction } from './TableUtil';
+import { nameFunction, SigFieldSkolem } from './TableUtil';
 import TableViewSideBar from './TableViewSideBar';
 import TableViewStage from './TableViewStage';
 import SterlingSettings, { ViewSide } from '../../../SterlingSettings';
@@ -16,14 +16,14 @@ export interface ITableViewState {
     lastAlphaSort: 'asc' | 'desc',
     lastNumSort: 'asc' | 'desc',
     lastSort: 'alpha' | 'num',
-    nameFunction: (item: ASigField) => string,
+    layout: 'row' | 'column',
+    nameFunction: (item: SigFieldSkolem) => string,
     removeThis: boolean,
+    selectedTables: SigFieldSkolem[],
     showBuiltin: boolean,
     showEmpty: boolean,
-    showGroups: boolean,
     sidebarSide: ViewSide,
-    table: ASigField | null,
-    tables: 'all' | 'signatures' | 'fields' | 'one'
+    tables: 'all' | 'signatures' | 'fields' | 'skolems' | 'select'
 }
 
 class TableView extends React.Component<ITableViewProps, ITableViewState> {
@@ -38,12 +38,12 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
             lastAlphaSort: 'asc',
             lastNumSort: 'asc',
             lastSort: 'alpha',
+            layout: 'row',
             nameFunction: nameFunction(true),
+            selectedTables: [],
             showBuiltin: false,
             showEmpty: false,
-            showGroups: true,
             sidebarSide: SterlingSettings.get('tableViewSidebarSide'),
-            table: null,
             tables: 'all'
         };
 
@@ -57,29 +57,33 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
 
         if (this.props.instance !== prevProps.instance) {
 
-            // If no instance, clear the selected table
-            if (this.props.instance === null) {
+            // If either state didn't have an instance, clear the selected tables
+            if (this.props.instance === null || prevProps.instance === null) {
                 this.setState({
-                    table: null,
+                    selectedTables: [],
                     tables: 'all'
                 });
                 return;
             }
 
-            // Otherwise, if a table was selected, look for it in the
+            // Otherwise, if any tables were selected, look for them in the
             // new instance
-            if (this.state.table !== null) {
-                const id = this.state.table.id();
-                const items = ([] as Array<ASigField>)
-                    .concat(this.props.instance.signatures())
-                    .concat(this.props.instance.fields());
-                const same = items.find(item => item.id() === id);
-                if (same) {
-                    this.setState({table: same});
-                } else {
-                    this.setState({table: null, tables: 'all'});
-                }
-            }
+            const oldInst: AlloyInstance = prevProps.instance;
+            const newInst: AlloyInstance = this.props.instance;
+            const oldTables = [
+                ...oldInst.skolems(),
+                ...oldInst.signatures(),
+                ...oldInst.fields()]
+                .map(item => item.id());
+
+            const newTables = [
+                ...newInst.skolems(),
+                ...newInst.signatures(),
+                ...newInst.fields()]
+                .filter(item => oldTables.includes(item.id()));
+
+            this.setState({selectedTables: newTables});
+
         }
 
     }
@@ -100,12 +104,14 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
                 instance={this.props.instance}
                 onChooseAlign={this._onChooseAlign}
                 onChooseAlphaSort={this._onChooseSortAlpha}
+                onChooseLayout={this._onChooseLayout}
                 onChooseNumSort={this._onChooseSortNum}
-                onChooseTable={this._onChooseTable}
                 onChooseTables={this._onChooseTables}
+                onClearSelectedTables={this._onClearSelectedTables}
+                onDeselectTable={this._onDeselectTable}
+                onSelectTable={this._onSelectTable}
                 onToggleBuiltin={this._onToggleBuiltin}
                 onToggleEmpty={this._onToggleEmpty}
-                onToggleGroups={this._onToggleGroups}
                 onToggleRemoveThis={this._onToggleRemoveThis}
                 side={this.state.sidebarSide}/>
         );
@@ -122,28 +128,12 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
 
     }
 
-    private _onToggleBuiltin = () => {
-        const curr: boolean = this.state.showBuiltin;
-        this.setState({showBuiltin: !curr});
-    };
-
-    private _onToggleEmpty = () => {
-        const curr: boolean = this.state.showEmpty;
-        this.setState({showEmpty: !curr});
-    };
-
-    private _onToggleGroups = () => {
-        const curr: boolean = this.state.showGroups;
-        this.setState({showGroups: !curr});
-    };
-
-    private _onToggleRemoveThis = () => {
-        const next: boolean = !this.state.removeThis;
-        this.setState({removeThis: next, nameFunction: nameFunction(next)});
-    };
-
     private _onChooseAlign = (align: 'left' | 'center' | 'right') => {
         this.setState({align: align});
+    };
+
+    private _onChooseLayout = (layout: 'row' | 'column') => {
+        this.setState({layout: layout});
     };
 
     private _onChooseSortAlpha = (sort: 'asc' | 'desc') => {
@@ -154,13 +144,42 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
         this.setState({lastNumSort: sort, lastSort: 'num'});
     };
 
-    private _onChooseTable = (item: ASigField) => {
-        this.setState({table: item});
+    private _onChooseTables = (tables: 'all' | 'signatures' | 'fields' | 'skolems' | 'select') => {
+        this.setState({tables: tables});
     };
 
-    private _onChooseTables = (tables: 'all' | 'signatures' | 'fields' | 'one') => {
-        this.setState({tables: tables});
-    }
+    private _onClearSelectedTables = () => {
+        this.setState({selectedTables: []});
+    };
+
+    private _onDeselectTable = (item: SigFieldSkolem) => {
+        const next = [...this.state.selectedTables];
+        const idx = next.indexOf(item);
+        if (idx >= 0) {
+            next.splice(idx, 1);
+            this.setState({selectedTables: next});
+        }
+    };
+
+    private _onSelectTable = (item: SigFieldSkolem) => {
+        const curr = this.state.selectedTables;
+        this.setState({selectedTables: [...curr, item]});
+    };
+
+    private _onToggleBuiltin = () => {
+        const curr: boolean = this.state.showBuiltin;
+        this.setState({showBuiltin: !curr});
+    };
+
+    private _onToggleEmpty = () => {
+        const curr: boolean = this.state.showEmpty;
+        this.setState({showEmpty: !curr});
+    };
+
+    private _onToggleRemoveThis = () => {
+        const next: boolean = !this.state.removeThis;
+        this.setState({removeThis: next, nameFunction: nameFunction(next)});
+    };
 
     private _watchSettings () {
 

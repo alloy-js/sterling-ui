@@ -2,9 +2,13 @@ import { HTMLTable } from '@blueprintjs/core';
 import { AlloyAtom, AlloySignature } from 'alloy-ts';
 import React from 'react';
 
-export default function SignatureHTMLTable (sig: AlloySignature) {
+export interface ISignatureHTMLTableProps {
+    signature: AlloySignature
+}
 
-    const atoms: AlloyAtom[] = sig.atoms();
+export default function SignatureHTMLTable (props: ISignatureHTMLTableProps) {
+
+    const atoms: AlloyAtom[] = props.signature.atoms();
 
     return (
         <HTMLTable

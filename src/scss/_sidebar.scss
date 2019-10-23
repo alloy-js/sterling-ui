@@ -78,4 +78,15 @@
     font-size: 12px;
   }
 
+  .bp3-multi-select {
+    input.bp3-input-ghost {
+      opacity: 1;
+      position: relative;
+    }
+  }
+
+}
+
+.bp3-menu-header {
+  min-width: $sidebar-min-width - 62px;
 }

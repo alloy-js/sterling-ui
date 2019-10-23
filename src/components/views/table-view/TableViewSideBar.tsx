@@ -2,41 +2,53 @@ import {
     Alignment,
     Button,
     ButtonGroup,
-    FormGroup,
+    FormGroup, Icon,
     Menu,
     MenuDivider,
-    MenuItem,
+    MenuItem, PopoverPosition,
     Radio,
     RadioGroup,
     Switch,
-    Tag,
     Text
 } from '@blueprintjs/core';
 import {
     IItemListRendererProps,
     IItemRendererProps,
     ItemPredicate,
-    Select
+    MultiSelect
 } from '@blueprintjs/select';
-import { AlloyField, AlloyInstance, AlloySignature } from 'alloy-ts';
+import {
+    AlloyField,
+    AlloyInstance,
+    AlloySignature,
+    AlloySkolem
+} from 'alloy-ts';
 import React from 'react';
 import SterlingSidebar from '../../SterlingSidebar';
-import { alphaSort, ASigField, builtinSort } from './TableUtil';
+import {
+    alphaSort,
+    builtinSort,
+    itemsEqual,
+    SigFieldSkolem
+} from './TableUtil';
 import { ITableViewState } from './TableView';
+import { FieldTag, SignatureTag, SkolemTag } from './TableTags';
 
-const AlloySelect = Select.ofType<ASigField>();
+const AlloySelect = MultiSelect.ofType<SigFieldSkolem>();
 
 export interface ITableViewSideBarProps extends ITableViewState {
     instance: AlloyInstance | null,
     onToggleBuiltin: () => void,
     onToggleEmpty: () => void,
-    onToggleGroups: () => void,
     onToggleRemoveThis: () => void,
     onChooseAlign: (align: 'left' | 'center' | 'right') => void,
     onChooseAlphaSort: (sort: 'asc' | 'desc') => void,
+    onChooseLayout: (layout: 'row' | 'column') => void,
     onChooseNumSort: (sort: 'asc' | 'desc') => void,
-    onChooseTable: (item: ASigField) => void,
-    onChooseTables: (tables: 'all' | 'signatures' | 'fields' | 'one') => void,
+    onChooseTables: (tables: 'all' | 'signatures' | 'fields' | 'select') => void,
+    onClearSelectedTables: () => void,
+    onDeselectTable: (item: SigFieldSkolem) => void,
+    onSelectTable: (item: SigFieldSkolem) => void,
     side: 'left' | 'right'
 }
 
@@ -45,7 +57,7 @@ export interface ITableViewSidebarState {
     collapseTableOptions: boolean,
     collapseDataOptions: boolean,
     collapseLayoutOptions: boolean,
-    items: Array<ASigField>
+    items: Array<SigFieldSkolem>
 }
 
 class TableViewSideBar extends React.Component<ITableViewSideBarProps, ITableViewSidebarState> {
@@ -75,6 +87,10 @@ class TableViewSideBar extends React.Component<ITableViewSideBarProps, ITableVie
 
     render (): React.ReactNode {
 
+        const clearButton = this.props.selectedTables.length
+            ? <Button icon='cross' minimal={true} onClick={this.props.onClearSelectedTables}/>
+            : undefined;
+
         return (
             <SterlingSidebar
                 collapsed={this.state.collapseSidebar}
@@ -87,34 +103,35 @@ class TableViewSideBar extends React.Component<ITableViewSideBarProps, ITableVie
                     onToggleCollapse={this._onToggleTablesOptions}>
                     <RadioGroup
                         selectedValue={this.props.tables}
-                        onChange={(event) => this.props.onChooseTables(event.currentTarget.value as 'all' | 'signatures' | 'fields' | 'one')}>
+                        onChange={(event) => {
+                            console.log(event.target);
+                            this.props.onChooseTables(event.currentTarget.value as 'all' | 'signatures' | 'fields' | 'select')
+                        }}>
                         <Radio label='All Tables' value='all'/>
                         <Radio label='Signatures Only' value='signatures'/>
                         <Radio label='Fields Only' value='fields'/>
-                        <Radio value='one'>
-                            <AlloySelect
-                                items={this.state.items}
-                                itemPredicate={this._filterItem}
-                                itemRenderer={this._renderItem}
-                                itemListRenderer={this._renderMenu}
-                                onItemSelect={this._onMenuItemChange}
-                                resetOnClose={true}>
-                                <Button
-                                    fill={true}
-                                    icon={
-                                        this.props.table && this.props.table.expressionType() === 'field'
-                                            ? <Tag>{this.props.nameFunction(this.props.table).split('<:')[0]}</Tag>
-                                            : null
-                                    }
-                                    rightIcon='caret-down'
-                                    text={
-                                        this.props.table
-                                            ? this.props.table.expressionType() === 'field'
-                                                ? this.props.nameFunction(this.props.table).split('<:')[1]
-                                                : this.props.nameFunction(this.props.table)
-                                            : 'Choose a Table'
-                                    }/>
-                            </AlloySelect></Radio>
+                        <Radio label='Skolems Only' value='skolems'/>
+                        <Radio label='Choose Tables' value='select'/>
+                        <AlloySelect
+                            fill={true}
+                            items={this.state.items}
+                            itemsEqual={itemsEqual}
+                            itemPredicate={this._filterItem}
+                            itemRenderer={this._renderItem}
+                            itemListRenderer={this._renderMenu}
+                            popoverProps={{
+                                minimal: false,
+                                position: this.props.sidebarSide === 'left'
+                                    ? PopoverPosition.BOTTOM_RIGHT
+                                    : PopoverPosition.BOTTOM_LEFT,
+                                fill: true
+                            }}
+                            onItemSelect={this._onMenuItemSelect}
+                            placeholder='Choose Tables...'
+                            resetOnSelect={true}
+                            selectedItems={this.props.selectedTables}
+                            tagInputProps={{rightElement: clearButton, onRemove: this._onRemoveTag}}
+                            tagRenderer={this._renderTag}/>
                     </RadioGroup>
                 </SterlingSidebar.Section>
                 <SterlingSidebar.Section
@@ -123,13 +140,13 @@ class TableViewSideBar extends React.Component<ITableViewSideBarProps, ITableVie
                     onToggleCollapse={this._onToggleDataOptions}>
                     <Switch
                         checked={this.props.showBuiltin}
-                        disabled={this.props.tables === 'one'}
+                        disabled={this.props.tables === 'select'}
                         onChange={this.props.onToggleBuiltin}
                         alignIndicator={Alignment.LEFT}
                         label='Show Built-in Signatures'/>
                     <Switch
                         checked={this.props.showEmpty}
-                        disabled={this.props.tables === 'one'}
+                        disabled={this.props.tables === 'select'}
                         onChange={this.props.onToggleEmpty}
                         alignIndicator={Alignment.LEFT}
                         label='Show Empty Tables'/>
@@ -144,6 +161,18 @@ class TableViewSideBar extends React.Component<ITableViewSideBarProps, ITableVie
                     collapsed={this.state.collapseLayoutOptions}
                     onToggleCollapse={this._onToggleLayoutOptions}>
                     <FormGroup>
+                        <FormGroup inline={true} label='Layout Direction'>
+                            <ButtonGroup>
+                                <Button
+                                    icon='vertical-distribution'
+                                    active={this.props.layout === 'row'}
+                                    onClick={() => this.props.onChooseLayout('row')}/>
+                                <Button
+                                    icon='horizontal-distribution'
+                                    active={this.props.layout === 'column'}
+                                    onClick={() => this.props.onChooseLayout('column')}/>
+                            </ButtonGroup>
+                        </FormGroup>
                         <FormGroup inline={true} label='Align'>
                             <ButtonGroup>
                                 <Button
@@ -160,32 +189,22 @@ class TableViewSideBar extends React.Component<ITableViewSideBarProps, ITableVie
                                     onClick={() => this.props.onChooseAlign('right')}/>
                             </ButtonGroup>
                         </FormGroup>
-                        <FormGroup inline={true} label='Sort' disabled={this.props.tables === 'one'}>
+                        <FormGroup inline={true} label='Sort' disabled={this.props.tables === 'select'}>
                             <ButtonGroup>
                                 <Button
                                     icon='sort-alphabetical'
-                                    disabled={this.props.tables === 'one'}
                                     onClick={() => this.props.onChooseAlphaSort('asc')}/>
                                 <Button
                                     icon='sort-alphabetical-desc'
-                                    disabled={this.props.tables === 'one'}
                                     onClick={() => this.props.onChooseAlphaSort('desc')}/>
                                 <Button
                                     icon='sort-numerical'
-                                    disabled={this.props.tables === 'one'}
                                     onClick={() => this.props.onChooseNumSort('asc')}/>
                                 <Button
                                     icon='sort-numerical-desc'
-                                    disabled={this.props.tables === 'one'}
                                     onClick={() => this.props.onChooseNumSort('desc')}/>
                             </ButtonGroup>
                         </FormGroup>
-                        <Switch
-                            checked={this.props.showGroups}
-                            onChange={this.props.onToggleGroups}
-                            alignIndicator={Alignment.LEFT}
-                            disabled={this.props.tables !== 'all'}
-                            label='Group into Signatures and Fields'/>
                     </FormGroup>
                 </SterlingSidebar.Section>
             </SterlingSidebar>
@@ -193,19 +212,31 @@ class TableViewSideBar extends React.Component<ITableViewSideBarProps, ITableVie
 
     }
 
-    private _filterItem: ItemPredicate<ASigField> = (query: string, item: ASigField): boolean => {
+    private _filterItem: ItemPredicate<SigFieldSkolem> = (query: string, item: SigFieldSkolem): boolean => {
 
-        const name = item.expressionType() === 'signature'
-            ? this.props.nameFunction(item)
-            : this.props.nameFunction(item).split('<:')[1];
+        const name = item.expressionType() === 'field'
+            ? this.props.nameFunction(item).split('<:')[1]
+            : this.props.nameFunction(item);
 
         return name.toLowerCase().indexOf(query.toLowerCase()) >= 0;
 
     };
 
-    private _onMenuItemChange = (item: ASigField) => {
-        this.props.onChooseTable(item);
-        this.props.onChooseTables('one');
+    private _isItemSelected = (item: SigFieldSkolem) => {
+        return this.props.selectedTables.includes(item);
+    };
+
+    private _onMenuItemSelect = (item: SigFieldSkolem) => {
+        if (!this._isItemSelected(item)) {
+            this.props.onSelectTable(item);
+        } else {
+            this.props.onDeselectTable(item);
+        }
+        this.props.onChooseTables('select');
+    };
+
+    private _onRemoveTag = (tag: string, index: number) => {
+        this.props.onDeselectTable(this.props.selectedTables[index]);
     };
 
     private _onToggleCollapse = () => {
@@ -228,16 +259,21 @@ class TableViewSideBar extends React.Component<ITableViewSideBarProps, ITableVie
         this.setState({collapseTableOptions: !curr});
     };
 
-    private _renderMenu = (props: IItemListRendererProps<ASigField>) => {
+    private _renderMenu = (props: IItemListRendererProps<SigFieldSkolem>) => {
+        const skls = props.items.filter(item => item.expressionType() === 'skolem');
         const sigs = props.items.filter(item => item.expressionType() === 'signature');
         const flds = props.items.filter(item => item.expressionType() === 'field');
         const alpha = alphaSort(this.props.nameFunction);
-        (sigs as Array<AlloySignature>).sort(alpha).sort(builtinSort);
-        (flds as Array<AlloyField>).sort(alpha);
+        (skls as AlloySkolem[]).sort(alpha);
+        (sigs as AlloySignature[]).sort(alpha).sort(builtinSort);
+        (flds as AlloyField[]).sort(alpha);
+        const renderedSkls = skls.map(props.renderItem).filter(item => item != null);
         const renderedSigs = sigs.map(props.renderItem).filter(item => item != null);
         const renderedFlds = flds.map(props.renderItem).filter(item => item != null);
         return (
             <Menu ulRef={props.itemsParentRef}>
+                <MenuDivider title='Skolems'/>
+                {renderedSkls.length ? renderedSkls : <MenuItem disabled={true} text='None'/>}
                 <MenuDivider title='Signatures'/>
                 {renderedSigs.length ? renderedSigs : <MenuItem disabled={true} text='None'/>}
                 <MenuDivider title='Fields'/>
@@ -246,49 +282,92 @@ class TableViewSideBar extends React.Component<ITableViewSideBarProps, ITableVie
         );
     };
 
-    private _renderItem = (item: ASigField, props: IItemRendererProps) => {
+    private _renderItem = (item: SigFieldSkolem, props: IItemRendererProps) => {
         if (!props.modifiers.matchesPredicate) return null;
-        return item.expressionType() === 'signature'
-            ? this._renderSignature(item as AlloySignature, props)
-            : this._renderField(item as AlloyField, props);
+        switch (item.expressionType()) {
+            case 'signature':
+                return this._renderSignature(item as AlloySignature, props);
+            case 'field':
+                return this._renderField(item as AlloyField, props);
+            case 'skolem':
+                return this._renderSkolem(item as AlloySkolem, props);
+            default:
+                return null;
+        }
     };
 
     private _renderSignature = (item: AlloySignature, props: IItemRendererProps) => {
+        const selected = this._isItemSelected(item);
         return (
             <MenuItem
                 active={props.modifiers.active}
                 disabled={props.modifiers.disabled}
                 key={item.id()}
                 labelElement={highlightText(this.props.nameFunction(item), props.query)}
-                icon={item.isBuiltin() ? 'build' : null}
+                icon={selected ? 'tick' : 'blank'}
                 onClick={props.handleClick}/>
-        )
+        );
     };
 
     private _renderField = (item: AlloyField, props: IItemRendererProps) => {
         const name = this.props.nameFunction(item);
         const tokens = name.split('<:');
+        const selected = this._isItemSelected(item);
         return (
             <MenuItem
                 active={props.modifiers.active}
                 disabled={props.modifiers.disabled}
                 key={item.id()}
-                icon={<Text>{tokens[0]}</Text>}
+                icon={<>
+                    { selected && <Icon icon='tick'/>}
+                    <Text>{tokens[0]}</Text>
+                </>}
                 labelElement={highlightText(tokens[1], props.query)}
                 onClick={props.handleClick}/>
-        )
+        );
     };
+
+    private _renderSkolem = (item: AlloySkolem, props: IItemRendererProps) => {
+        const selected = this._isItemSelected(item);
+        return (
+            <MenuItem
+                active={props.modifiers.active}
+                disabled={props.modifiers.disabled}
+                icon={selected ? 'tick' : 'blank'}
+                key={item.id()}
+                labelElement={highlightText(item.name(), props.query)}
+                onClick={props.handleClick}/>
+        );
+    };
+
+    private _renderTag = (item: SigFieldSkolem): React.ReactNode => {
+        if (item.expressionType() === 'signature')
+            return <SignatureTag
+                signature={item as AlloySignature}
+                nameFunction={this.props.nameFunction}/>;
+        if (item.expressionType() === 'field')
+            return <FieldTag
+                field={item as AlloyField}
+                nameFunction={this.props.nameFunction}/>;
+        if (item.expressionType() === 'skolem')
+            return <SkolemTag
+                skolem={item as AlloySkolem}
+                nameFunction={this.props.nameFunction}/>;
+        return null;
+    }
 
 }
 
-function getSortedItems (instance: AlloyInstance | null, nameFunction: (item: ASigField) => string): Array<ASigField> {
+function getSortedItems (instance: AlloyInstance | null, nameFunction: (item: SigFieldSkolem) => string): Array<SigFieldSkolem> {
     if (instance === null) return [];
     const sigs = instance.signatures().filter(sig => sig.id() !== 'univ');
     const flds = instance.fields();
+    const skls = instance.skolems();
     const alpha = alphaSort(nameFunction);
     (sigs as Array<AlloySignature>).sort(alpha).sort(builtinSort);
     (flds as Array<AlloyField>).sort(alpha);
-    return ([] as Array<ASigField>).concat(sigs).concat(flds);
+    (skls as Array<AlloySkolem>).sort(alpha);
+    return ([] as Array<SigFieldSkolem>).concat(skls).concat(sigs).concat(flds);
 }
 
 function highlightText (text: string, query: string) {

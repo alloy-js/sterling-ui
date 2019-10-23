@@ -1,0 +1,22 @@
+@import '~@blueprintjs/core/lib/scss/variables';
+
+.sig-tag {
+  background-color: $blue3 !important;
+  span {
+    color: $light-gray5;
+  }
+}
+
+.field-tag {
+  background-color: $gray1 !important;
+  span {
+    color: $light-gray5;
+  }
+}
+
+.skolem-tag {
+  background-color: $green3 !important;
+  span {
+    color: $light-gray5;
+  }
+}
