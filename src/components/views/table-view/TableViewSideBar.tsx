@@ -2,7 +2,7 @@ import {
     Alignment,
     Button,
     ButtonGroup,
-    FormGroup, Icon,
+    FormGroup, Icon, ITagProps,
     Menu,
     MenuDivider,
     MenuItem, PopoverPosition,
@@ -108,9 +108,9 @@ class TableViewSideBar extends React.Component<ITableViewSideBarProps, ITableVie
                             this.props.onChooseTables(event.currentTarget.value as 'all' | 'signatures' | 'fields' | 'select')
                         }}>
                         <Radio label='All Tables' value='all'/>
-                        <Radio label='Signatures Only' value='signatures'/>
-                        <Radio label='Fields Only' value='fields'/>
-                        <Radio label='Skolems Only' value='skolems'/>
+                        <Radio label='Signatures' value='signatures'/>
+                        <Radio label='Fields' value='fields'/>
+                        <Radio label='Skolems' value='skolems'/>
                         <Radio label='Choose Tables' value='select'/>
                         <AlloySelect
                             fill={true}
@@ -130,7 +130,11 @@ class TableViewSideBar extends React.Component<ITableViewSideBarProps, ITableVie
                             placeholder='Choose Tables...'
                             resetOnSelect={true}
                             selectedItems={this.props.selectedTables}
-                            tagInputProps={{rightElement: clearButton, onRemove: this._onRemoveTag}}
+                            tagInputProps={{
+                                onRemove: this._onRemoveTag,
+                                rightElement: clearButton,
+                                tagProps: this._tagProps
+                            }}
                             tagRenderer={this._renderTag}/>
                     </RadioGroup>
                 </SterlingSidebar.Section>
@@ -189,7 +193,7 @@ class TableViewSideBar extends React.Component<ITableViewSideBarProps, ITableVie
                                     onClick={() => this.props.onChooseAlign('right')}/>
                             </ButtonGroup>
                         </FormGroup>
-                        <FormGroup inline={true} label='Sort' disabled={this.props.tables === 'select'}>
+                        <FormGroup inline={true} label='Sort'>
                             <ButtonGroup>
                                 <Button
                                     icon='sort-alphabetical'
@@ -341,19 +345,21 @@ class TableViewSideBar extends React.Component<ITableViewSideBarProps, ITableVie
     };
 
     private _renderTag = (item: SigFieldSkolem): React.ReactNode => {
-        if (item.expressionType() === 'signature')
-            return <SignatureTag
-                signature={item as AlloySignature}
-                nameFunction={this.props.nameFunction}/>;
-        if (item.expressionType() === 'field')
-            return <FieldTag
-                field={item as AlloyField}
-                nameFunction={this.props.nameFunction}/>;
-        if (item.expressionType() === 'skolem')
-            return <SkolemTag
-                skolem={item as AlloySkolem}
-                nameFunction={this.props.nameFunction}/>;
-        return null;
+        const name = this.props.nameFunction(item);
+        return item.expressionType() === 'field'
+            ? name.split('<:').join(' \u2BC7 ')
+            : name;
+    };
+
+    private _tagProps = (value: React.ReactNode, index: number): ITagProps => {
+        const itemType = this.props.selectedTables[index].expressionType();
+        const tag = itemType === 'signature' ? 'sig-tag'
+            : itemType === 'field' ? 'field-tag'
+            : itemType === 'skolem' ? 'skolem-tag'
+            : '';
+        return {
+            className: tag
+        };
     }
 
 }

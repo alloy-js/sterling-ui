@@ -68,12 +68,8 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
 
             // Otherwise, if any tables were selected, look for them in the
             // new instance
-            const oldInst: AlloyInstance = prevProps.instance;
             const newInst: AlloyInstance = this.props.instance;
-            const oldTables = [
-                ...oldInst.skolems(),
-                ...oldInst.signatures(),
-                ...oldInst.fields()]
+            const oldTables = prevState.selectedTables
                 .map(item => item.id());
 
             const newTables = [

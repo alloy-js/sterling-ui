@@ -12,7 +12,7 @@ import SignatureHTMLTable from './SignatureHTMLTable';
 import { alphaSort, numSort, SigFieldSkolem } from './TableUtil';
 import { ITableViewState } from './TableView';
 import SkolemHTMLTable from './SkolemHTMLTable';
-import { SignatureTag, SkolemTag } from './TableTags';
+import { FieldTag, SignatureTag, SkolemTag } from './TableTags';
 
 export interface ITableViewStageProps extends ITableViewState {
     instance: AlloyInstance | null,
@@ -50,6 +50,7 @@ class TableViewStage extends React.Component<ITableViewStageProps> {
                         key={item.id()}
                         elevation={2}>
                         <SignatureTag
+                            fill={true}
                             signature={item as AlloySignature}
                             nameFunction={this.props.nameFunction}/>
                         {SignatureHTMLTable(props)}
@@ -67,7 +68,10 @@ class TableViewStage extends React.Component<ITableViewStageProps> {
                     <Card
                         key={item.id()}
                         elevation={2}>
-                        {FieldBreadcrumbs(props)}
+                        <FieldTag
+                            fill={true}
+                            field={item as AlloyField}
+                            nameFunction={this.props.nameFunction}/>
                         {FieldHTMLTable(props)}
                     </Card>
                 );
@@ -85,6 +89,7 @@ class TableViewStage extends React.Component<ITableViewStageProps> {
                         key={item.id()}
                         elevation={2}>
                         <SkolemTag
+                            fill={true}
                             skolem={item as AlloySkolem}
                             nameFunction={this.props.nameFunction}/>
                         {SkolemHTMLTable(props)}
@@ -102,32 +107,38 @@ class TableViewStage extends React.Component<ITableViewStageProps> {
     private _getItems (): SigFieldSkolem[] {
 
         if (this.props.tables === 'select') {
-            return this.props.selectedTables;
+
+            return [...this.props.selectedTables]
+                .sort(this._secondarySort())
+                .sort(this._primarySort());
+
+        } else {
+
+            const showSigs = this.props.tables === 'all' || this.props.tables === 'signatures';
+            const showFlds = this.props.tables === 'all' || this.props.tables === 'fields';
+            const showSkls = this.props.tables === 'all' || this.props.tables === 'skolems';
+
+            const sigs: Array<AlloySignature> = showSigs
+                ? this.props.instance!.signatures()
+                    .filter(sig => sig.name() !== 'univ')
+                    .filter(sig => this.props.showBuiltin || !sig.isBuiltin())
+                    .filter(sig => this.props.showEmpty || !!sig.atoms().length)
+                : [];
+
+            const fields: Array<AlloyField> = showFlds
+                ? this.props.instance!.fields()
+                    .filter(fld => this.props.showEmpty || fld.size() !== 0)
+                : [];
+
+            const skolems: Array<AlloySkolem> = showSkls
+                ? this.props.instance!.skolems()
+                : [];
+
+            return [...sigs, ...fields, ...skolems]
+                .sort(this._secondarySort())
+                .sort(this._primarySort());
+
         }
-
-        const showSigs = this.props.tables === 'all' || this.props.tables === 'signatures';
-        const showFlds = this.props.tables === 'all' || this.props.tables === 'fields';
-        const showSkls = this.props.tables === 'all' || this.props.tables === 'skolems';
-
-        const sigs: Array<AlloySignature> = showSigs
-            ? this.props.instance!.signatures()
-                .filter(sig => sig.name() !== 'univ')
-                .filter(sig => this.props.showBuiltin || !sig.isBuiltin())
-                .filter(sig => this.props.showEmpty || !!sig.atoms().length)
-            : [];
-
-        const fields: Array<AlloyField> = showFlds
-            ? this.props.instance!.fields()
-                .filter(fld => this.props.showEmpty || fld.size() !== 0)
-            : [];
-
-        const skolems: Array<AlloySkolem> = showSkls
-            ? this.props.instance!.skolems()
-            : [];
-
-        return [...sigs, ...fields, ...skolems]
-            .sort(this._secondarySort())
-            .sort(this._primarySort());
 
     }
 

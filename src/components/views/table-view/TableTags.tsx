@@ -5,16 +5,19 @@ import { SigFieldSkolem } from './TableUtil';
 
 
 export interface ISignatureTagProps {
+    fill?: boolean,
     nameFunction?: (item: SigFieldSkolem) => string,
     signature: AlloySignature
 }
 
 export interface IFieldTagProps {
+    fill?: boolean,
     nameFunction?: (item: SigFieldSkolem) => string,
     field: AlloyField
 }
 
 export interface ISkolemTagProps {
+    fill?: boolean,
     nameFunction?: (item: SigFieldSkolem) => string,
     skolem: AlloySkolem
 }
@@ -22,7 +25,7 @@ export interface ISkolemTagProps {
 function SignatureTag (props: ISignatureTagProps) {
 
     return (
-        <Tag className='sig-tag'>
+        <Tag className='sig-tag' fill={props.fill}>
             {
                 props.nameFunction
                     ? props.nameFunction(props.signature)
@@ -40,8 +43,8 @@ function FieldTag (props: IFieldTagProps) {
         : props.field.name();
 
     return (
-        <Tag className='field-tag'>
-            { name.split('<:').join('\u2192') }
+        <Tag className='field-tag' fill={props.fill}>
+            { name.split('<:').join(' \u2BC7 ') }
         </Tag>
     )
 
@@ -50,7 +53,7 @@ function FieldTag (props: IFieldTagProps) {
 function SkolemTag (props: ISkolemTagProps) {
 
     return (
-        <Tag className='skolem-tag'>
+        <Tag className='skolem-tag' fill={props.fill}>
             {
                 props.nameFunction
                     ? props.nameFunction(props.skolem)
