@@ -2,8 +2,8 @@ import store from 'store';
 import defaultsPlugin from 'store/plugins/defaults';
 import eventsPlugin from 'store/plugins/events';
 
-export type ViewSide = 'left' | 'right';
-export type ViewType = 'graph' | 'table' | 'tree' | 'source';
+export enum ViewSide {Left = 'left', Right = 'right'}
+export enum ViewType {Graph = 'graph', Table = 'table', Tree = 'tree', Source = 'source'}
 
 export interface ISterlingSettings {
     defaultView: ViewType,
@@ -14,11 +14,11 @@ export interface ISterlingSettings {
 }
 
 const DEFAULT_SETTINGS: ISterlingSettings = {
-    defaultView: 'graph',
-    graphViewSidebarSide: 'left',
-    sourceViewSidebarSide: 'left',
-    tableViewSidebarSide: 'left',
-    treeViewSidebarSide: 'left'
+    defaultView: ViewType.Graph,
+    graphViewSidebarSide: ViewSide.Left,
+    sourceViewSidebarSide: ViewSide.Left,
+    tableViewSidebarSide: ViewSide.Left,
+    treeViewSidebarSide: ViewSide.Left
 };
 
 store.addPlugin(defaultsPlugin);

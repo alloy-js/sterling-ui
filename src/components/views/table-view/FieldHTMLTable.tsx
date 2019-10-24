@@ -1,12 +1,12 @@
 import { HTMLTable } from '@blueprintjs/core';
 import { AlloyAtom, AlloyField, AlloySignature, AlloyTuple } from 'alloy-ts';
 import React from 'react';
-import { ASigField } from './TableUtil';
+import { SigFieldSkolem } from './TableUtil';
 
 
 interface IFieldHTMLTableProps {
     field: AlloyField,
-    nameFunction: (item: ASigField) => string
+    nameFunction: (item: SigFieldSkolem) => string
 }
 
 export default function FieldHTMLTable (props: IFieldHTMLTableProps) {

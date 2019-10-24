@@ -4,16 +4,19 @@ import {
     Classes,
     Navbar,
     NavbarDivider,
-    NavbarHeading, Position,
-    Tag, Tooltip
+    NavbarHeading,
+    Position,
+    Tag,
+    Tooltip
 } from '@blueprintjs/core';
 import React from 'react';
+import { ViewType } from '../SterlingSettings';
 
 interface INavBarProps {
     connected: boolean,
     command: string,
     onRequestNext: () => void,
-    onRequestView: (view: 'graph' | 'table' | 'tree' | 'source') => void,
+    onRequestView: (view: ViewType) => void,
     onRequestSettings: () => void,
     ready: boolean,
     view: string
@@ -36,28 +39,28 @@ class SterlingNavbar extends React.Component<INavBarProps> {
                         large={true}
                         icon='graph'
                         text='Graph'
-                        onClick={() => this.props.onRequestView('graph')}/>
+                        onClick={() => this.props.onRequestView(ViewType.Graph)}/>
                     <Button
                         className={Classes.MINIMAL}
                         active={this.props.view === 'table'}
                         large={true}
                         icon='th'
                         text='Table'
-                        onClick={() => this.props.onRequestView('table')}/>
+                        onClick={() => this.props.onRequestView(ViewType.Table)}/>
                     <Button
                         className={Classes.MINIMAL}
                         active={this.props.view === 'tree'}
                         large={true}
                         icon='diagram-tree'
                         text='Tree'
-                        onClick={() => this.props.onRequestView('tree')}/>
+                        onClick={() => this.props.onRequestView(ViewType.Tree)}/>
                     <Button
                         className={Classes.MINIMAL}
                         active={this.props.view === 'source'}
                         large={true}
                         icon='document'
                         text='Source'
-                        onClick={() => this.props.onRequestView('source')}/>
+                        onClick={() => this.props.onRequestView(ViewType.Source)}/>
                     <NavbarDivider/>
                     <Tooltip
                         content='Sterling Settings'

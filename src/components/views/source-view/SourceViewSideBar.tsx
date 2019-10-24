@@ -2,12 +2,13 @@ import { ITreeNode, Position, Tooltip, Tree } from '@blueprintjs/core';
 import { AlloyInstance, AlloySource } from 'alloy-ts';
 import React from 'react';
 import SterlingSidebar from '../../SterlingSidebar';
+import { ViewSide } from '../../../SterlingSettings';
 
 export interface ISourceViewSideBarProps {
     active: AlloySource | null
     instance: AlloyInstance | null,
     onChooseSource: Function,
-    side: 'left' | 'right'
+    side: ViewSide
 }
 
 export interface ISourceViewSidebarState {
@@ -26,7 +27,7 @@ class SourceViewSideBar extends React.Component<ISourceViewSideBarProps, ISource
             <SterlingSidebar
                 collapsed={this.state.collapseSidebar}
                 onToggleCollapse={this.onToggleCollapse}
-                side={this.props.side}
+                sidebarSide={this.props.side}
                 title='Alloy Source Files'>
                 <Tree
                     contents={this.sourceNodes(this.props.instance)}
@@ -55,7 +56,7 @@ class SourceViewSideBar extends React.Component<ISourceViewSideBarProps, ISource
 
         if (instance === null) return [];
 
-        const tooltipPos = this.props.side === 'left'
+        const tooltipPos = this.props.side === ViewSide.Left
             ? Position.RIGHT
             : Position.LEFT;
 

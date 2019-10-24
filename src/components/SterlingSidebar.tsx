@@ -1,5 +1,6 @@
 import { Button, Collapse } from '@blueprintjs/core';
 import * as React from 'react';
+import { ViewSide } from '../SterlingSettings';
 
 export interface ISterlingSidebarSectionProps {
     collapsed: boolean,
@@ -44,7 +45,7 @@ class Section extends React.Component<ISterlingSidebarSectionProps> {
 export interface ISterlingSidebarProps {
     collapsed: boolean,
     onToggleCollapse: () => void,
-    side: 'left' | 'right',
+    sidebarSide: ViewSide,
     title: string
 }
 
@@ -54,12 +55,12 @@ class SterlingSidebar extends React.Component<ISterlingSidebarProps> {
 
     render(): React.ReactNode {
 
-        const openIcon = this.props.side === 'left' ? 'menu-open' : 'menu-closed';
-        const closeIcon = this.props.side === 'left' ? 'menu-closed' : 'menu-open';
+        const openIcon = this.props.sidebarSide === ViewSide.Left ? 'menu-open' : 'menu-closed';
+        const closeIcon = this.props.sidebarSide === ViewSide.Left ? 'menu-closed' : 'menu-open';
 
         if (this.props.collapsed) {
             return (
-                <div className={`sterling-sidebar ${this.props.side} collapsed`}>
+                <div className={`sterling-sidebar ${this.props.sidebarSide} collapsed`}>
                     <div className='header'>
                         <Button icon={openIcon} minimal={true} onClick={this.props.onToggleCollapse}/>
                     </div>
@@ -68,7 +69,7 @@ class SterlingSidebar extends React.Component<ISterlingSidebarProps> {
         }
 
         return (
-            <div className={`sterling-sidebar ${this.props.side} bp3-dark`}>
+            <div className={`sterling-sidebar ${this.props.sidebarSide} bp3-dark`}>
                 <div className='header'>
                     <div className='title'>
                         {this.props.title}

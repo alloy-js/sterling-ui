@@ -1,10 +1,11 @@
 import React from 'react';
 import { AlloyInstance } from 'alloy-ts';
 import SterlingSidebar from '../../SterlingSidebar';
+import { ViewSide } from '../../../SterlingSettings';
 
 export interface ITreeViewSidebarProps {
     instance: AlloyInstance | null,
-    side: 'left' | 'right'
+    side: ViewSide
 }
 
 export interface ITreeViewSidebarState {
@@ -23,7 +24,7 @@ class TreeViewSideBar extends React.Component<ITreeViewSidebarProps, ITreeViewSi
             <SterlingSidebar
                 collapsed={this.state.collapseSidebar}
                 onToggleCollapse={this.onToggleCollapse}
-                side={this.props.side}
+                sidebarSide={this.props.side}
                 title='Tree View Settings'>
             </SterlingSidebar>
         )

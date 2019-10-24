@@ -1,10 +1,11 @@
 import React from 'react';
 import SterlingSidebar from '../../SterlingSidebar';
 import { AlloyInstance } from 'alloy-ts';
+import { ViewSide } from '../../../SterlingSettings';
 
 export interface IGraphViewSidebarProps {
     instance: AlloyInstance | null,
-    side: 'left' | 'right'
+    side: ViewSide
 }
 
 export interface IGraphViewSidebarState {
@@ -23,7 +24,7 @@ class GraphViewSideBar extends React.Component<IGraphViewSidebarProps, IGraphVie
             <SterlingSidebar
                 collapsed={this.state.collapseSidebar}
                 onToggleCollapse={this.onToggleCollapse}
-                side={this.props.side}
+                sidebarSide={this.props.side}
                 title='Graph View Settings'>
             </SterlingSidebar>
         )

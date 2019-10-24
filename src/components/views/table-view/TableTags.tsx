@@ -1,67 +1,116 @@
 import * as React from 'react';
 import { AlloyField, AlloySignature, AlloySkolem } from 'alloy-ts';
-import { Tag } from '@blueprintjs/core';
+import { Icon, Tag } from '@blueprintjs/core';
 import { SigFieldSkolem } from './TableUtil';
 
-
-export interface ISignatureTagProps {
+export interface IAlloyTagProps {
     fill?: boolean,
     nameFunction?: (item: SigFieldSkolem) => string,
-    signature: AlloySignature
 }
 
-export interface IFieldTagProps {
-    fill?: boolean,
-    nameFunction?: (item: SigFieldSkolem) => string,
-    field: AlloyField
+export interface ISignatureTagProps extends IAlloyTagProps {
+    signature: AlloySignature | string
 }
 
-export interface ISkolemTagProps {
-    fill?: boolean,
-    nameFunction?: (item: SigFieldSkolem) => string,
-    skolem: AlloySkolem
+export interface IFieldTagProps extends IAlloyTagProps {
+    field: AlloyField | string
 }
 
-function SignatureTag (props: ISignatureTagProps) {
-
-    return (
-        <Tag className='sig-tag' fill={props.fill}>
-            {
-                props.nameFunction
-                    ? props.nameFunction(props.signature)
-                    : props.signature.name()
-            }
-        </Tag>
-    )
-
+export interface ISkolemTagProps extends IAlloyTagProps {
+    skolem: AlloySkolem | string
 }
 
-function FieldTag (props: IFieldTagProps) {
+class SignatureTag extends React.Component<ISignatureTagProps> {
 
-    const name = props.nameFunction
-        ? props.nameFunction(props.field)
-        : props.field.name();
+    static className = 'sig-tag';
 
-    return (
-        <Tag className='field-tag' fill={props.fill}>
-            { name.split('<:').join(' \u2BC7 ') }
-        </Tag>
-    )
+    render (): React.ReactNode {
+
+        const props = this.props;
+
+        const name = typeof props.signature === 'string'
+            ? props.signature
+            : props.nameFunction
+                ? props.nameFunction(props.signature)
+                : props.signature.name();
+
+        return (
+            <Tag className={SignatureTag.className} fill={props.fill}>
+                { name }
+            </Tag>
+        );
+
+    }
 
 }
 
-function SkolemTag (props: ISkolemTagProps) {
+class FieldTag extends React.Component<IFieldTagProps> {
 
-    return (
-        <Tag className='skolem-tag' fill={props.fill}>
-            {
-                props.nameFunction
-                    ? props.nameFunction(props.skolem)
-                    : props.skolem.name()
-            }
-        </Tag>
+    static className = 'field-tag';
 
-    )
+    render (): React.ReactNode {
+
+        const name = typeof this.props.field === 'string'
+            ? this.props.field
+            : this.props.nameFunction
+                ? this.props.nameFunction(this.props.field)
+                : this.props.field.name();
+
+        const tokens = name.split('<:');
+
+        return (
+            <Tag
+                className={FieldTag.className}
+                fill={this.props.fill}>
+                { FieldTag.FieldTagEls(tokens) }
+            </Tag>
+        )
+
+    }
+
+    public static FieldTagEls (tokens: Array<string>): React.ReactElement {
+
+        if (tokens.length !== 2)
+            return <>{tokens.join('')}</>;
+
+        return (<>
+            {tokens[0]}
+            <Icon
+                icon='symbol-triangle-down'
+                iconSize={14}
+                style={{
+                    padding: '0 1px 0 1px',
+                    transform: 'rotate(90deg)'
+                }}/>
+            {tokens[1]}
+        </>);
+
+    }
+
+}
+
+class SkolemTag extends React.Component<ISkolemTagProps> {
+
+    static className = 'skolem-tag';
+
+    render (): React.ReactNode {
+
+        const props = this.props;
+
+        const name = typeof props.skolem === 'string'
+            ? props.skolem
+            : props.nameFunction
+                ? props.nameFunction(props.skolem)
+                : props.skolem.name();
+
+        return (
+            <Tag className={SkolemTag.className} fill={props.fill}>
+                { name }
+            </Tag>
+
+        );
+
+    }
 
 }
 

@@ -1,8 +1,27 @@
 import { AlloyField, AlloySignature, AlloySkolem } from 'alloy-ts';
 
-export type ASigField = AlloySignature | AlloyField;
 export type SigFieldSkolem = AlloySignature | AlloyField | AlloySkolem;
 export type ASortFunction = (a: SigFieldSkolem, b: SigFieldSkolem) => number;
+
+function extractSignatures (item: SigFieldSkolem): boolean {
+    return item.expressionType() === 'signature';
+}
+
+function extractFields (item: SigFieldSkolem): boolean {
+    return item.expressionType() === 'field';
+}
+
+function extractSkolems (item: SigFieldSkolem): boolean {
+    return item.expressionType() === 'skolem';
+}
+
+function filterBuiltin (item: SigFieldSkolem): boolean {
+    return !(item.expressionType() === 'signature' && (item as AlloySignature).isBuiltin())
+}
+
+function filterEmpty (item: SigFieldSkolem): boolean {
+    return getLength(item) > 0;
+}
 
 function alphaSort (getName: (item: SigFieldSkolem) => string, asc: boolean = true): ASortFunction {
     const one = asc ? 1 : -1;
@@ -56,8 +75,15 @@ function removeThis (name: string): string {
     return name.replace(/^this\//, '');
 }
 
-function itemsEqual (a: SigFieldSkolem, b: SigFieldSkolem): boolean {
-    return a.id() === b.id();
-}
 
-export { alphaSort, builtinSort, itemsEqual, nameFunction, numSort };
+export {
+    alphaSort,
+    builtinSort,
+    extractFields,
+    extractSignatures,
+    extractSkolems,
+    filterBuiltin,
+    filterEmpty,
+    nameFunction,
+    numSort
+};
