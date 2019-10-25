@@ -1,20 +1,29 @@
 import { AlloyInstance } from 'alloy-ts';
 import React from 'react';
+import SterlingSettings, { ViewSide } from '../../../SterlingSettings';
+import { alphabeticalSort } from '../../../util/SterlingSorting';
+import {
+    AlloyNameFn,
+    HorizontalAlignment,
+    LayoutDirection,
+    SigFieldSkolem,
+    TableSortFunction,
+    TablesType
+} from '../../../util/SterlingTypes';
 import View from '../View';
 import {
-    alphaSort, builtinSort, extractFields,
-    extractSignatures, extractSkolems, filterBuiltin, filterEmpty, groupSort,
+    builtinSort,
+    extractFields,
+    extractSignatures,
+    extractSkolems,
+    filterBuiltin,
+    filterEmpty,
+    groupSort,
     nameFunction,
-    numSort,
-    SigFieldSkolem
+    numSort
 } from './TableUtil';
-import TableViewSidebar, { TableSortFunction } from './TableViewSidebar';
+import TableViewSidebar from './TableViewSidebar';
 import TableViewStage from './TableViewStage';
-import SterlingSettings, { ViewSide } from '../../../SterlingSettings';
-
-export enum LayoutDirection { Row, Column}
-export enum TableAlignment { Left, Center, Right }
-export enum TablesType { All, Signatures, Fields, Skolems, Select}
 
 export interface ITableViewProps {
     instance: AlloyInstance | null,
@@ -29,14 +38,14 @@ export interface ITableViewState {
     items: SigFieldSkolem[],
     itemsSelected: SigFieldSkolem[],
     layoutDirection: LayoutDirection,
-    nameFunction: (item: SigFieldSkolem) => string,
+    nameFunction: AlloyNameFn,
     removeBuiltin: boolean,
     removeEmpty: boolean,
     removeThis: boolean,
     sidebarSide: ViewSide,
     sortPrimary: TableSortFunction,
     sortSecondary: TableSortFunction,
-    tableAlignment: TableAlignment,
+    tableAlignment: HorizontalAlignment,
     tables: TablesType
 }
 
@@ -63,7 +72,7 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
             sidebarSide: SterlingSettings.get('tableViewSidebarSide'),
             sortPrimary: groupSort(),
             sortSecondary: numSort(),
-            tableAlignment: TableAlignment.Left,
+            tableAlignment: HorizontalAlignment.Left,
             tables: TablesType.All
         };
 
@@ -94,7 +103,7 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
                 // Note that the order established here is the order the items
                 // will appear in in the sidebar selector
 
-                const alpha = alphaSort(nameFunction(true));
+                const alpha = alphabeticalSort(nameFunction(true));
                 const builtin = builtinSort;
 
                 const newItems = [
@@ -191,7 +200,7 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
         this.setState({sortPrimary: primary, sortSecondary: secondary});
     };
     
-    private _onChooseTableAlignment = (align: TableAlignment): void => {
+    private _onChooseTableAlignment = (align: HorizontalAlignment): void => {
         this.setState({tableAlignment: align});
     };
     

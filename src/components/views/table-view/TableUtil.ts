@@ -1,7 +1,14 @@
-import { AlloyField, AlloySignature, AlloySkolem } from 'alloy-ts';
-
-export type SigFieldSkolem = AlloySignature | AlloyField | AlloySkolem;
-export type ASortFunction = (a: SigFieldSkolem, b: SigFieldSkolem) => number;
+import {
+    AlloyElement,
+    AlloyField,
+    AlloySignature,
+    AlloySkolem
+} from 'alloy-ts';
+import {
+    AlloyNameFn,
+    SigFieldSkolem,
+    TableSortFunction
+} from '../../../util/SterlingTypes';
 
 function extractSignatures (item: SigFieldSkolem): boolean {
     return item.expressionType() === 'signature';
@@ -23,7 +30,7 @@ function filterEmpty (item: SigFieldSkolem): boolean {
     return getLength(item) > 0;
 }
 
-function alphaSort (getName: (item: SigFieldSkolem) => string, asc: boolean = true): ASortFunction {
+function alphaSort (getName: (item: SigFieldSkolem) => string, asc: boolean = true): TableSortFunction {
     const one = asc ? 1 : -1;
     return (a: SigFieldSkolem, b: SigFieldSkolem) => {
         const aname = getName(a);
@@ -44,7 +51,7 @@ function builtinSort (a: AlloySignature, b: AlloySignature): number {
             : -1;
 }
 
-function groupSort (): ASortFunction {
+function groupSort (): TableSortFunction {
     return (a: SigFieldSkolem, b: SigFieldSkolem) => {
         const aType = a.expressionType();
         const bType = b.expressionType();
@@ -60,7 +67,7 @@ function groupSort (): ASortFunction {
     }
 }
 
-function numSort (asc: boolean = true): ASortFunction {
+function numSort (asc: boolean = true): TableSortFunction {
     const one = asc ? 1 : -1;
     return (a: SigFieldSkolem, b: SigFieldSkolem) => {
         const alen = getLength(a);
@@ -79,8 +86,8 @@ function getLength (item: SigFieldSkolem) {
     throw Error('Item is not a signature, field, or skolem');
 }
 
-function nameFunction (remove_this: boolean): (item: SigFieldSkolem) => string {
-    return (item: SigFieldSkolem) => {
+function nameFunction (remove_this: boolean): AlloyNameFn {
+    return (item: AlloyElement) => {
         return remove_this
             ? removeThis(item.id())
             : item.id();
@@ -93,7 +100,7 @@ function removeThis (name: string): string {
 
 
 export {
-    alphaSort,
+    // alphaSort,
     builtinSort,
     groupSort,
     extractFields,

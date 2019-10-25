@@ -1,7 +1,8 @@
 import * as React from 'react';
 import SterlingSidebar from '../../../SterlingSidebar';
 import { Alignment, Switch } from '@blueprintjs/core';
-import { ITableViewState, TablesType } from '../TableView';
+import { ITableViewState } from '../TableView';
+import { TablesType } from '../../../../util/SterlingTypes';
 
 export interface IDataSectionProps extends ITableViewState {
     onToggleBuiltin: () => void,

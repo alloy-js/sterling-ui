@@ -1,12 +1,16 @@
 import { Card } from '@blueprintjs/core';
 import { AlloyField, AlloySignature, AlloySkolem } from 'alloy-ts';
 import React, { ReactNode } from 'react';
+import {
+    HorizontalAlignment,
+    LayoutDirection,
+    SigFieldSkolem
+} from '../../../util/SterlingTypes';
 import FieldHTMLTable from './stage-components/FieldHTMLTable';
 import SignatureHTMLTable from './stage-components/SignatureHTMLTable';
-import { SigFieldSkolem } from './TableUtil';
-import { ITableViewState, LayoutDirection, TableAlignment } from './TableView';
 import SkolemHTMLTable from './stage-components/SkolemHTMLTable';
 import { FieldTag, SignatureTag, SkolemTag } from './TableTags';
+import { ITableViewState } from './TableView';
 
 export interface ITableViewStageProps extends ITableViewState {
     itemsVisible: SigFieldSkolem[]
@@ -20,9 +24,9 @@ class TableViewStage extends React.Component<ITableViewStageProps> {
         const tableLayout = this.props.layoutDirection;
 
         const alignClass =
-            tableAlign === TableAlignment.Left ? 'left' :
-            tableAlign === TableAlignment.Center ? 'center' :
-            tableAlign === TableAlignment.Right ? 'right' : '';
+            tableAlign === HorizontalAlignment.Left ? 'left' :
+            tableAlign === HorizontalAlignment.Center ? 'center' :
+            tableAlign === HorizontalAlignment.Right ? 'right' : '';
 
         const layoutClass =
             tableLayout === LayoutDirection.Row ? 'row' :
@@ -104,56 +108,6 @@ class TableViewStage extends React.Component<ITableViewStageProps> {
         });
 
     }
-
-    // private _getItems (): SigFieldSkolem[] {
-    //
-    //     if (this.props.tables === 'select') {
-    //
-    //         return [...this.props.selectedTables]
-    //             .sort(this._secondarySort())
-    //             .sort(this._primarySort());
-    //
-    //     } else {
-    //
-    //         const showSigs = this.props.tables === 'all' || this.props.tables === 'signatures';
-    //         const showFlds = this.props.tables === 'all' || this.props.tables === 'fields';
-    //         const showSkls = this.props.tables === 'all' || this.props.tables === 'skolems';
-    //
-    //         const sigs: Array<AlloySignature> = showSigs
-    //             ? this.props.instance!.signatures()
-    //                 .filter(sig => sig.name() !== 'univ')
-    //                 .filter(sig => this.props.showBuiltin || !sig.isBuiltin())
-    //                 .filter(sig => this.props.showEmpty || !!sig.atoms().length)
-    //             : [];
-    //
-    //         const fields: Array<AlloyField> = showFlds
-    //             ? this.props.instance!.fields()
-    //                 .filter(fld => this.props.showEmpty || fld.size() !== 0)
-    //             : [];
-    //
-    //         const skolems: Array<AlloySkolem> = showSkls
-    //             ? this.props.instance!.skolems()
-    //             : [];
-    //
-    //         return [...sigs, ...fields, ...skolems]
-    //             .sort(this._secondarySort())
-    //             .sort(this._primarySort());
-    //
-    //     }
-    //
-    // }
-    //
-    // private _primarySort () {
-    //     return this.props.lastSort === 'alpha'
-    //         ? alphaSort(this.props.nameFunction, this.props.lastAlphaSort === 'asc')
-    //         : numSort(this.props.lastNumSort === 'asc');
-    // }
-    //
-    // private _secondarySort () {
-    //     return this.props.lastSort === 'alpha'
-    //         ? numSort(this.props.lastNumSort === 'asc')
-    //         : alphaSort(this.props.nameFunction, this.props.lastAlphaSort === 'asc');
-    // }
 
 }
 

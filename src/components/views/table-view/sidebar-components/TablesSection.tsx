@@ -2,8 +2,8 @@ import * as React from 'react';
 import SterlingSidebar from '../../../SterlingSidebar';
 import { Radio, RadioGroup } from '@blueprintjs/core';
 import AlloyMultiSelect from './tables-section-components/AlloyMultiSelect';
-import { SigFieldSkolem } from '../TableUtil';
-import { ITableViewState, TablesType } from '../TableView';
+import { ITableViewState } from '../TableView';
+import { SigFieldSkolem, TablesType } from '../../../../util/SterlingTypes';
 
 export interface ITablesSectionProps extends ITableViewState {
     onChooseTablesType: (type: TablesType) => void,

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { AlloyField, AlloySignature, AlloySkolem } from 'alloy-ts';
 import { Icon, Tag } from '@blueprintjs/core';
-import { SigFieldSkolem } from './TableUtil';
+import { SigFieldSkolem } from '../../../util/SterlingTypes';
 
 export interface IAlloyTagProps {
     fill?: boolean,

@@ -1,7 +1,7 @@
 import { HTMLTable } from '@blueprintjs/core';
 import { AlloyAtom, AlloyField, AlloySignature, AlloyTuple } from 'alloy-ts';
 import React from 'react';
-import { SigFieldSkolem } from '../TableUtil';
+import { SigFieldSkolem } from '../../../../util/SterlingTypes';
 
 
 interface IFieldHTMLTableProps {

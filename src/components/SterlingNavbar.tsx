@@ -64,7 +64,7 @@ class SterlingNavbar extends React.Component<INavBarProps> {
                     <NavbarDivider/>
                     <Tooltip
                         content='Sterling Settings'
-                        position={Position.BOTTOM}>
+                        position={Position.RIGHT}>
                         <Button
                             className={Classes.MINIMAL}
                             large={true}

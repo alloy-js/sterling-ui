@@ -1,7 +1,7 @@
 import { AlloyAtom, AlloySignature, AlloySkolem, AlloyTuple } from 'alloy-ts';
 import { HTMLTable } from '@blueprintjs/core';
 import React from 'react';
-import { SigFieldSkolem } from '../TableUtil';
+import { SigFieldSkolem } from '../../../../util/SterlingTypes';
 
 interface ISkolemHTMLTableProps {
     color: string,

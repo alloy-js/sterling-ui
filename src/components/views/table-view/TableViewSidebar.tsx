@@ -3,20 +3,20 @@ import SterlingSidebar from '../../SterlingSidebar';
 import DataSection from './sidebar-components/DataSection';
 import LayoutSection from './sidebar-components/LayoutSection';
 import TablesSection from './sidebar-components/TablesSection';
-import { SigFieldSkolem } from './TableUtil';
+import { ITableViewState } from './TableView';
 import {
-    ITableViewState,
+    HorizontalAlignment,
     LayoutDirection,
-    TableAlignment,
+    SigFieldSkolem,
+    TableSortFunction,
     TablesType
-} from './TableView';
+} from '../../../util/SterlingTypes';
 
-export type TableSortFunction = (a: SigFieldSkolem, b: SigFieldSkolem) => number;
 
 export interface ITableViewSidebarProps extends ITableViewState {
     onChooseLayoutDirection: (layout: LayoutDirection) => void,
     onChooseSortingFunctions: (primary: TableSortFunction, secondary: TableSortFunction) => void,
-    onChooseTableAlignment: (align: TableAlignment) => void,
+    onChooseTableAlignment: (align: HorizontalAlignment) => void,
     onChooseTablesType: (type: TablesType) => void,
     onItemsSelected: (items: SigFieldSkolem[]) => void,
     onToggleBuiltin: () => void,

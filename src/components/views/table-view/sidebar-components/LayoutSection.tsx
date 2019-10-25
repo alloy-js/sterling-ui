@@ -1,16 +1,19 @@
 import * as React from 'react';
+import { alphabeticalSort } from '../../../../util/SterlingSorting';
 import SterlingSidebar from '../../../SterlingSidebar';
 import { Button, ButtonGroup, FormGroup } from '@blueprintjs/core';
-import { ITableViewState, LayoutDirection, TableAlignment } from '../TableView';
-import { TableSortFunction } from '../TableViewSidebar';
-import { alphaSort, groupSort, numSort } from '../TableUtil';
-
-export enum TableSortDirection { Ascending, Descending}
+import { groupSort, numSort } from '../TableUtil';
+import {
+    HorizontalAlignment,
+    LayoutDirection, SortDirection,
+    TableSortFunction
+} from '../../../../util/SterlingTypes';
+import { ITableViewState } from '../TableView';
 
 export interface ILayoutSectionProps extends ITableViewState {
     onChooseLayoutDirection: (direction: LayoutDirection) => void,
     onChooseSortingFunctions: (primary: TableSortFunction, secondary: TableSortFunction) => void,
-    onChooseTableAlignment: (alignment: TableAlignment) => void,
+    onChooseTableAlignment: (alignment: HorizontalAlignment) => void,
     onToggleCollapse: () => void
 }
 
@@ -43,17 +46,17 @@ class LayoutSection extends React.Component<ILayoutSectionProps> {
                     <FormGroup inline={true} label='Align'>
                         <ButtonGroup>
                             <Button
-                                active={props.tableAlignment === TableAlignment.Left}
+                                active={props.tableAlignment === HorizontalAlignment.Left}
                                 icon='align-left'
-                                onClick={() => props.onChooseTableAlignment(TableAlignment.Left)}/>
+                                onClick={() => props.onChooseTableAlignment(HorizontalAlignment.Left)}/>
                             <Button
-                                active={props.tableAlignment === TableAlignment.Center}
+                                active={props.tableAlignment === HorizontalAlignment.Center}
                                 icon='align-center'
-                                onClick={() => props.onChooseTableAlignment(TableAlignment.Center)}/>
+                                onClick={() => props.onChooseTableAlignment(HorizontalAlignment.Center)}/>
                             <Button
-                                active={props.tableAlignment === TableAlignment.Right}
+                                active={props.tableAlignment === HorizontalAlignment.Right}
                                 icon='align-right'
-                                onClick={() => props.onChooseTableAlignment(TableAlignment.Right)}/>
+                                onClick={() => props.onChooseTableAlignment(HorizontalAlignment.Right)}/>
                         </ButtonGroup>
                     </FormGroup>
 
@@ -64,16 +67,16 @@ class LayoutSection extends React.Component<ILayoutSectionProps> {
                                 onClick={() => this._chooseGroupSort()}/>
                             <Button
                                 icon='sort-alphabetical'
-                                onClick={() => this._chooseAlphaSort(TableSortDirection.Ascending)}/>
+                                onClick={() => this._chooseAlphaSort(SortDirection.Ascending)}/>
                             <Button
                                 icon='sort-alphabetical-desc'
-                                onClick={() => this._chooseAlphaSort(TableSortDirection.Descending)}/>
+                                onClick={() => this._chooseAlphaSort(SortDirection.Descending)}/>
                             <Button
                                 icon='sort-numerical'
-                                onClick={() => this._chooseNumSort(TableSortDirection.Ascending)}/>
+                                onClick={() => this._chooseNumSort(SortDirection.Ascending)}/>
                             <Button
                                 icon='sort-numerical-desc'
-                                onClick={() => this._chooseNumSort(TableSortDirection.Descending)}/>
+                                onClick={() => this._chooseNumSort(SortDirection.Descending)}/>
                         </ButtonGroup>
                     </FormGroup>
 
@@ -91,12 +94,12 @@ class LayoutSection extends React.Component<ILayoutSectionProps> {
      * @param direction Sort alphabetically ascending or descending
      * @private
      */
-    private _chooseAlphaSort = (direction: TableSortDirection): void => {
+    private _chooseAlphaSort = (direction: SortDirection): void => {
 
         const oldPrimary = this.props.sortPrimary;
-        const newPrimary = direction === TableSortDirection.Ascending
-            ? alphaSort(this.props.nameFunction, true)
-            : alphaSort(this.props.nameFunction, false);
+        const newPrimary = direction === SortDirection.Ascending
+            ? alphabeticalSort(this.props.nameFunction, true)
+            : alphabeticalSort(this.props.nameFunction, false);
         this.props.onChooseSortingFunctions(newPrimary, oldPrimary);
 
     };
@@ -119,10 +122,10 @@ class LayoutSection extends React.Component<ILayoutSectionProps> {
      * @param direction Sort by size ascending or descending
      * @private
      */
-    private _chooseNumSort = (direction: TableSortDirection): void => {
+    private _chooseNumSort = (direction: SortDirection): void => {
 
         const oldPrimary = this.props.sortPrimary;
-        const newPrimary = direction === TableSortDirection.Ascending
+        const newPrimary = direction === SortDirection.Ascending
             ? numSort(true)
             : numSort(false);
         this.props.onChooseSortingFunctions(newPrimary, oldPrimary);

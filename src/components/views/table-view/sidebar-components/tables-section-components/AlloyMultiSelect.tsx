@@ -5,7 +5,8 @@ import {
     ItemPredicate,
     MultiSelect
 } from '@blueprintjs/select';
-import { alphaSort, builtinSort, SigFieldSkolem } from '../../TableUtil';
+import { alphabeticalSort } from '../../../../../util/SterlingSorting';
+import { builtinSort } from '../../TableUtil';
 import { AlloyField, AlloySignature, AlloySkolem } from 'alloy-ts';
 import {
     Button,
@@ -16,6 +17,7 @@ import {
     MenuItem
 } from '@blueprintjs/core';
 import { FieldTag, SignatureTag } from '../../TableTags';
+import { AlloyNameFn, SigFieldSkolem } from '../../../../../util/SterlingTypes';
 
 const AlloySelect = MultiSelect.ofType<SigFieldSkolem>();
 
@@ -25,7 +27,7 @@ export interface IAlloyMultiSelectProps {
     onClearSelectedItems: () => void,
     onDeselectItem: (item: SigFieldSkolem) => void,
     onSelectItem: (item: SigFieldSkolem) => void,
-    nameFunction: (item: SigFieldSkolem) => string
+    nameFunction: AlloyNameFn
 }
 
 class AlloyMultiSelect extends React.Component<IAlloyMultiSelectProps> {
@@ -148,7 +150,7 @@ class AlloyMultiSelect extends React.Component<IAlloyMultiSelectProps> {
         const sigs = props.items.filter(item => item.expressionType() === 'signature');
         const flds = props.items.filter(item => item.expressionType() === 'field');
         const skls = props.items.filter(item => item.expressionType() === 'skolem');
-        const alpha = alphaSort(this.props.nameFunction);
+        const alpha = alphabeticalSort(this.props.nameFunction);
         (sigs as AlloySignature[]).sort(alpha).sort(builtinSort);
         (flds as AlloyField[]).sort(alpha);
         (skls as AlloySkolem[]).sort(alpha);
