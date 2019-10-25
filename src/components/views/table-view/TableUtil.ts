@@ -44,6 +44,22 @@ function builtinSort (a: AlloySignature, b: AlloySignature): number {
             : -1;
 }
 
+function groupSort (): ASortFunction {
+    return (a: SigFieldSkolem, b: SigFieldSkolem) => {
+        const aType = a.expressionType();
+        const bType = b.expressionType();
+        const aVal =
+            aType === 'signature' ? 0 :
+                aType === 'field' ? 1 :
+                    aType === 'skolem' ? 2 : 3;
+        const bVal =
+            bType === 'signature' ? 0 :
+                bType === 'field' ? 1 :
+                    bType === 'skolem' ? 2 : 3;
+        return aVal - bVal;
+    }
+}
+
 function numSort (asc: boolean = true): ASortFunction {
     const one = asc ? 1 : -1;
     return (a: SigFieldSkolem, b: SigFieldSkolem) => {
@@ -79,6 +95,7 @@ function removeThis (name: string): string {
 export {
     alphaSort,
     builtinSort,
+    groupSort,
     extractFields,
     extractSignatures,
     extractSkolems,

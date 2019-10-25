@@ -21,11 +21,11 @@ const AlloySelect = MultiSelect.ofType<SigFieldSkolem>();
 
 export interface IAlloyMultiSelectProps {
     items: SigFieldSkolem[],
-    onClearSelectedTables: () => void,
-    onDeselectTable: (item: SigFieldSkolem) => void,
-    onSelectTable: (item: SigFieldSkolem) => void,
-    nameFunction: (item: SigFieldSkolem) => string,
-    selectedTables: SigFieldSkolem[]
+    itemsSelected: SigFieldSkolem[],
+    onClearSelectedItems: () => void,
+    onDeselectItem: (item: SigFieldSkolem) => void,
+    onSelectItem: (item: SigFieldSkolem) => void,
+    nameFunction: (item: SigFieldSkolem) => string
 }
 
 class AlloyMultiSelect extends React.Component<IAlloyMultiSelectProps> {
@@ -34,11 +34,11 @@ class AlloyMultiSelect extends React.Component<IAlloyMultiSelectProps> {
 
         const props = this.props;
 
-        const clearButton = this.props.selectedTables.length
+        const clearButton = this.props.itemsSelected.length
             ? <Button
                 icon='cross'
                 minimal={true}
-                onClick={this.props.onClearSelectedTables}/>
+                onClick={this.props.onClearSelectedItems}/>
             : undefined;
 
         return (
@@ -48,10 +48,10 @@ class AlloyMultiSelect extends React.Component<IAlloyMultiSelectProps> {
                 itemPredicate={this._filterItem}
                 itemRenderer={this._renderItem}
                 itemListRenderer={this._renderList}
-                onItemSelect={this._onItemSelect}
+                onItemSelect={this._onSelectItem}
                 placeholder='Choose Tables...'
                 resetOnSelect={true}
-                selectedItems={this.props.selectedTables}
+                selectedItems={this.props.itemsSelected}
                 tagInputProps={{
                     onRemove: this._onRemoveTag,
                     rightElement: clearButton,
@@ -89,20 +89,7 @@ class AlloyMultiSelect extends React.Component<IAlloyMultiSelectProps> {
      * @return Returns true if the item is currently selected, false otherwise
      */
     private _isItemSelected = (item: SigFieldSkolem) => {
-        return this.props.selectedTables.includes(item);
-    };
-
-    /**
-     * Event handler used when an item in the list is selected
-     * @param item The selected item
-     * @private
-     */
-    private _onItemSelect = (item: SigFieldSkolem): void => {
-
-        this._isItemSelected(item)
-            ? this.props.onSelectTable(item)
-            : this.props.onDeselectTable(item);
-
+        return this.props.itemsSelected.includes(item);
     };
 
     /**
@@ -112,7 +99,20 @@ class AlloyMultiSelect extends React.Component<IAlloyMultiSelectProps> {
      * @private
      */
     private _onRemoveTag = (tag: string, index: number): void => {
-        this.props.onDeselectTable(this.props.selectedTables[index]);
+        this.props.onDeselectItem(this.props.itemsSelected[index]);
+    };
+
+    /**
+     * Event handler used when an item in the list is selected
+     * @param item The selected item
+     * @private
+     */
+    private _onSelectItem = (item: SigFieldSkolem): void => {
+
+        this._isItemSelected(item)
+            ? this.props.onDeselectItem(item)
+            : this.props.onSelectItem(item);
+
     };
 
     /**
@@ -254,7 +254,7 @@ class AlloyMultiSelect extends React.Component<IAlloyMultiSelectProps> {
      */
     private _tagProps = (value: React.ReactNode, index: number): ITagProps => {
 
-        const itemType = this.props.selectedTables[index].expressionType();
+        const itemType = this.props.itemsSelected[index].expressionType();
         const tag = itemType === 'signature'
             ? 'sig-tag' : itemType === 'field'
                 ? 'field-tag' : itemType === 'skolem'

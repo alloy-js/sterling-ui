@@ -1,14 +1,16 @@
 import { Card } from '@blueprintjs/core';
 import { AlloyField, AlloySignature, AlloySkolem } from 'alloy-ts';
 import React, { ReactNode } from 'react';
-import FieldHTMLTable from './FieldHTMLTable';
-import SignatureHTMLTable from './SignatureHTMLTable';
+import FieldHTMLTable from './stage-components/FieldHTMLTable';
+import SignatureHTMLTable from './stage-components/SignatureHTMLTable';
 import { SigFieldSkolem } from './TableUtil';
 import { ITableViewState, LayoutDirection, TableAlignment } from './TableView';
-import SkolemHTMLTable from './SkolemHTMLTable';
+import SkolemHTMLTable from './stage-components/SkolemHTMLTable';
 import { FieldTag, SignatureTag, SkolemTag } from './TableTags';
 
-export interface ITableViewStageProps extends ITableViewState {}
+export interface ITableViewStageProps extends ITableViewState {
+    itemsVisible: SigFieldSkolem[]
+}
 
 class TableViewStage extends React.Component<ITableViewStageProps> {
 

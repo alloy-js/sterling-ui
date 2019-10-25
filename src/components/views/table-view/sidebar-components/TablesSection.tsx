@@ -7,29 +7,20 @@ import { ITableViewState, TablesType } from '../TableView';
 
 export interface ITablesSectionProps extends ITableViewState {
     onChooseTablesType: (type: TablesType) => void,
-    onItemsSelected: (items: SigFieldSkolem[]) => void
+    onItemsSelected: (items: SigFieldSkolem[]) => void,
+    onToggleCollapse: () => void,
 }
 
-export interface ITablesSectionState {
-    collapsed: boolean
-}
-
-class TablesSection extends React.Component<ITablesSectionProps, ITablesSectionState> {
-
-    public state = {
-        collapsed: false
-    };
-
+class TablesSection extends React.Component<ITablesSectionProps> {
 
     render (): React.ReactNode {
 
         const props = this.props;
-        const state = this.state;
 
         return (
             <SterlingSidebar.Section
-                collapsed={state.collapsed}
-                onToggleCollapse={this._toggleCollapse}
+                collapsed={props.collapseTables}
+                onToggleCollapse={props.onToggleCollapse}
                 title='Tables'>
 
                 <RadioGroup
@@ -43,11 +34,11 @@ class TablesSection extends React.Component<ITablesSectionProps, ITablesSectionS
                     <Radio label='Choose Tables' value={TablesType.Select}/>
                     <AlloyMultiSelect
                         items={props.items}
-                        onClearSelectedTables={this._clearTables}
-                        onDeselectTable={this._removeTable}
-                        onSelectTable={this._addTable}
+                        onClearSelectedItems={this._clearItems}
+                        onDeselectItem={this._removeItem}
+                        onSelectItem={this._addItem}
                         nameFunction={props.nameFunction}
-                        selectedTables={props.itemsSelected}/>
+                        itemsSelected={props.itemsSelected}/>
 
                 </RadioGroup>
 
@@ -61,7 +52,7 @@ class TablesSection extends React.Component<ITablesSectionProps, ITablesSectionS
      * @param item The item to select
      * @private
      */
-    private _addTable = (item: SigFieldSkolem): void => {
+    private _addItem = (item: SigFieldSkolem): void => {
 
         const curr = this.props.itemsSelected;
         this.props.onItemsSelected([...curr, item]);
@@ -72,7 +63,7 @@ class TablesSection extends React.Component<ITablesSectionProps, ITablesSectionS
      * Clear selected tables by selecting no items
      * @private
      */
-    private _clearTables = (): void => {
+    private _clearItems = (): void => {
 
         this.props.onItemsSelected([]);
 
@@ -84,7 +75,7 @@ class TablesSection extends React.Component<ITablesSectionProps, ITablesSectionS
      * @param item The item to deselect
      * @private
      */
-    private _removeTable = (item: SigFieldSkolem): void => {
+    private _removeItem = (item: SigFieldSkolem): void => {
 
         const next: SigFieldSkolem[] = [...this.props.itemsSelected];
         const idx = next.indexOf(item);
@@ -106,17 +97,6 @@ class TablesSection extends React.Component<ITablesSectionProps, ITablesSectionS
         this.props.onChooseTablesType(parseInt(event.currentTarget.value));
 
     };
-
-    /**
-     * Toggle the collapsed state of this section
-     * @private
-     */
-    private _toggleCollapse = () => {
-
-        const curr = this.state.collapsed;
-        this.setState({collapsed: !curr});
-
-    }
 
 }
 

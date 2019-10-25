@@ -3,35 +3,27 @@ import SterlingSidebar from '../../../SterlingSidebar';
 import { Button, ButtonGroup, FormGroup } from '@blueprintjs/core';
 import { ITableViewState, LayoutDirection, TableAlignment } from '../TableView';
 import { TableSortFunction } from '../TableViewSidebar';
-import { alphaSort, numSort } from '../TableUtil';
+import { alphaSort, groupSort, numSort } from '../TableUtil';
 
 export enum TableSortDirection { Ascending, Descending}
 
-export interface ILayoutSectionProps extends ITableViewState{
+export interface ILayoutSectionProps extends ITableViewState {
     onChooseLayoutDirection: (direction: LayoutDirection) => void,
     onChooseSortingFunctions: (primary: TableSortFunction, secondary: TableSortFunction) => void,
-    onChooseTableAlignment: (alignment: TableAlignment) => void
+    onChooseTableAlignment: (alignment: TableAlignment) => void,
+    onToggleCollapse: () => void
 }
 
-export interface ILayoutSectionState {
-    collapsed: boolean
-}
-
-class LayoutSection extends React.Component<ILayoutSectionProps, ILayoutSectionState> {
-
-    public state = {
-        collapsed: false
-    };
+class LayoutSection extends React.Component<ILayoutSectionProps> {
 
     render (): React.ReactNode {
 
         const props = this.props;
-        const state = this.state;
 
         return (
             <SterlingSidebar.Section
-                collapsed={state.collapsed}
-                onToggleCollapse={this._toggleCollapse}
+                collapsed={props.collapseLayout}
+                onToggleCollapse={props.onToggleCollapse}
                 title='Layout Options'>
 
                 <FormGroup>
@@ -68,6 +60,9 @@ class LayoutSection extends React.Component<ILayoutSectionProps, ILayoutSectionS
                     <FormGroup inline={true} label='Sort'>
                         <ButtonGroup>
                             <Button
+                                icon='group-objects'
+                                onClick={() => this._chooseGroupSort()}/>
+                            <Button
                                 icon='sort-alphabetical'
                                 onClick={() => this._chooseAlphaSort(TableSortDirection.Ascending)}/>
                             <Button
@@ -90,7 +85,7 @@ class LayoutSection extends React.Component<ILayoutSectionProps, ILayoutSectionS
     }
 
     /**
-     * Callback used to set the primary and secondary sorting function. The
+     * Callback used to set the primary and secondary sorting functions. The
      * current primary sorting function will be bumped down to act as the
      * new secondary sorting function
      * @param direction Sort alphabetically ascending or descending
@@ -107,7 +102,18 @@ class LayoutSection extends React.Component<ILayoutSectionProps, ILayoutSectionS
     };
 
     /**
-     * Callback used to set the primary and secondary sorting function. The
+     * Callback used to set the primary and secondary sorting functions. The
+     * current primary sorting function will be bumped down to act as the
+     * new secondary sorting function. The new primary sorting function will
+     * sort by item type in the following order: signatures, fields, skolems.
+     * @private
+     */
+    private _chooseGroupSort = (): void => {
+        this.props.onChooseSortingFunctions(groupSort(), this.props.sortPrimary);
+    };
+
+    /**
+     * Callback used to set the primary and secondary sorting functions. The
      * current primary sorting function will be bumped down to act as the
      * new secondary sorting function
      * @param direction Sort by size ascending or descending
@@ -122,17 +128,6 @@ class LayoutSection extends React.Component<ILayoutSectionProps, ILayoutSectionS
         this.props.onChooseSortingFunctions(newPrimary, oldPrimary);
 
     };
-
-    /**
-     * Toggle the collapsed state of this section
-     * @private
-     */
-    private _toggleCollapse = (): void => {
-
-        const curr = this.state.collapsed;
-        this.setState({collapsed: !curr});
-
-    }
 
 }
 

@@ -2,8 +2,8 @@ import { AlloyInstance } from 'alloy-ts';
 import React from 'react';
 import View from '../View';
 import {
-    alphaSort, extractFields,
-    extractSignatures, extractSkolems,
+    alphaSort, builtinSort, extractFields,
+    extractSignatures, extractSkolems, filterBuiltin, filterEmpty, groupSort,
     nameFunction,
     numSort,
     SigFieldSkolem
@@ -22,9 +22,12 @@ export interface ITableViewProps {
 }
 
 export interface ITableViewState {
+    collapseData: boolean,
+    collapseLayout: boolean,
+    collapseSidebar: boolean,
+    collapseTables: boolean,
     items: SigFieldSkolem[],
     itemsSelected: SigFieldSkolem[],
-    itemsVisible: SigFieldSkolem[],
     layoutDirection: LayoutDirection,
     nameFunction: (item: SigFieldSkolem) => string,
     removeBuiltin: boolean,
@@ -46,16 +49,19 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
         const nF = nameFunction(true);
 
         this.state = {
+            collapseData: false,
+            collapseLayout: false,
+            collapseSidebar: false,
+            collapseTables: false,
             items: [],
             itemsSelected: [],
-            itemsVisible: [],
             layoutDirection: LayoutDirection.Row,
             nameFunction: nF,
             removeBuiltin: true,
             removeEmpty: true,
             removeThis: true,
             sidebarSide: SterlingSettings.get('tableViewSidebarSide'),
-            sortPrimary: alphaSort(nF),
+            sortPrimary: groupSort(),
             sortSecondary: numSort(),
             tableAlignment: TableAlignment.Left,
             tables: TablesType.All
@@ -65,9 +71,7 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
 
     }
 
-    componentDidUpdate (
-        prevProps: Readonly<ITableViewProps>,
-        prevState: Readonly<ITableViewState>): void {
+    componentDidUpdate (prevProps: ITableViewProps, prevState: ITableViewState): void {
 
         // We've recieved a new instance to render
         const newInstance = this.props.instance;
@@ -80,38 +84,31 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
 
                 this.setState({
                     items: [],
-                    itemsSelected: [],
-                    itemsVisible: []
+                    itemsSelected: []
                 });
 
             } else {
 
                 // Compare new items with old items so that we can maintain
-                // the list of selected items as we step through instances
+                // the list of selected items as we step through instances.
+                // Note that the order established here is the order the items
+                // will appear in in the sidebar selector
+
+                const alpha = alphaSort(nameFunction(true));
+                const builtin = builtinSort;
 
                 const newItems = [
-                    ...newInstance.signatures(),
-                    ...newInstance.fields(),
-                    ...newInstance.skolems()
+                    ...newInstance.signatures().sort(builtin).sort(alpha),
+                    ...newInstance.fields().sort(alpha),
+                    ...newInstance.skolems().sort(alpha)
                 ];
 
                 const oldSelected = prevState.itemsSelected.map(item => item.id());
                 const newSelected = newItems.filter(item => oldSelected.includes(item.id()));
 
-                // Determine the set of visible items based on tables selection
-                const tables = this.state.tables;
-                const newVisible = tables === TablesType.All
-                    ? [...newItems] : tables === TablesType.Signatures
-                    ? newItems.filter(extractSignatures) : tables === TablesType.Fields
-                    ? newItems.filter(extractFields) : tables === TablesType.Skolems
-                    ? newItems.filter(extractSkolems) : tables === TablesType.Select
-                    ? [...newSelected]
-                        : [];
-
                 this.setState({
                     items: newItems,
-                    itemsSelected: newSelected,
-                    itemsVisible: newVisible
+                    itemsSelected: newSelected
                 });
 
             }
@@ -126,7 +123,9 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
 
         const state = this.state;
         const stage = (
-            <TableViewStage {...state}/>
+            <TableViewStage
+                {...state}
+                itemsVisible={this._getVisibleItems()}/>
         );
         const sidebar = (
             <TableViewSidebar
@@ -136,9 +135,11 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
                 onChooseTableAlignment={this._onChooseTableAlignment}
                 onChooseTablesType={this._onChooseTablesType}
                 onItemsSelected={this._onItemsSelected}
-                onItemsVisible={this._onItemsVisible}
-                onSelectItems={this._onSelectItems}
                 onToggleBuiltin={this._onToggleBuiltin}
+                onToggleCollapseData={this._onToggleCollapseData}
+                onToggleCollapseLayout={this._onToggleCollapseLayout}
+                onToggleCollapseSidebar={this._onToggleCollapseSidebar}
+                onToggleCollapseTables={this._onToggleCollapseTables}
                 onToggleEmpty={this._onToggleEmpty}
                 onToggleRemoveThis={this._onToggleRemoveThis}
             />
@@ -155,6 +156,32 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
         );
 
     }
+
+    private _getVisibleItems = (): SigFieldSkolem[] => {
+
+        const type = this.state.tables;
+
+        const items = [...this.state.items];
+        const itemsVisible =
+            type === TablesType.All ? items :
+                type === TablesType.Signatures ? items.filter(extractSignatures) :
+                    type === TablesType.Fields ? items.filter(extractFields) :
+                        type === TablesType.Skolems ? items.filter(extractSkolems) :
+                            type === TablesType.Select ? [...this.state.itemsSelected] : [];
+
+
+        const pass = () => true;
+        const itemsFiltered = type === TablesType.Select
+            ? itemsVisible
+            : itemsVisible
+                .filter(this.state.removeBuiltin ? filterBuiltin : pass)
+                .filter(this.state.removeEmpty ? filterEmpty : pass);
+
+        return itemsFiltered
+            .sort(this.state.sortSecondary)
+            .sort(this.state.sortPrimary);
+
+    };
     
     private _onChooseLayoutDirection = (layout: LayoutDirection): void => {
         this.setState({layoutDirection: layout});
@@ -173,19 +200,28 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
     };
     
     private _onItemsSelected = (items: SigFieldSkolem[]): void => {
-        this.setState({itemsSelected: items});
-    };
-    
-    private _onItemsVisible = (items: SigFieldSkolem[]): void => {
-        this.setState({itemsVisible: items});
-    };
-    
-    private _onSelectItems = (items: SigFieldSkolem[]): void => {
-        this.setState({itemsSelected: items});
+        this.setState({itemsSelected: items, tables: TablesType.Select});
     };
     
     private _onToggleBuiltin = (): void => {
         this.setState({removeBuiltin: !this.state.removeBuiltin});
+    };
+
+    private _onToggleCollapseSidebar = () => {
+        const curr = this.state.collapseSidebar;
+        this.setState({collapseSidebar: !curr});
+    };
+
+    private _onToggleCollapseData = (): void => {
+        this.setState({collapseData: !this.state.collapseData});
+    };
+
+    private _onToggleCollapseLayout = (): void => {
+        this.setState({collapseLayout: !this.state.collapseLayout});
+    };
+
+    private _onToggleCollapseTables = (): void => {
+        this.setState({collapseTables: !this.state.collapseTables});
     };
     
     private _onToggleEmpty = (): void => {

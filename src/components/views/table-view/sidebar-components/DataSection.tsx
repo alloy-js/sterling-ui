@@ -5,29 +5,21 @@ import { ITableViewState, TablesType } from '../TableView';
 
 export interface IDataSectionProps extends ITableViewState {
     onToggleBuiltin: () => void,
+    onToggleCollapse: () => void,
     onToggleEmpty: () => void,
     onToggleRemoveThis: () => void
 }
 
-export interface IDataSectionState {
-    collapsed: boolean
-}
-
-class DataSection extends React.Component<IDataSectionProps, IDataSectionState> {
-
-    public state = {
-        collapsed: false
-    };
+class DataSection extends React.Component<IDataSectionProps> {
 
     render (): React.ReactNode {
 
         const props = this.props;
-        const state = this.state;
 
         return (
             <SterlingSidebar.Section
-                collapsed={state.collapsed}
-                onToggleCollapse={this._toggleCollapse}
+                collapsed={props.collapseData}
+                onToggleCollapse={props.onToggleCollapse}
                 title='Data Options'>
 
                 <Switch
@@ -52,17 +44,6 @@ class DataSection extends React.Component<IDataSectionProps, IDataSectionState> 
 
             </SterlingSidebar.Section>
         )
-
-    }
-
-    /**
-     * Toggle the collapsed state of this section
-     * @private
-     */
-    private _toggleCollapse = (): void => {
-
-        const curr = this.state.collapsed;
-        this.setState({collapsed: !curr});
 
     }
 
