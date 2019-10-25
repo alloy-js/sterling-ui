@@ -39,7 +39,7 @@ class GraphView extends React.Component<IGraphViewProps, IGraphViewState> {
         );
 
         const stage = (
-            <GraphViewStage/>
+            <GraphViewStage instance={this.props.instance}/>
         );
 
         return (

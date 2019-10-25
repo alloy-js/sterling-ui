@@ -1,0 +1,17 @@
+@import '~@blueprintjs/core/lib/scss/variables';
+
+svg {
+  text {
+    text-anchor: middle;
+    fill: white;
+  }
+  .cell {
+    fill: none;
+    stroke: white;
+  }
+  .border {
+    fill: none;
+    stroke: $dark-gray1;
+    stroke-width: 3px;
+  }
+}

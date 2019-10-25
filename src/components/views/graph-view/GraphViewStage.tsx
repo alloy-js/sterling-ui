@@ -1,10 +1,16 @@
 import React from 'react';
+import MatrixView from './MatrixView';
+import { AlloyInstance } from 'alloy-ts';
 
-class GraphViewStage extends React.Component {
+interface IGraphViewStageProps {
+    instance: AlloyInstance | null
+}
+
+class GraphViewStage extends React.Component<IGraphViewStageProps> {
 
     render (): React.ReactNode {
 
-        return <svg className='stage' id='stage'/>
+        return <MatrixView instance={this.props.instance}/>;
 
     }
 
