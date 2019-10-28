@@ -1,24 +1,17 @@
-import { AlloyInstance, filtering, sorting } from 'alloy-ts';
+import { AlloyInstance, AlloySkolem, filtering, sorting } from 'alloy-ts';
 import React from 'react';
 import SterlingSettings, { ViewSide } from '../../../SterlingSettings';
 import {
     AlloyNameFn,
     HorizontalAlignment,
     LayoutDirection,
-    SigFieldSkolem,
+    SigFieldSkolem, SkolemHighlight,
+    SkolemViewType,
     TableSortFunction,
     TablesType
 } from '../../../util/SterlingTypes';
 import View from '../View';
-import {
-    // extractFields,
-    // extractSignatures,
-    // extractSkolems,
-    // filterBuiltin,
-    // filterEmpty,
-    nameFunction,
-    // numSort
-} from './TableUtil';
+import { nameFunction, } from './TableUtil';
 import TableViewSidebar from './TableViewSidebar';
 import TableViewStage from './TableViewStage';
 
@@ -31,6 +24,7 @@ export interface ITableViewState {
     collapseData: boolean,
     collapseLayout: boolean,
     collapseSidebar: boolean,
+    collapseSkolem: boolean,
     collapseTables: boolean,
     items: SigFieldSkolem[],
     itemsSelected: SigFieldSkolem[],
@@ -40,6 +34,8 @@ export interface ITableViewState {
     removeEmpty: boolean,
     removeThis: boolean,
     sidebarSide: ViewSide,
+    skolemHighlights: SkolemHighlight[],
+    skolemView: SkolemViewType,
     sortPrimary: TableSortFunction,
     sortSecondary: TableSortFunction,
     tableAlignment: HorizontalAlignment,
@@ -53,11 +49,13 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
         super(props);
 
         const nF = nameFunction(true);
+        const sH = props.instance ? this._assignSkolemColors(props.instance.skolems()) : [];
 
         this.state = {
             collapseData: false,
             collapseLayout: false,
             collapseSidebar: false,
+            collapseSkolem: false,
             collapseTables: false,
             items: [],
             itemsSelected: [],
@@ -67,6 +65,8 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
             removeEmpty: true,
             removeThis: true,
             sidebarSide: SterlingSettings.get('tableViewSidebarSide'),
+            skolemHighlights: sH,
+            skolemView: SkolemViewType.Highlights,
             sortPrimary: sorting.groupSort(),
             sortSecondary: sorting.sizeSort(),
             tableAlignment: HorizontalAlignment.Left,
@@ -90,7 +90,8 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
 
                 this.setState({
                     items: [],
-                    itemsSelected: []
+                    itemsSelected: [],
+                    skolemHighlights: []
                 });
 
             } else {
@@ -114,7 +115,8 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
 
                 this.setState({
                     items: newItems,
-                    itemsSelected: newSelected
+                    itemsSelected: newSelected,
+                    skolemHighlights: this._assignSkolemColors(newInstance.skolems())
                 });
 
             }
@@ -145,6 +147,7 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
                 onToggleCollapseData={this._onToggleCollapseData}
                 onToggleCollapseLayout={this._onToggleCollapseLayout}
                 onToggleCollapseSidebar={this._onToggleCollapseSidebar}
+                onToggleCollapseSkolem={this._onToggleCollapseSkolem}
                 onToggleCollapseTables={this._onToggleCollapseTables}
                 onToggleEmpty={this._onToggleEmpty}
                 onToggleRemoveThis={this._onToggleRemoveThis}
@@ -162,6 +165,19 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
         );
 
     }
+
+    private _assignSkolemColors = (skolems: AlloySkolem[]): SkolemHighlight[] => {
+
+        const colors = ["#2965CC", "#29A634", "#D99E0B", "#D13913", "#8F398F", "#00B3A4", "#DB2C6F", "#9BBF30", "#96622D", "#7157D9"];
+
+        return skolems.map((skolem: AlloySkolem, i: number) => {
+            return {
+                color: colors[i%skolems.length],
+                skolem: skolem
+            }
+        });
+
+    };
 
     private _getVisibleItems = (): SigFieldSkolem[] => {
 
@@ -224,6 +240,10 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
 
     private _onToggleCollapseLayout = (): void => {
         this.setState({collapseLayout: !this.state.collapseLayout});
+    };
+
+    private _onToggleCollapseSkolem = (): void => {
+        this.setState({collapseSkolem: !this.state.collapseSkolem});
     };
 
     private _onToggleCollapseTables = (): void => {

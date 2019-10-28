@@ -1,5 +1,5 @@
-import { AlloyAtom, AlloySignature, AlloySkolem, AlloyTuple } from 'alloy-ts';
 import { HTMLTable } from '@blueprintjs/core';
+import { AlloyAtom, AlloySignature, AlloySkolem, AlloyTuple } from 'alloy-ts';
 import React from 'react';
 import { SigFieldSkolem } from '../../../../util/SterlingTypes';
 
@@ -46,6 +46,6 @@ export default function SkolemHTMLTable (props: ISkolemHTMLTableProps) {
             }
             </tbody>
         </HTMLTable>
-    )
+    );
 
 }

@@ -47,7 +47,8 @@ class TableViewStage extends React.Component<ITableViewStageProps> {
             if (itemType === 'signature') {
 
                 const props = {
-                    signature: item as AlloySignature
+                    signature: item as AlloySignature,
+                    skolemHighlights: this.props.skolemHighlights
                 };
 
                 return (

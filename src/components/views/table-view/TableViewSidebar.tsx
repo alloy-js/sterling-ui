@@ -2,6 +2,7 @@ import React from 'react';
 import SterlingSidebar from '../../SterlingSidebar';
 import DataSection from './sidebar-components/DataSection';
 import LayoutSection from './sidebar-components/LayoutSection';
+import SkolemSection from './sidebar-components/SkolemSection';
 import TablesSection from './sidebar-components/TablesSection';
 import { ITableViewState } from './TableView';
 import {
@@ -23,6 +24,7 @@ export interface ITableViewSidebarProps extends ITableViewState {
     onToggleCollapseData: () => void,
     onToggleCollapseLayout: () => void,
     onToggleCollapseSidebar: () => void,
+    onToggleCollapseSkolem: () => void,
     onToggleCollapseTables: () => void,
     onToggleEmpty: () => void,
     onToggleRemoveThis: () => void
@@ -42,6 +44,7 @@ class TableViewSidebar extends React.Component<ITableViewSidebarProps> {
             onToggleCollapseData,
             onToggleCollapseLayout,
             onToggleCollapseSidebar,
+            onToggleCollapseSkolem,
             onToggleCollapseTables,
             onToggleEmpty,
             onToggleRemoveThis,
@@ -74,6 +77,10 @@ class TableViewSidebar extends React.Component<ITableViewSidebarProps> {
                     onChooseSortingFunctions={onChooseSortingFunctions}
                     onChooseTableAlignment={onChooseTableAlignment}
                     onToggleCollapse={onToggleCollapseLayout}/>
+
+                <SkolemSection
+                    {...viewState}
+                    onToggleCollapse={onToggleCollapseSkolem}/>
 
             </SterlingSidebar>
         );
