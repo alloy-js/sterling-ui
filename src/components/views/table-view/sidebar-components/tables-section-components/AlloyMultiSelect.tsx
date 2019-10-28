@@ -1,13 +1,3 @@
-import * as React from 'react';
-import {
-    IItemListRendererProps,
-    IItemRendererProps,
-    ItemPredicate,
-    MultiSelect
-} from '@blueprintjs/select';
-import { alphabeticalSort } from '../../../../../util/SterlingSorting';
-import { builtinSort } from '../../TableUtil';
-import { AlloyField, AlloySignature, AlloySkolem } from 'alloy-ts';
 import {
     Button,
     Icon,
@@ -16,8 +6,16 @@ import {
     MenuDivider,
     MenuItem
 } from '@blueprintjs/core';
-import { FieldTag, SignatureTag } from '../../TableTags';
+import {
+    IItemListRendererProps,
+    IItemRendererProps,
+    ItemPredicate,
+    MultiSelect
+} from '@blueprintjs/select';
+import { AlloyField, AlloySignature, AlloySkolem, sorting } from 'alloy-ts';
+import * as React from 'react';
 import { AlloyNameFn, SigFieldSkolem } from '../../../../../util/SterlingTypes';
+import { FieldTag, SignatureTag } from '../../TableTags';
 
 const AlloySelect = MultiSelect.ofType<SigFieldSkolem>();
 
@@ -150,8 +148,8 @@ class AlloyMultiSelect extends React.Component<IAlloyMultiSelectProps> {
         const sigs = props.items.filter(item => item.expressionType() === 'signature');
         const flds = props.items.filter(item => item.expressionType() === 'field');
         const skls = props.items.filter(item => item.expressionType() === 'skolem');
-        const alpha = alphabeticalSort(this.props.nameFunction);
-        (sigs as AlloySignature[]).sort(alpha).sort(builtinSort);
+        const alpha = sorting.alphabeticalSort(this.props.nameFunction);
+        (sigs as AlloySignature[]).sort(alpha).sort(sorting.builtinSort());
         (flds as AlloyField[]).sort(alpha);
         (skls as AlloySkolem[]).sort(alpha);
         const renderedSigs = sigs.map(props.renderItem).filter(item => item != null);

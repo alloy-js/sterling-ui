@@ -1,7 +1,6 @@
-import { AlloyInstance } from 'alloy-ts';
+import { AlloyInstance, filtering, sorting } from 'alloy-ts';
 import React from 'react';
 import SterlingSettings, { ViewSide } from '../../../SterlingSettings';
-import { alphabeticalSort } from '../../../util/SterlingSorting';
 import {
     AlloyNameFn,
     HorizontalAlignment,
@@ -12,15 +11,13 @@ import {
 } from '../../../util/SterlingTypes';
 import View from '../View';
 import {
-    builtinSort,
-    extractFields,
-    extractSignatures,
-    extractSkolems,
-    filterBuiltin,
-    filterEmpty,
-    groupSort,
+    // extractFields,
+    // extractSignatures,
+    // extractSkolems,
+    // filterBuiltin,
+    // filterEmpty,
     nameFunction,
-    numSort
+    // numSort
 } from './TableUtil';
 import TableViewSidebar from './TableViewSidebar';
 import TableViewStage from './TableViewStage';
@@ -70,8 +67,8 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
             removeEmpty: true,
             removeThis: true,
             sidebarSide: SterlingSettings.get('tableViewSidebarSide'),
-            sortPrimary: groupSort(),
-            sortSecondary: numSort(),
+            sortPrimary: sorting.groupSort(),
+            sortSecondary: sorting.sizeSort(),
             tableAlignment: HorizontalAlignment.Left,
             tables: TablesType.All
         };
@@ -103,8 +100,8 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
                 // Note that the order established here is the order the items
                 // will appear in in the sidebar selector
 
-                const alpha = alphabeticalSort(nameFunction(true));
-                const builtin = builtinSort;
+                const alpha = sorting.alphabeticalSort(nameFunction(true));
+                const builtin = sorting.builtinSort();
 
                 const newItems = [
                     ...newInstance.signatures().sort(builtin).sort(alpha),
@@ -173,9 +170,9 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
         const items = [...this.state.items];
         const itemsVisible =
             type === TablesType.All ? items :
-                type === TablesType.Signatures ? items.filter(extractSignatures) :
-                    type === TablesType.Fields ? items.filter(extractFields) :
-                        type === TablesType.Skolems ? items.filter(extractSkolems) :
+                type === TablesType.Signatures ? items.filter(filtering.keepSignatures) :
+                    type === TablesType.Fields ? items.filter(filtering.keepFields) :
+                        type === TablesType.Skolems ? items.filter(filtering.keepSkolems) :
                             type === TablesType.Select ? [...this.state.itemsSelected] : [];
 
 
@@ -183,8 +180,8 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
         const itemsFiltered = type === TablesType.Select
             ? itemsVisible
             : itemsVisible
-                .filter(this.state.removeBuiltin ? filterBuiltin : pass)
-                .filter(this.state.removeEmpty ? filterEmpty : pass);
+                .filter(this.state.removeBuiltin ? filtering.removeBuiltins : pass)
+                .filter(this.state.removeEmpty ? filtering.removeEmptys : pass);
 
         return itemsFiltered
             .sort(this.state.sortSecondary)

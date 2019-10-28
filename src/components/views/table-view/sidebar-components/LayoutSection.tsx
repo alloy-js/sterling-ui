@@ -1,13 +1,13 @@
-import * as React from 'react';
-import { alphabeticalSort } from '../../../../util/SterlingSorting';
-import SterlingSidebar from '../../../SterlingSidebar';
 import { Button, ButtonGroup, FormGroup } from '@blueprintjs/core';
-import { groupSort, numSort } from '../TableUtil';
+import { sorting } from 'alloy-ts';
+import * as React from 'react';
 import {
     HorizontalAlignment,
-    LayoutDirection, SortDirection,
+    LayoutDirection,
+    SortDirection,
     TableSortFunction
 } from '../../../../util/SterlingTypes';
+import SterlingSidebar from '../../../SterlingSidebar';
 import { ITableViewState } from '../TableView';
 
 export interface ILayoutSectionProps extends ITableViewState {
@@ -98,8 +98,8 @@ class LayoutSection extends React.Component<ILayoutSectionProps> {
 
         const oldPrimary = this.props.sortPrimary;
         const newPrimary = direction === SortDirection.Ascending
-            ? alphabeticalSort(this.props.nameFunction, true)
-            : alphabeticalSort(this.props.nameFunction, false);
+            ? sorting.alphabeticalSort(this.props.nameFunction, true)
+            : sorting.alphabeticalSort(this.props.nameFunction, false);
         this.props.onChooseSortingFunctions(newPrimary, oldPrimary);
 
     };
@@ -112,7 +112,7 @@ class LayoutSection extends React.Component<ILayoutSectionProps> {
      * @private
      */
     private _chooseGroupSort = (): void => {
-        this.props.onChooseSortingFunctions(groupSort(), this.props.sortPrimary);
+        this.props.onChooseSortingFunctions(sorting.groupSort(), this.props.sortPrimary);
     };
 
     /**
@@ -126,8 +126,8 @@ class LayoutSection extends React.Component<ILayoutSectionProps> {
 
         const oldPrimary = this.props.sortPrimary;
         const newPrimary = direction === SortDirection.Ascending
-            ? numSort(true)
-            : numSort(false);
+            ? sorting.sizeSort()
+            : sorting.sizeSort(false);
         this.props.onChooseSortingFunctions(newPrimary, oldPrimary);
 
     };
