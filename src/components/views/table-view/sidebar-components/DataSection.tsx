@@ -49,7 +49,7 @@ class DataSection extends React.Component<IDataSectionProps> {
                     <Switch
                         alignIndicator={Alignment.LEFT}
                         checked={props.highlightSkolems}
-                        label='Display skolems as highlighted rows'
+                        label='Display Skolems as highlighted rows'
                         onChange={props.onToggleHighlightSkolems}/>
 
                 </FormGroup>
