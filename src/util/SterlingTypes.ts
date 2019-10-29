@@ -22,7 +22,5 @@ export type SigFieldSkolem = AlloySignature | AlloyField | AlloySkolem;
 /**
  * Tables
  */
-export type SkolemHighlight = { color: string, skolem: AlloySkolem };
 export type TableSortFunction = (a: SigFieldSkolem, b: SigFieldSkolem) => number;
 export enum TablesType { All, Signatures, Fields, Skolems, Select}
-export enum SkolemViewType { Highlights, Tables}

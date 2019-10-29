@@ -1,6 +1,6 @@
 import * as React from 'react';
 import SterlingSidebar from '../../../SterlingSidebar';
-import { Alignment, Switch } from '@blueprintjs/core';
+import { Alignment, FormGroup, Switch } from '@blueprintjs/core';
 import { ITableViewState } from '../TableView';
 import { TablesType } from '../../../../util/SterlingTypes';
 
@@ -8,6 +8,7 @@ export interface IDataSectionProps extends ITableViewState {
     onToggleBuiltin: () => void,
     onToggleCollapse: () => void,
     onToggleEmpty: () => void,
+    onToggleHighlightSkolems: () => void,
     onToggleRemoveThis: () => void
 }
 
@@ -23,25 +24,35 @@ class DataSection extends React.Component<IDataSectionProps> {
                 onToggleCollapse={props.onToggleCollapse}
                 title='Data Options'>
 
-                <Switch
-                    alignIndicator={Alignment.LEFT}
-                    checked={props.removeBuiltin}
-                    disabled={props.tables === TablesType.Select}
-                    label='Hide Built-in Signatures'
-                    onChange={props.onToggleBuiltin}/>
+                <FormGroup>
 
-                <Switch
-                    alignIndicator={Alignment.LEFT}
-                    checked={props.removeEmpty}
-                    disabled={props.tables === TablesType.Select}
-                    label='Hide Empty Tables'
-                    onChange={props.onToggleEmpty}/>
+                    <Switch
+                        alignIndicator={Alignment.LEFT}
+                        checked={props.removeBuiltin}
+                        disabled={props.tables === TablesType.Select}
+                        label='Hide Built-in Signatures'
+                        onChange={props.onToggleBuiltin}/>
 
-                <Switch
-                    alignIndicator={Alignment.LEFT}
-                    checked={props.removeThis}
-                    label='Remove "this" from Signature names'
-                    onChange={props.onToggleRemoveThis}/>
+                    <Switch
+                        alignIndicator={Alignment.LEFT}
+                        checked={props.removeEmpty}
+                        disabled={props.tables === TablesType.Select}
+                        label='Hide Empty Tables'
+                        onChange={props.onToggleEmpty}/>
+
+                    <Switch
+                        alignIndicator={Alignment.LEFT}
+                        checked={props.removeThis}
+                        label='Remove "this" from Signature names'
+                        onChange={props.onToggleRemoveThis}/>
+
+                    <Switch
+                        alignIndicator={Alignment.LEFT}
+                        checked={props.highlightSkolems}
+                        label='Display skolems as highlighted rows'
+                        onChange={props.onToggleHighlightSkolems}/>
+
+                </FormGroup>
 
             </SterlingSidebar.Section>
         )

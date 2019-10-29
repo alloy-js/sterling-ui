@@ -1,45 +1,19 @@
 import { HTMLTable } from '@blueprintjs/core';
-import { AlloyAtom, AlloySignature } from 'alloy-ts';
+import { AlloyAtom, AlloySignature, AlloySkolem } from 'alloy-ts';
 import React from 'react';
-import { SkolemHighlight } from '../../../../util/SterlingTypes';
 import PopoverRow from './PopoverRow';
-
-function filterHighlights (signature: AlloySignature, highlights: SkolemHighlight[]): SkolemHighlight[] {
-
-    return highlights.filter((highlight: SkolemHighlight): boolean => {
-        const types = highlight.skolem.types();
-        return types.length === 1 && types[0] === signature;
-    });
-
-}
-
-function getWitnessAtoms (highlights: SkolemHighlight[], atoms: AlloyAtom[]): Map<AlloyAtom, SkolemHighlight[]> {
-    const witnesses = new Map();
-    highlights.forEach(highlight => {
-        const atomset = highlight.skolem.tuples().map(tuple => tuple.atoms()[0]);
-        atoms.forEach(atom => {
-            if (atomset.includes(atom)) {
-                if (!witnesses.has(atom)) {
-                    witnesses.set(atom, []);
-                }
-                witnesses.set(atom, [...witnesses.get(atom), highlight])
-            }
-        })
-    });
-    return witnesses;
-}
+import SkolemListPopover from './SkolemListPopover';
 
 export interface ISignatureHTMLTableProps {
+    highlightSkolems: boolean,
     signature: AlloySignature,
-    skolemHighlights: SkolemHighlight[]
+    skolemColors: Map<AlloySkolem, string>
 }
 
 export default function SignatureHTMLTable (props: ISignatureHTMLTableProps) {
 
     const signature = props.signature;
     const atoms: AlloyAtom[] = signature.atoms();
-    const highlights = filterHighlights(signature, props.skolemHighlights);
-    const witnesses = getWitnessAtoms(highlights, atoms);
 
     return (
         <HTMLTable
@@ -49,27 +23,30 @@ export default function SignatureHTMLTable (props: ISignatureHTMLTableProps) {
             <tbody>
             {
                 atoms.map((atom: AlloyAtom) => {
-                    if (witnesses.has(atom)) {
-                        const witness = witnesses.get(atom)![0];
+
+                    const skolems = atom.skolems();
+
+                    if (props.highlightSkolems && skolems.length) {
+
+                        const colors = skolems.map(s => props.skolemColors.get(s) || '');
+
                         return (
-                            <PopoverRow key={atom.id()} content={witness.skolem.name()} color={witness.color}>
-                                <td
-                                    style={{
-                                        borderRight: '1px solid transparent',
-                                        borderBottom: '1px solid transparent'
-                                    }}>
-                                    {atom.name()}
-                                </td>
+                            <PopoverRow
+                                key={atom.id()}
+                                content={SkolemListPopover(skolems, colors)}
+                                colors={colors}>
+                                <td>{ atom.name() }</td>
                             </PopoverRow>
-                        )
+                        );
+
                     } else {
+
                         return (
                             <tr key={atom.id()}>
-                                <td>
-                                    {atom.name()}
-                                </td>
+                                <td>{ atom.name() }</td>
                             </tr>
-                        )
+                        );
+
                     }
                 })
             }

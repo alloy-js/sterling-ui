@@ -1,12 +1,22 @@
 import { HTMLTable } from '@blueprintjs/core';
-import { AlloyAtom, AlloyField, AlloySignature, AlloyTuple } from 'alloy-ts';
+import {
+    AlloyAtom,
+    AlloyField,
+    AlloySignature,
+    AlloySkolem,
+    AlloyTuple
+} from 'alloy-ts';
 import React from 'react';
 import { SigFieldSkolem } from '../../../../util/SterlingTypes';
+import PopoverRow from './PopoverRow';
+import SkolemListPopover from './SkolemListPopover';
 
 
 interface IFieldHTMLTableProps {
     field: AlloyField,
-    nameFunction: (item: SigFieldSkolem) => string
+    highlightSkolems: boolean,
+    nameFunction: (item: SigFieldSkolem) => string,
+    skolemColors: Map<AlloySkolem, string>
 }
 
 export default function FieldHTMLTable (props: IFieldHTMLTableProps) {
@@ -32,17 +42,46 @@ export default function FieldHTMLTable (props: IFieldHTMLTableProps) {
             </thead>
             <tbody>
             {
-                tuples.map((tuple: AlloyTuple) => (
-                    <tr key={tuple.id()}>
-                        {
-                            tuple.atoms().map((atom: AlloyAtom, i: number) => (
-                                <td key={tuple.id() + '[' + i + ']'}>
-                                    {atom.name()}
-                                </td>
-                            ))
-                        }
-                    </tr>
-                ))
+                tuples.map((tuple: AlloyTuple) => {
+
+                    const skolems = tuple.skolems();
+
+                    if (props.highlightSkolems && skolems.length) {
+
+                        const colors = skolems.map(s => props.skolemColors.get(s) || '');
+
+                        return (
+                            <PopoverRow
+                                key={tuple.id()}
+                                content={SkolemListPopover(skolems, colors)}
+                                colors={colors}>
+                                {
+                                    tuple.atoms().map((atom: AlloyAtom, i: number) => (
+                                        <td key={tuple.id() + '[' + i + ']'}>
+                                            {atom.name()}
+                                        </td>
+                                    ))
+                                }
+                            </PopoverRow>
+                        );
+
+                    } else {
+
+                        return (
+                            <tr key={tuple.id()}>
+                                {
+                                    tuple.atoms().map((atom: AlloyAtom, i: number) => (
+                                        <td key={tuple.id() + '[' + i + ']'}>
+                                            {atom.name()}
+                                        </td>
+                                    ))
+                                }
+                            </tr>
+                        )
+
+                    }
+
+                })
             }
             </tbody>
         </HTMLTable>

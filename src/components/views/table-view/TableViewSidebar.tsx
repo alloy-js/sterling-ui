@@ -1,10 +1,4 @@
 import React from 'react';
-import SterlingSidebar from '../../SterlingSidebar';
-import DataSection from './sidebar-components/DataSection';
-import LayoutSection from './sidebar-components/LayoutSection';
-import SkolemSection from './sidebar-components/SkolemSection';
-import TablesSection from './sidebar-components/TablesSection';
-import { ITableViewState } from './TableView';
 import {
     HorizontalAlignment,
     LayoutDirection,
@@ -12,6 +6,11 @@ import {
     TableSortFunction,
     TablesType
 } from '../../../util/SterlingTypes';
+import SterlingSidebar from '../../SterlingSidebar';
+import DataSection from './sidebar-components/DataSection';
+import LayoutSection from './sidebar-components/LayoutSection';
+import TablesSection from './sidebar-components/TablesSection';
+import { ITableViewState } from './TableView';
 
 
 export interface ITableViewSidebarProps extends ITableViewState {
@@ -26,6 +25,7 @@ export interface ITableViewSidebarProps extends ITableViewState {
     onToggleCollapseSidebar: () => void,
     onToggleCollapseSkolem: () => void,
     onToggleCollapseTables: () => void,
+    onToggleHighlightSkolems: () => void,
     onToggleEmpty: () => void,
     onToggleRemoveThis: () => void
 }
@@ -47,6 +47,7 @@ class TableViewSidebar extends React.Component<ITableViewSidebarProps> {
             onToggleCollapseSkolem,
             onToggleCollapseTables,
             onToggleEmpty,
+            onToggleHighlightSkolems,
             onToggleRemoveThis,
             ...viewState
         } = this.props;
@@ -69,6 +70,7 @@ class TableViewSidebar extends React.Component<ITableViewSidebarProps> {
                     onToggleBuiltin={onToggleBuiltin}
                     onToggleCollapse={onToggleCollapseData}
                     onToggleEmpty={onToggleEmpty}
+                    onToggleHighlightSkolems={onToggleHighlightSkolems}
                     onToggleRemoveThis={onToggleRemoveThis}/>
 
                 <LayoutSection
@@ -77,10 +79,6 @@ class TableViewSidebar extends React.Component<ITableViewSidebarProps> {
                     onChooseSortingFunctions={onChooseSortingFunctions}
                     onChooseTableAlignment={onChooseTableAlignment}
                     onToggleCollapse={onToggleCollapseLayout}/>
-
-                <SkolemSection
-                    {...viewState}
-                    onToggleCollapse={onToggleCollapseSkolem}/>
 
             </SterlingSidebar>
         );

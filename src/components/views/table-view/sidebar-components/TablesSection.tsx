@@ -1,6 +1,6 @@
 import * as React from 'react';
 import SterlingSidebar from '../../../SterlingSidebar';
-import { Radio, RadioGroup } from '@blueprintjs/core';
+import { FormGroup, Radio, RadioGroup } from '@blueprintjs/core';
 import AlloyMultiSelect from './tables-section-components/AlloyMultiSelect';
 import { ITableViewState } from '../TableView';
 import { SigFieldSkolem, TablesType } from '../../../../util/SterlingTypes';
@@ -23,24 +23,28 @@ class TablesSection extends React.Component<ITablesSectionProps> {
                 onToggleCollapse={props.onToggleCollapse}
                 title='Tables'>
 
-                <RadioGroup
-                    onChange={this._handleRadioChange}
-                    selectedValue={props.tables}>
+                <FormGroup>
 
-                    <Radio label='All Tables' value={TablesType.All}/>
-                    <Radio label='Signatures' value={TablesType.Signatures}/>
-                    <Radio label='Fields' value={TablesType.Fields}/>
-                    <Radio label='Skolems' value={TablesType.Skolems}/>
-                    <Radio label='Choose Tables' value={TablesType.Select}/>
-                    <AlloyMultiSelect
-                        items={props.items}
-                        onClearSelectedItems={this._clearItems}
-                        onDeselectItem={this._removeItem}
-                        onSelectItem={this._addItem}
-                        nameFunction={props.nameFunction}
-                        itemsSelected={props.itemsSelected}/>
+                    <RadioGroup
+                        onChange={this._handleRadioChange}
+                        selectedValue={props.tables}>
 
-                </RadioGroup>
+                        <Radio label='All Tables' value={TablesType.All}/>
+                        <Radio label='Signatures' value={TablesType.Signatures}/>
+                        <Radio label='Fields' value={TablesType.Fields}/>
+                        <Radio label='Skolems' disabled={props.highlightSkolems} value={TablesType.Skolems}/>
+                        <Radio label='Choose Tables' value={TablesType.Select}/>
+                        <AlloyMultiSelect
+                            items={props.items}
+                            onClearSelectedItems={this._clearItems}
+                            onDeselectItem={this._removeItem}
+                            onSelectItem={this._addItem}
+                            nameFunction={props.nameFunction}
+                            itemsSelected={props.itemsSelected}/>
+
+                    </RadioGroup>
+
+                </FormGroup>
 
             </SterlingSidebar.Section>
         )

@@ -4,7 +4,7 @@ import { Manager, Popper, Reference } from 'react-popper';
 
 interface IPopoverRowProps {
     content: string | React.ReactElement,
-    color: string
+    colors: string[]
 }
 
 interface IPopoverRowState {
@@ -19,17 +19,19 @@ export default class PopoverRow extends React.Component<IPopoverRowProps, IPopov
 
     render (): React.ReactNode {
 
-        const color = this.props.color;
-        const thickness = this.state.enabled ? '3px' : '1px';
+        const colors = this.props.colors;
+        const thickness = this.state.enabled ? 4 : 2;
 
         return (
             <Manager>
                 <Reference>
                     {({ ref }) => (
-                        <tr onMouseEnter={this.onMouseEnter}
-                            onMouseLeave={this.onMouseLeave}
+                        <tr onMouseEnter={this._onMouseEnter}
+                            onMouseLeave={this._onMouseLeave}
                             ref={ref}
-                            style={{outline: `${thickness} solid ${color}`}}>
+                            style={{
+                                boxShadow: this._buildShadowStyle(colors, thickness)
+                            }}>
                             {this.props.children}
                         </tr>
                     )}
@@ -38,14 +40,13 @@ export default class PopoverRow extends React.Component<IPopoverRowProps, IPopov
                     <Popper
                         modifiers={{}}
                         placement='right'>
-                        {({ ref, style, placement, arrowProps }) => (
+                        {({ ref, style, placement }) => (
                             this.state.enabled &&
                             <div
                                 ref={ref}
                                 style={{
                                     ...style,
-                                    backgroundColor: color,
-                                    borderRadius: 3
+                                    padding: (thickness * (colors.length - 1)) + 'px'
                                 }}
                                 data-placement={placement}>
                                 <div className='table-rowpop'>
@@ -60,11 +61,17 @@ export default class PopoverRow extends React.Component<IPopoverRowProps, IPopov
 
     }
 
-    private onMouseEnter = () => {
+    private _buildShadowStyle = (colors: string[], thickness: number): string => {
+        return colors.map((color: string, i: number) => {
+            return `0 0 0 ${(i+1) * thickness}px ${color}`
+        }).join(',');
+    };
+
+    private _onMouseEnter = () => {
         this.setState({enabled: true});
     };
 
-    private onMouseLeave = () => {
+    private _onMouseLeave = () => {
         this.setState({enabled: false});
     };
 
