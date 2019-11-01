@@ -1,21 +1,21 @@
 import * as React from 'react';
 import SterlingSettings, { ViewSide } from '../../SterlingSettings';
-import { InlineFormGroup } from './InlineFormGroup';
+import { InlineFormGroup } from './components/InlineFormGroup';
 import { HTMLSelect } from '@blueprintjs/core';
-import { capitalize } from './SettingsUtil';
+import { capitalize } from './util';
 
-interface ITreeViewSettingsState {
+interface ISettingsViewSourceState {
     sidebarSide: ViewSide
 }
 
-class TreeViewSettings extends React.Component<{}, ITreeViewSettingsState> {
+class SettingsViewSource extends React.Component<{}, ISettingsViewSourceState> {
 
     constructor (props: {}) {
 
         super(props);
 
         this.state = {
-            sidebarSide: SterlingSettings.get('treeViewSidebarSide')
+            sidebarSide: SterlingSettings.get('sourceViewSidebarSide')
         };
 
         this._watchSettings();
@@ -39,12 +39,12 @@ class TreeViewSettings extends React.Component<{}, ITreeViewSettingsState> {
     }
 
     private _onSelectSidebarSide = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        SterlingSettings.set('treeViewSidebarSide', event.currentTarget.value.toLowerCase());
+        SterlingSettings.set('sourceViewSidebarSide', event.currentTarget.value.toLowerCase());
     };
 
     private _watchSettings () {
 
-        SterlingSettings.watch('treeViewSidebarSide', (value: ViewSide) => {
+        SterlingSettings.watch('sourceViewSidebarSide', (value: ViewSide) => {
             this.setState({sidebarSide: value});
         });
 
@@ -52,4 +52,4 @@ class TreeViewSettings extends React.Component<{}, ITreeViewSettingsState> {
 
 }
 
-export default TreeViewSettings;
+export default SettingsViewSource;

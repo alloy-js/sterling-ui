@@ -4,6 +4,7 @@ import { AlloyConnection } from './alloy/AlloyConnection';
 import SterlingSettingsDialog
     from './components/settings/SterlingSettingsDialog';
 import SterlingNavbar from './components/SterlingNavbar';
+import CustomView from './components/views/custom-view/CustomView';
 import GraphView from './components/views/graph-view/GraphView';
 import SourceView from './components/views/source-view/SourceView';
 import TableView from './components/views/table-view/TableView';
@@ -54,16 +55,19 @@ class Sterling extends React.Component<{}, ISterlingState> {
                     onRequestSettings={this._openSettingsDialog}/>
                 <GraphView
                     instance={instance}
-                    visible={view === 'graph'}/>
+                    visible={view === ViewType.Graph}/>
                 <TableView
                     instance={instance}
-                    visible={view === 'table'}/>
+                    visible={view === ViewType.Table}/>
                 <TreeView
                     instance={instance}
-                    visible={view === 'tree'}/>
+                    visible={view === ViewType.Tree}/>
                 <SourceView
                     instance={instance}
-                    visible={view === 'source'}/>
+                    visible={view === ViewType.Source}/>
+                <CustomView
+                    instance={instance}
+                    visible={view === ViewType.Custom}/>
                 <SterlingSettingsDialog
                     onClose={this._closeSettingsDialog}
                     isOpen={this.state.showSettings}/>

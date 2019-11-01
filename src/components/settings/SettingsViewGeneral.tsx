@@ -1,14 +1,14 @@
 import { HTMLSelect } from '@blueprintjs/core';
 import * as React from 'react';
 import SterlingSettings, { ViewType } from '../../SterlingSettings';
-import { InlineFormGroup } from './InlineFormGroup';
-import { capitalize } from './SettingsUtil';
+import { InlineFormGroup } from './components/InlineFormGroup';
+import { capitalize } from './util';
 
-export interface IGeneralSettingsState {
+export interface ISettingsViewGeneralState {
     defaultView: ViewType
 }
 
-class GeneralSettings extends React.Component<{}, IGeneralSettingsState> {
+class SettingsViewGeneral extends React.Component<{}, ISettingsViewGeneralState> {
 
     constructor (props: {}) {
 
@@ -30,7 +30,7 @@ class GeneralSettings extends React.Component<{}, IGeneralSettingsState> {
                     label='Default View'
                     helperText='The view to display when Sterling opens'>
                     <HTMLSelect
-                        options={['Graph', 'Table', 'Tree', 'Source']}
+                        options={['Graph', 'Table', 'Tree', 'Source', 'Custom']}
                         onChange={this.onSelectDefaultView}
                         value={capitalize(this.state.defaultView)}/>
                 </InlineFormGroup>
@@ -51,4 +51,4 @@ class GeneralSettings extends React.Component<{}, IGeneralSettingsState> {
 
 }
 
-export default GeneralSettings;
+export default SettingsViewGeneral;

@@ -1,7 +1,7 @@
 import { AlloyInstance } from 'alloy-ts';
 import React from 'react';
 import View from '../View';
-import TreeViewSideBar from './TreeViewSideBar';
+import TreeViewSidebar from './TreeViewSidebar';
 import TreeViewStage from './TreeViewStage';
 import SterlingSettings, { ViewSide } from '../../../SterlingSettings';
 
@@ -33,7 +33,7 @@ class TreeView extends React.Component<ITreeViewProps, ITreeViewState> {
         if (!this.props.visible) return null;
 
         const sidebar = (
-            <TreeViewSideBar
+            <TreeViewSidebar
                 instance={this.props.instance}
                 side={this.state.sidebarSide}/>
         );

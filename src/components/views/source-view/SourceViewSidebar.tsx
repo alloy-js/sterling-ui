@@ -15,7 +15,7 @@ export interface ISourceViewSidebarState {
     collapseSidebar: boolean
 }
 
-class SourceViewSideBar extends React.Component<ISourceViewSideBarProps, ISourceViewSidebarState> {
+class SourceViewSidebar extends React.Component<ISourceViewSideBarProps, ISourceViewSidebarState> {
 
     public state: ISourceViewSidebarState = {
         collapseSidebar: false
@@ -116,4 +116,4 @@ function filename (filepath: string): string {
 
 }
 
-export default SourceViewSideBar;
+export default SourceViewSidebar;

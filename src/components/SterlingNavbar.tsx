@@ -19,13 +19,15 @@ interface INavBarProps {
     onRequestView: (view: ViewType) => void,
     onRequestSettings: () => void,
     ready: boolean,
-    view: string
+    view: ViewType
 }
 
 class SterlingNavbar extends React.Component<INavBarProps> {
 
     render (): React.ReactNode {
 
+        const props = this.props;
+        
         return (
             <Navbar fixedToTop className='nav bp3-dark'>
                 <Navbar.Group>
@@ -35,32 +37,39 @@ class SterlingNavbar extends React.Component<INavBarProps> {
                     <NavbarDivider/>
                     <Button
                         className={Classes.MINIMAL}
-                        active={this.props.view === 'graph'}
+                        active={props.view === ViewType.Graph}
                         large={true}
                         icon='graph'
                         text='Graph'
-                        onClick={() => this.props.onRequestView(ViewType.Graph)}/>
+                        onClick={() => props.onRequestView(ViewType.Graph)}/>
                     <Button
                         className={Classes.MINIMAL}
-                        active={this.props.view === 'table'}
+                        active={props.view === ViewType.Table}
                         large={true}
                         icon='th'
                         text='Table'
-                        onClick={() => this.props.onRequestView(ViewType.Table)}/>
+                        onClick={() => props.onRequestView(ViewType.Table)}/>
                     <Button
                         className={Classes.MINIMAL}
-                        active={this.props.view === 'tree'}
+                        active={props.view === ViewType.Tree}
                         large={true}
                         icon='diagram-tree'
                         text='Tree'
-                        onClick={() => this.props.onRequestView(ViewType.Tree)}/>
+                        onClick={() => props.onRequestView(ViewType.Tree)}/>
                     <Button
                         className={Classes.MINIMAL}
-                        active={this.props.view === 'source'}
+                        active={props.view === ViewType.Source}
                         large={true}
                         icon='document'
                         text='Source'
-                        onClick={() => this.props.onRequestView(ViewType.Source)}/>
+                        onClick={() => props.onRequestView(ViewType.Source)}/>
+                    <Button
+                        className={Classes.MINIMAL}
+                        active={props.view === ViewType.Custom}
+                        large={true}
+                        icon='lightbulb'
+                        text='Custom'
+                        onClick={() => props.onRequestView(ViewType.Custom)}/>
                     <NavbarDivider/>
                     <Tooltip
                         content='Sterling Settings'
@@ -69,28 +78,28 @@ class SterlingNavbar extends React.Component<INavBarProps> {
                             className={Classes.MINIMAL}
                             large={true}
                             icon='cog'
-                            onClick={this.props.onRequestSettings}/>
+                            onClick={props.onRequestSettings}/>
                     </Tooltip>
                 </Navbar.Group>
                 <Navbar.Group align={Alignment.RIGHT}>
                     {
-                        this.props.command.length > 0 &&
+                        props.command.length > 0 &&
                         <Tag
                             minimal={true}>
-                            {this.props.command}
+                            {props.command}
                         </Tag>
                     }
                     {
-                        this.props.command.length > 0 &&
+                        props.command.length > 0 &&
                         <Navbar.Divider />
                     }
                     <Button
                         large={true}
-                        disabled={!this.props.ready}
-                        intent={this.props.connected ? 'success' : 'danger'}
+                        disabled={!props.ready}
+                        intent={props.connected ? 'success' : 'danger'}
                         rightIcon='circle-arrow-right'
                         text='Next'
-                        onClick={() => this.props.onRequestNext()}/>
+                        onClick={() => props.onRequestNext()}/>
                 </Navbar.Group>
             </Navbar>
         )

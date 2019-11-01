@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { Callout, Classes, Dialog, Intent, Tab, Tabs } from '@blueprintjs/core';
 import SterlingSettings from '../../SterlingSettings';
-import GeneralSettings from './GeneralSettings';
-import GraphViewSettings from './GraphViewSettings';
-import TableViewSettings from './TableViewSettings';
-import TreeViewSettings from './TreeViewSettings';
-import SourceViewSettings from './SourceViewSettings';
+import SettingsViewCustom from './SettingsViewCustom';
+import SettingsViewGeneral from './SettingsViewGeneral';
+import SettingsViewGraph from './SettingsViewGraph';
+import SettingsViewTable from './SettingsViewTable';
+import SettingsViewTree from './SettingsViewTree';
+import SettingsViewSource from './SettingsViewSource';
 
 const STORAGE_API_LINK = 'https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API';
 
@@ -41,11 +42,12 @@ class SterlingSettingsDialog extends React.Component<ISterlingSettingsProps> {
                         animate={true}
                         id='settings'
                         vertical={true}>
-                        <Tab id='general' title='General' panel={<GeneralSettings/>}/>
-                        <Tab id='graph' title='Graph View' panel={<GraphViewSettings/>}/>
-                        <Tab id='table' title='Table View' panel={<TableViewSettings/>}/>
-                        <Tab id='tree' title='Tree View' panel={<TreeViewSettings/>}/>
-                        <Tab id='source' title='Source View' panel={<SourceViewSettings/>}/>
+                        <Tab id='general' title='General' panel={<SettingsViewGeneral/>}/>
+                        <Tab id='graph' title='Graph View' panel={<SettingsViewGraph/>}/>
+                        <Tab id='table' title='Table View' panel={<SettingsViewTable/>}/>
+                        <Tab id='tree' title='Tree View' panel={<SettingsViewTree/>}/>
+                        <Tab id='source' title='Source View' panel={<SettingsViewSource/>}/>
+                        <Tab id='custom' title='Custom View' panel={<SettingsViewCustom/>}/>
                     </Tabs>
                 </div>
             </Dialog>

@@ -1,21 +1,21 @@
 import * as React from 'react';
 import SterlingSettings, { ViewSide } from '../../SterlingSettings';
-import { InlineFormGroup } from './InlineFormGroup';
+import { InlineFormGroup } from './components/InlineFormGroup';
 import { HTMLSelect } from '@blueprintjs/core';
-import { capitalize } from './SettingsUtil';
+import { capitalize } from './util';
 
-interface IGraphViewSettingsState {
+interface ISettingsViewTreeState {
     sidebarSide: ViewSide
 }
 
-class GraphViewSettings extends React.Component<{}, IGraphViewSettingsState> {
+class SettingsViewTree extends React.Component<{}, ISettingsViewTreeState> {
 
     constructor (props: {}) {
 
         super(props);
 
         this.state = {
-            sidebarSide: SterlingSettings.get('graphViewSidebarSide')
+            sidebarSide: SterlingSettings.get('treeViewSidebarSide')
         };
 
         this._watchSettings();
@@ -39,12 +39,12 @@ class GraphViewSettings extends React.Component<{}, IGraphViewSettingsState> {
     }
 
     private _onSelectSidebarSide = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        SterlingSettings.set('graphViewSidebarSide', event.currentTarget.value.toLowerCase());
+        SterlingSettings.set('treeViewSidebarSide', event.currentTarget.value.toLowerCase());
     };
 
     private _watchSettings () {
 
-        SterlingSettings.watch('graphViewSidebarSide', (value: ViewSide) => {
+        SterlingSettings.watch('treeViewSidebarSide', (value: ViewSide) => {
             this.setState({sidebarSide: value});
         });
 
@@ -52,4 +52,4 @@ class GraphViewSettings extends React.Component<{}, IGraphViewSettingsState> {
 
 }
 
-export default GraphViewSettings;
+export default SettingsViewTree;

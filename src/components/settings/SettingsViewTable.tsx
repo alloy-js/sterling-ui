@@ -1,21 +1,21 @@
 import * as React from 'react';
 import SterlingSettings, { ViewSide } from '../../SterlingSettings';
-import { InlineFormGroup } from './InlineFormGroup';
+import { InlineFormGroup } from './components/InlineFormGroup';
 import { HTMLSelect } from '@blueprintjs/core';
-import { capitalize } from './SettingsUtil';
+import { capitalize } from './util';
 
-interface ISourceViewSettingsState {
+interface ISettingsViewTableState {
     sidebarSide: ViewSide
 }
 
-class SourceViewSettings extends React.Component<{}, ISourceViewSettingsState> {
+class SettingsViewTable extends React.Component<{}, ISettingsViewTableState> {
 
     constructor (props: {}) {
 
         super(props);
 
         this.state = {
-            sidebarSide: SterlingSettings.get('sourceViewSidebarSide')
+            sidebarSide: SterlingSettings.get('tableViewSidebarSide')
         };
 
         this._watchSettings();
@@ -39,12 +39,12 @@ class SourceViewSettings extends React.Component<{}, ISourceViewSettingsState> {
     }
 
     private _onSelectSidebarSide = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        SterlingSettings.set('sourceViewSidebarSide', event.currentTarget.value.toLowerCase());
+        SterlingSettings.set('tableViewSidebarSide', event.currentTarget.value.toLowerCase());
     };
 
     private _watchSettings () {
 
-        SterlingSettings.watch('sourceViewSidebarSide', (value: ViewSide) => {
+        SterlingSettings.watch('tableViewSidebarSide', (value: ViewSide) => {
             this.setState({sidebarSide: value});
         });
 
@@ -52,4 +52,4 @@ class SourceViewSettings extends React.Component<{}, ISourceViewSettingsState> {
 
 }
 
-export default SourceViewSettings;
+export default SettingsViewTable;

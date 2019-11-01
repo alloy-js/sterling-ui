@@ -1,21 +1,21 @@
-import * as React from 'react';
-import SterlingSettings, { ViewSide } from '../../SterlingSettings';
-import { InlineFormGroup } from './InlineFormGroup';
 import { HTMLSelect } from '@blueprintjs/core';
-import { capitalize } from './SettingsUtil';
+import React from 'react';
+import SterlingSettings, { ViewSide } from '../../SterlingSettings';
+import { InlineFormGroup } from './components/InlineFormGroup';
+import { capitalize } from './util';
 
-interface ITableViewSettingsState {
+interface ISettingsViewCustomState {
     sidebarSide: ViewSide
 }
 
-class TableViewSettings extends React.Component<{}, ITableViewSettingsState> {
+class SettingsViewCustom extends React.Component<{}, ISettingsViewCustomState> {
 
     constructor (props: {}) {
 
         super(props);
 
         this.state = {
-            sidebarSide: SterlingSettings.get('tableViewSidebarSide')
+            sidebarSide: SterlingSettings.get('customViewSidebarSide')
         };
 
         this._watchSettings();
@@ -39,17 +39,19 @@ class TableViewSettings extends React.Component<{}, ITableViewSettingsState> {
     }
 
     private _onSelectSidebarSide = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        SterlingSettings.set('tableViewSidebarSide', event.currentTarget.value.toLowerCase());
+
+        SterlingSettings.set('customViewSidebarSide', event.currentTarget.value.toLowerCase());
+
     };
 
     private _watchSettings () {
 
-        SterlingSettings.watch('tableViewSidebarSide', (value: ViewSide) => {
+        SterlingSettings.watch('customViewSidebarSide', (value: ViewSide) => {
             this.setState({sidebarSide: value});
-        });
+        })
 
     }
 
 }
 
-export default TableViewSettings;
+export default SettingsViewCustom;

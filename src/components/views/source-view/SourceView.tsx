@@ -1,7 +1,7 @@
 import { AlloyInstance, AlloySource } from 'alloy-ts';
 import React from 'react';
 import View from '../View';
-import SourceViewSideBar from './SourceViewSideBar';
+import SourceViewSidebar from './SourceViewSidebar';
 import SourceViewStage from './SourceViewStage';
 import SterlingSettings, { ViewSide } from '../../../SterlingSettings';
 
@@ -63,7 +63,7 @@ class SourceView extends React.Component<ISourceViewProps, ISourceViewState> {
         if (!this.props.visible) return null;
 
         const sidebar = (
-            <SourceViewSideBar
+            <SourceViewSidebar
                 active={this.state.active}
                 instance={this.props.instance}
                 onChooseSource={this._onChooseSource.bind(this)}

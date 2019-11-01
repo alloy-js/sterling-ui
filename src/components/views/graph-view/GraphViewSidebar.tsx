@@ -1,31 +1,31 @@
 import React from 'react';
-import { AlloyInstance } from 'alloy-ts';
 import SterlingSidebar from '../../SterlingSidebar';
+import { AlloyInstance } from 'alloy-ts';
 import { ViewSide } from '../../../SterlingSettings';
 
-export interface ITreeViewSidebarProps {
+export interface IGraphViewSidebarProps {
     instance: AlloyInstance | null,
     side: ViewSide
 }
 
-export interface ITreeViewSidebarState {
+export interface IGraphViewSidebarState {
     collapseSidebar: boolean
 }
 
-class TreeViewSideBar extends React.Component<ITreeViewSidebarProps, ITreeViewSidebarState> {
+class GraphViewSidebar extends React.Component<IGraphViewSidebarProps, IGraphViewSidebarState> {
 
-    public state = {
+    public state: IGraphViewSidebarState = {
         collapseSidebar: false
     };
 
-    render(): React.ReactNode {
+    render (): React.ReactNode {
 
         return (
             <SterlingSidebar
                 collapsed={this.state.collapseSidebar}
                 onToggleCollapse={this.onToggleCollapse}
                 sidebarSide={this.props.side}
-                title='Tree View Settings'>
+                title='Graph View Settings'>
             </SterlingSidebar>
         )
 
@@ -38,4 +38,4 @@ class TreeViewSideBar extends React.Component<ITreeViewSidebarProps, ITreeViewSi
 
 }
 
-export default TreeViewSideBar;
+export default GraphViewSidebar;

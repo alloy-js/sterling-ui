@@ -1,7 +1,7 @@
 import { AlloyInstance } from 'alloy-ts';
 import React from 'react';
 import View from '../View';
-import GraphViewSideBar from './GraphViewSideBar';
+import GraphViewSidebar from './GraphViewSidebar';
 import GraphViewStage from './GraphViewStage';
 import SterlingSettings, { ViewSide } from '../../../SterlingSettings';
 
@@ -33,7 +33,7 @@ class GraphView extends React.Component<IGraphViewProps, IGraphViewState> {
         if (!this.props.visible) return null;
 
         const sidebar = (
-            <GraphViewSideBar
+            <GraphViewSidebar
                 instance={this.props.instance}
                 side={this.state.sidebarSide}/>
         );

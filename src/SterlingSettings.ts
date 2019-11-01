@@ -3,10 +3,12 @@ import defaultsPlugin from 'store/plugins/defaults';
 import eventsPlugin from 'store/plugins/events';
 
 export enum ViewSide {Left = 'left', Right = 'right'}
-export enum ViewType {Graph = 'graph', Table = 'table', Tree = 'tree', Source = 'source'}
+export enum ViewType {Custom = 'custom', Graph = 'graph', Table = 'table', Tree = 'tree', Source = 'source'}
 
 export interface ISterlingSettings {
     defaultView: ViewType,
+
+    customViewSidebarSide: ViewSide,
     graphViewSidebarSide: ViewSide,
     sourceViewSidebarSide: ViewSide,
     tableViewSidebarSide: ViewSide,
@@ -15,6 +17,8 @@ export interface ISterlingSettings {
 
 const DEFAULT_SETTINGS: ISterlingSettings = {
     defaultView: ViewType.Graph,
+
+    customViewSidebarSide: ViewSide.Left,
     graphViewSidebarSide: ViewSide.Left,
     sourceViewSidebarSide: ViewSide.Left,
     tableViewSidebarSide: ViewSide.Left,
