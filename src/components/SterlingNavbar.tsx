@@ -81,7 +81,7 @@ class SterlingNavbar extends React.Component<INavBarProps> {
                             onClick={props.onRequestSettings}/>
                     </Tooltip>
                 </Navbar.Group>
-                <Navbar.Group align={Alignment.RIGHT}>
+                <Navbar.Group className='collapsing' align={Alignment.RIGHT}>
                     {
                         props.command.length > 0 &&
                         <Tag

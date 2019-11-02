@@ -15,7 +15,7 @@ export interface ICustomViewSidebarState {
 class CustomViewSidebar extends React.Component<ICustomViewSidebarProps, ICustomViewSidebarState> {
 
     public state: ICustomViewSidebarState = {
-        collapseSidebar: false
+        collapseSidebar: true
     };
 
     render (): React.ReactNode {

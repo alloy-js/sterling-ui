@@ -1,8 +1,26 @@
 .nav {
   z-index: 19;
+  display: flex;
+  justify-content: space-between;
 }
 
 .nav-heading {
   font-size: 20px;
   font-weight: bold;
+}
+
+.bp3-navbar-group.collapsing {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  > * {
+    flex: 0 0 auto;
+  }
+  &.bp3-align-right {
+    justify-content: flex-end;
+  }
+  .bp3-tag {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
 }
