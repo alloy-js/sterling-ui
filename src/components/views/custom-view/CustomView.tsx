@@ -37,7 +37,8 @@ class CustomView extends React.Component<ICustomViewProps, ICustomViewState> {
         );
 
         const stage = (
-            <CustomViewStage/>
+            <CustomViewStage
+                instance={this.props.instance}/>
         );
 
         return (
