@@ -90,42 +90,40 @@ class CustomViewStage extends React.Component<ICustomViewStageProps> {
         // const height = parseInt(stage.style('height'));
         //
         // const sigs = instance.signatures();
-        // const atoms = sigs
-        //     .map(sig => sig.atoms())
-        //     .reduce((acc, cur) => acc.concat(cur), []);
+        // const flds = instance.fields();
         //
-        // atoms.forEach(atom => {
-        //     atom.x = width/2;
-        //     atom.y = width/2;
+        // const rowsfld = flds.find(fld => fld.name() === 'rows');
+        // const colsfld = flds.find(fld => fld.name() === 'cols');
+        // const valsfld = flds.find(fld => fld.name() === 'vals');
+        //
+        // const rows = parseInt(rowsfld.tuples()[0].atoms()[1].name());
+        // const cols = parseInt(colsfld.tuples()[0].atoms()[1].name());
+        // const w = 100;
+        // const h = 100;
+        //
+        // function isZero (val) {
+        //     return val.slice(0, 4) === 'Zero';
+        // }
+        //
+        // const vals = valsfld.tuples().map(tup => {
+        //     return {
+        //         row: parseInt(tup.atoms()[1].name()),
+        //         col: parseInt(tup.atoms()[2].name()),
+        //         zero: isZero(tup.atoms()[3].name())
+        //     }
         // });
         //
-        // const simulation = d3.forceSimulation(atoms)
-        //     .force('center', d3.forceCenter(width/2, height/2))
-        //     .force('collide', d3.forceCollide(25));
-        //
-        // const groups = stage.selectAll('g')
-        //     .data(atoms)
-        //     .join('g');
-        //
-        // const circles = groups
-        //     .selectAll('circle')
-        //     .data(d => [d])
-        //     .join('circle')
-        //     .attr('fill', 'none')
+        // const cells = stage.selectAll('rect')
+        //     .data(vals)
+        //     .join('rect')
+        //     .attr('fill', d => d.zero ? 'white' : 'steelblue')
         //     .attr('stroke', 'black')
-        //     .attr('r', 25);
+        //     .attr('width', w)
+        //     .attr('height', h)
+        //     .attr('x', d => width/2 + d.col * w - cols * w/2)
+        //     .attr('y', d => height/2 + d.row * h - rows * h/2);
         //
-        // const labels = groups
-        //     .selectAll('text')
-        //     .data(d => [d])
-        //     .join('text')
-        //     .text(a => a.name());
-        //
-        // simulation.on('tick', () => {
-        //     groups.attr('transform', d => {
-        //         return `translate(${d.x},${d.y})`;
-        //     });
-        // });
+        // console.log(vals);
 
     }
 
