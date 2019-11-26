@@ -1,12 +1,12 @@
 import React from 'react';
-import { SterlingData } from '../../../SterlingData';
+import { SterlingMetadata } from '../../../SterlingMetadata';
 import { ViewSide } from '../../../SterlingTypes';
 import SterlingView from '../SterlingView';
 import GraphViewSidebar from './GraphViewSidebar';
 import GraphViewStage from './GraphViewStage';
 
 interface IGraphViewProps {
-    dataset: SterlingData | null,
+    dataset: SterlingMetadata | null,
     visible: boolean,
     welcome: string
 }

@@ -1,18 +1,19 @@
 import React from 'react';
 import SterlingNavbar from './components/SterlingNavbar';
 import GraphView from './components/views/graph-view/GraphView';
-import { SterlingData } from './SterlingData';
+import TableView from './components/views/table-view/TableView';
+import { SterlingMetadata } from './SterlingMetadata';
 import { SterlingConnection, ViewType } from './SterlingTypes';
 
 interface ISterlingProps {
     connection: SterlingConnection,
-    transform: (data: any) => SterlingData,
+    metadata: (data: any) => SterlingMetadata,
     welcome: string
 }
 
 interface ISterlingState {
     connected: boolean,
-    dataset: SterlingData | null,
+    dataset: SterlingMetadata | null,
     ready: boolean,
     view: ViewType
 }
@@ -54,6 +55,10 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
                     dataset={state.dataset}
                     visible={state.view === ViewType.Graph}
                     welcome={props.welcome}/>
+                <TableView
+                    tables={null}
+                    visible={state.view === ViewType.Table}
+                    welcome={props.welcome}/>
             </div>
         );
 
@@ -72,7 +77,7 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
     private _initializeConnection = () => {
 
         const connection = this.props.connection;
-        const transform = this.props.transform;
+        const metadata = this.props.metadata;
 
         connection
             .onConnected(() => {
@@ -85,7 +90,7 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
             .onData((data: any) => {
                 this.setState({
                     ready: this.state.connected,
-                    dataset: transform(data)
+                    dataset: metadata(data)
                 });
             })
             .connect();
@@ -121,5 +126,6 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
     };
 
 }
+
 
 export default Sterling;

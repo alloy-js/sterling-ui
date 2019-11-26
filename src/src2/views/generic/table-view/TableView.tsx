@@ -2,17 +2,15 @@ import React from 'react';
 import {
     HorizonalAlignment,
     LayoutDirection,
+    SterlingViewProps,
     ViewSide
 } from '../../../SterlingTypes';
-import SterlingView from '../SterlingView';
 import SterlingTable from './SterlingTable';
 import TableViewSidebar from './TableViewSidebar';
 import TableViewStage from './TableViewStage';
 
-interface ITableViewProps {
-    tables: SterlingTable[] | null
-    visible: boolean,
-    welcome: string
+interface ITableViewProps extends SterlingViewProps {
+    transform: (data: any) => SterlingTable[]
 }
 
 interface ITableViewState {
@@ -22,7 +20,7 @@ interface ITableViewState {
     sidebarSide: ViewSide
 }
 
-class TableView extends React.Component<ITableViewProps, ITableViewState> {
+class TableView extends React.Component<SterlingViewProps, ITableViewState> {
 
     constructor (props: ITableViewProps) {
 
@@ -41,14 +39,13 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
 
         const props = this.props;
         const state = this.state;
-
-        if (!props.visible) return null;
+        const tables = props.data;
 
         const stage = (
             <TableViewStage
                 horizontalAlign={HorizonalAlignment.Left}
                 layoutDirection={LayoutDirection.Row}
-                tables={props.tables}/>
+                tables={tables} />
         );
 
         const sidebar = (
@@ -56,16 +53,9 @@ class TableView extends React.Component<ITableViewProps, ITableViewState> {
         );
 
         return (
-            <SterlingView
-                icon={'th'}
-                showPlaceholder={!props.tables}
-                welcome={props.welcome}>
-                {
-                    state.sidebarSide === ViewSide.Left
-                        ? <>{sidebar}{stage}</>
-                        : <>{stage}{sidebar}</>
-                }
-            </SterlingView>
+            state.sidebarSide === ViewSide.Left
+                ? <>{sidebar}{stage}</>
+                : <>{stage}{sidebar}</>
         );
 
     }

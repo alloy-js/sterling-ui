@@ -1,4 +1,24 @@
 /**
+ * All Sterling views components must use props that extend this interface
+ */
+export interface SterlingViewProps {
+    data: any
+}
+
+/**
+ * This interface allows Sterling to communicate with an external tool that
+ * provides data displayed in Sterling, such as Alloy.
+ */
+export interface SterlingConnection {
+    connect(): void,
+    onConnected(callback: () => void): SterlingConnection,
+    onData(callback: (data: any) => void): SterlingConnection,
+    onDisconnected(callback: () => void): SterlingConnection,
+    requestCurrent(): void,
+    requestNext(): void
+}
+
+/**
  * The side on which a view should appear.
  */
 export enum ViewSide {
@@ -20,14 +40,18 @@ export enum ViewType {
 }
 
 /**
- * This interface allows Sterling to communicate with an external tool that
- * provides data displayed in Sterling, such as Alloy.
+ * Simple horizontal alignment
  */
-export interface SterlingConnection {
-    connect(): void,
-    onConnected(callback: () => void): SterlingConnection,
-    onData(callback: (data: any) => void): SterlingConnection,
-    onDisconnected(callback: () => void): SterlingConnection,
-    requestCurrent(): void,
-    requestNext(): void
+export enum HorizonalAlignment {
+    Left = 'left',
+    Center = 'center',
+    Right = 'right'
+}
+
+/**
+ * Simple row or column layout direction
+ */
+export enum LayoutDirection {
+    Row = 'row',
+    Column = 'column'
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import PopoverRow from './PopoverRow';
-import SterlingTable from './SterlingTable';
+import SterlingTable from '../SterlingTable';
 import { Card, HTMLTable } from '@blueprintjs/core';
 
 interface ITableProps {
@@ -39,11 +39,15 @@ export default function Table (props: ITableProps) {
                     )
                 }
                 {
-                    data.map((row: string[], i: number) => (
-                        highlight.hasOwnProperty(i)
-                            ? popoverRow(row, i, highlight[i])
-                            : normalRow(row, i)
-                    ))
+                    <tbody>
+                    {
+                        data.map((row: string[], i: number) => (
+                            highlight.hasOwnProperty(i)
+                                ? popoverRow(row, i, highlight[i])
+                                : normalRow(row, i)
+                        ))
+                    }
+                    </tbody>
                 }
             </HTMLTable>
         </Card>

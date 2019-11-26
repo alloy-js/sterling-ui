@@ -1,10 +1,10 @@
 import React from 'react';
-import { SterlingData } from '../../../SterlingData';
+import { SterlingMetadata } from '../../../SterlingMetadata';
 import { ViewSide } from '../../../SterlingTypes';
 import SterlingSidebar from '../SterlingSidebar';
 
 interface IGraphViewSidebarProps {
-    dataset: SterlingData | null,
+    dataset: SterlingMetadata | null,
     side: ViewSide
 }
 
