@@ -52,14 +52,11 @@ export default function Table (props: ITableProps) {
 }
 
 function popoverRow (row: string[], key: number, highlight: {[index: string]: string | boolean}): React.ReactNode {
-
-    // TODO: Pick up here!
-
     return (
         <PopoverRow
             key={key}
-            content={}
-            colors={}>
+            content={popovers(highlight)}
+            colors={Object.getOwnPropertyNames(highlight)}>
             {
                 rowData(row)
             }
@@ -83,4 +80,25 @@ function rowData (row: string[]): React.ReactNode {
             {item}
         </td>
     ));
+}
+
+function popovers (items: {[index: string]: string | boolean}): React.ReactNode {
+    return (
+        <>
+            {
+                Object.entries(items)
+                    .filter(item => typeof item[1] === 'string')
+                    .map(item => {
+                        const color: string = item[0];
+                        const label: string = item[1] as string;
+                        return (
+                            <div key={label}
+                                 style={{backgroundColor: color}}>
+                                {label}
+                            </div>
+                        )
+                    })
+            }
+        </>
+    )
 }

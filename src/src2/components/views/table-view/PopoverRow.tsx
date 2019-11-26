@@ -3,7 +3,7 @@ import React from 'react';
 import { Manager, Popper, Reference } from 'react-popper';
 
 interface IPopoverRowProps {
-    content: string | React.ReactElement,
+    content: string | React.ReactNode,
     colors: string[]
 }
 
