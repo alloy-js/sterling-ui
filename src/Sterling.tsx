@@ -1,114 +1,179 @@
-import { AlloyInstance } from 'alloy-ts';
+import { NonIdealState } from '@blueprintjs/core';
+import { IconName } from '@blueprintjs/icons';
 import React from 'react';
-import { AlloyConnection } from './alloy/AlloyConnection';
-import SterlingSettingsDialog
-    from './components/settings/SterlingSettingsDialog';
-import SterlingNavbar from './components/SterlingNavbar';
-import CustomView from './components/views/custom-view/CustomView';
-import GraphView from './components/views/graph-view/GraphView';
-import SourceView from './components/views/source-view/SourceView';
-import TableView from './components/views/table-view/TableView';
-import TreeView from './components/views/tree-view/TreeView';
-import SterlingSettings, { ViewType } from './SterlingSettings';
+import SterlingNavbar from './SterlingNavbar';
+import { SterlingMetadata } from './SterlingMetadata';
+import { ISterlingUIView, SterlingConnection } from './SterlingTypes';
+
+interface ISterlingProps {
+    connection: SterlingConnection,
+    message?: string,
+    metadata: null | SterlingMetadata | ((data: any) => SterlingMetadata),
+    views: ISterlingUIView[]
+}
 
 interface ISterlingState {
     connected: boolean,
-    instance: AlloyInstance | null,
+    data: any | null,
     ready: boolean,
-    showSettings: boolean,
-    view: ViewType
+    view: string
 }
 
-class Sterling extends React.Component<{}, ISterlingState> {
+class Sterling extends React.Component<ISterlingProps, ISterlingState> {
 
-    alloy = new AlloyConnection();
-    settings = new SterlingSettings();
+    constructor (props: ISterlingProps) {
 
-    state: ISterlingState = {
-        connected: false,
-        instance: null,
-        ready: false,
-        showSettings: false,
-        view: SterlingSettings.get('defaultView')
-    };
-
-    constructor (props: {}) {
         super(props);
-        this._initializeAlloy();
+
+        this.state = {
+            connected: false,
+            data: null,
+            ready: false,
+            view: props.views.length ? props.views[0].name : ''
+        };
+
+        this._initializeConnection();
+
     }
 
-    render(): React.ReactNode {
+    render (): React.ReactNode {
 
-        const instance: AlloyInstance | null = this.state.instance;
-        const view: string = this.state.view;
-        const command: string = instance ? instance!.command() : '';
+        const props = this.props;
+        const state = this.state;
+
+        // The metadata associated with the current dataset
+        const meta = getMeta(props, state);
+
+        // The currently selected view
+        const View = getCurrentView(props, state);
+
+        // The function that will transform the current data in
+        // to a form that is useable by the current view
+        const trns = getCurrentTransform(props, state);
+
+        // The transformed data
+        const data = trns ? trns(state.data) : state.data;
 
         return (
-            <div className='sterling'>
+            <div className={'sterling'}>
                 <SterlingNavbar
-                    connected={this.state.connected}
-                    command={command}
-                    ready={this.state.ready}
-                    view={this.state.view}
+                    connected={state.connected}
+                    command={meta.attr('command') || ''}
                     onRequestNext={this._requestNext}
-                    onRequestView={(view: ViewType) => this._setView(view)}
-                    onRequestSettings={this._openSettingsDialog}/>
-                <GraphView
-                    instance={instance}
-                    visible={view === ViewType.Graph}/>
-                <TableView
-                    instance={instance}
-                    visible={view === ViewType.Table}/>
-                <TreeView
-                    instance={instance}
-                    visible={view === ViewType.Tree}/>
-                <SourceView
-                    instance={instance}
-                    visible={view === ViewType.Source}/>
-                <CustomView
-                    instance={instance}
-                    visible={view === ViewType.Custom}/>
-                <SterlingSettingsDialog
-                    onClose={this._closeSettingsDialog}
-                    isOpen={this.state.showSettings}/>
+                    onRequestView={this._setView}
+                    ready={state.ready}
+                    view={state.view}
+                    views={props.views}/>
+                {
+                    state.data === null
+                        ? <NonIdealState
+                            icon={getIcon(state.view, props.views) || 'lightbulb'}
+                            title={'Welcome to Sterling'}
+                            description={props.message}/>
+                        : <div className={'sterling-view'}>
+                            {
+                                View &&
+                                <View data={data}/>
+                            }
+                          </div>
+                }
             </div>
         )
 
     }
 
-    private _closeSettingsDialog = () => {
-        this.setState({showSettings: false});
-    };
+    /**
+     * Initialize the connection with the data provider.
+     *
+     * @remarks
+     * Sets up monitoring of the connection between Sterling and the data
+     * provider by providing callbacks that are called when the connection is
+     * established, when the connection is lost, and when data is received.
+     *
+     * @private
+     */
+    private _initializeConnection = () => {
 
-    private _initializeAlloy = () => {
-        this.alloy
-            .on_connected(() => {
+        const connection = this.props.connection;
+
+        connection
+            .onConnected(() => {
                 this.setState({connected: true});
-                this.alloy.request_current();
+                connection.requestCurrent();
             })
-            .on_disconnected(() => {
-                this.setState({connected: false, ready: false})
+            .onDisconnected(() => {
+                this.setState({connected: false});
             })
-            .on_instance((instance: any) => {
-                this.setState({ready: this.state.connected, instance: instance});
+            .onData((data: any) => {
+                this.setState({
+                    ready: this.state.connected,
+                    data: data
+                });
             })
             .connect();
+
     };
 
-    private _openSettingsDialog = () => {
-        this.setState({showSettings: true});
-    };
-
+    /**
+     * Request the next dataset from the data provider.
+     *
+     * @remarks
+     * Sets the 'ready' state to false, deactivating the 'Next' button. The
+     * 'ready' state will remain false until we receive a dataset from the
+     * provider.
+     *
+     * @private
+     */
     private _requestNext = () => {
-        this.setState({
-            ready: false
-        });
-        this.alloy.request_next();
+
+        this.setState({ready: false});
+        this.props.connection.requestNext();
+
     };
 
-    private _setView = (view: ViewType) => {
-        this.setState({ view: view });
+    /**
+     * Sets the view that is visible to the user.
+     * @param view The view to make visible to the user
+     * @private
+     */
+    private _setView = (view: string) => {
+
+        this.setState({view: view});
+
     };
+
+}
+
+function getCurrentTransform (props: ISterlingProps, state: ISterlingState): ((data: any) => any) | null {
+
+    const name = state.view;
+    const views = props.views;
+    const view = views.find(view => view.name === name);
+    return view ? view.transform || null : null;
+
+}
+
+function getCurrentView (props: ISterlingProps, state: ISterlingState): React.ComponentType<any> | null {
+
+    const name = state.view;
+    const views = props.views;
+    const view = views.find(view => view.name === name);
+    return view ? view.view : null;
+
+}
+
+function getIcon (view: string, views: ISterlingUIView[]): IconName | null {
+    const v = views.find(curr => curr.name === view);
+    return v ? v.icon : null;
+}
+
+function getMeta (props: ISterlingProps, state: ISterlingState): SterlingMetadata {
+
+    const meta = props.metadata;
+    if (!meta) return new SterlingMetadata();
+    if (typeof meta === 'function') return meta(state.data);
+    return meta;
+
 }
 
 export default Sterling;

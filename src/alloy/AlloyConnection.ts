@@ -1,6 +1,7 @@
 import { AlloyInstance } from 'alloy-ts';
+import { SterlingConnection } from '../SterlingTypes';
 
-export class AlloyConnection {
+export class AlloyConnection implements SterlingConnection {
 
     _ws: WebSocket | null;
 
@@ -65,44 +66,32 @@ export class AlloyConnection {
 
     }
 
-    on_connected (cb: Function): AlloyConnection {
-
-        this._on_connected_cb = cb;
+    onConnected (callback: () => void): AlloyConnection {
+        this._on_connected_cb = callback;
         return this;
     }
 
-    on_disconnected (cb: Function): AlloyConnection {
-
-        this._on_disconnected_cb = cb;
+    onData (callback: (data: any) => void): AlloyConnection {
+        this._on_instance_cb = callback;
         return this;
     }
 
-    on_error (cb: Function): AlloyConnection {
-
-        this._on_error_cb = cb;
+    onError (callback: () => void): AlloyConnection {
+        this._on_error_cb = callback;
         return this;
-
     }
 
-    on_instance (cb: Function): AlloyConnection {
-
-        this._on_instance_cb = cb;
+    onDisconnected (callback: () => void): SterlingConnection {
+        this._on_disconnected_cb = callback;
         return this;
-
     }
 
-    request_current (): AlloyConnection {
-
+    requestCurrent (): void {
         if (this._ws) this._ws.send('current');
-        return this;
-
     }
 
-    request_next (): AlloyConnection {
-
+    requestNext (): void {
         if (this._ws) this._ws.send('next');
-        return this;
-
     }
 
     _on_open (e: Event) {
