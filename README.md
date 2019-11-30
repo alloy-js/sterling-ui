@@ -85,7 +85,7 @@ variable in the [package.json](package.json) file.
 
 Finally, the current Sterling implementation simply chooses a random available
 port through which to serve the Sterling UI and API requests, and so during
-development you must explicitly use port 4000 using the following command to
+development you must explicitly use port 4000 by using the following command to
 launch Sterling:
 
 ```bash

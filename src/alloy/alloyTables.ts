@@ -8,8 +8,7 @@ export default function alloyTables (instance: AlloyInstance | null): Table[] {
     const sigs = instance.signatures().map(sig => {
         const atoms = sig.atoms();
         return new Table()
-            .title(sig.name())
-            // .headers(['sig'])
+            .id(sig.name())
             .data(atoms.map(atom => [atom.name()]))
     });
 
@@ -17,7 +16,7 @@ export default function alloyTables (instance: AlloyInstance | null): Table[] {
         const types = fld.types();
         const tuples = fld.tuples();
         return new Table()
-            .title(fld.name())
+            .id(fld.name())
             .headers(types.map(sig => sig.name()))
             .data(tuples.map(tuple => {
                 return tuple.atoms().map(atom => {

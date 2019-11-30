@@ -1,12 +1,12 @@
 import React from 'react';
-import { HorizonalAlignment, LayoutDirection } from '../../../SterlingTypes';
+import { HorizontalAlignment, LayoutDirection } from '../../../SterlingTypes';
 import Table from './Table';
 import TableCard from './stage-components/TableCard';
 
 interface ITableViewStageProps {
     tables: Table[] | null,
     layoutDirection: LayoutDirection,
-    horizontalAlign: HorizonalAlignment
+    horizontalAlign: HorizontalAlignment
 }
 
 class TableViewStage extends React.Component<ITableViewStageProps> {
@@ -34,10 +34,10 @@ class TableViewStage extends React.Component<ITableViewStageProps> {
 
 }
 
-function horizontalAlignClass (align: HorizonalAlignment): string {
-    return align === HorizonalAlignment.Left ? 'left' :
-        align === HorizonalAlignment.Center ? 'center' :
-        align === HorizonalAlignment.Right ? 'right' : '';
+function horizontalAlignClass (align: HorizontalAlignment): string {
+    return align === HorizontalAlignment.Left ? 'left' :
+        align === HorizontalAlignment.Center ? 'center' :
+        align === HorizontalAlignment.Right ? 'right' : '';
 
 }
 

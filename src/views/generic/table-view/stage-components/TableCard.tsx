@@ -10,7 +10,7 @@ interface ITableProps {
 export default function TableCard (props: ITableProps) {
 
     const table = props.table;
-    const title = table.title();
+    const title = table.title() || <div>{table.id()}</div>;
     const hdrs = table.headers();
     const data = table.data();
     const highlight = table.highlights();

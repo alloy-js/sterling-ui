@@ -18,7 +18,7 @@ class Section extends React.Component<ISterlingSidebarSectionProps> {
 
         const className = this.props.collapsed
             ? 'section collapsed'
-            : 'collapsed';
+            : 'section';
 
         return (
             <div className={className}>

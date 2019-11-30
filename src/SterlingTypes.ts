@@ -43,7 +43,7 @@ export enum ViewSide {
 /**
  * Simple horizontal alignment
  */
-export enum HorizonalAlignment {
+export enum HorizontalAlignment {
     Left = 'left',
     Center = 'center',
     Right = 'right'
@@ -55,4 +55,12 @@ export enum HorizonalAlignment {
 export enum LayoutDirection {
     Row = 'row',
     Column = 'column'
+}
+
+/**
+ * Simple sort order
+ */
+export enum SortDirection {
+    Ascending = 'ascending',
+    Descending = 'descending'
 }
