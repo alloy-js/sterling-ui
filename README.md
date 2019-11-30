@@ -1,3 +1,40 @@
+# Sterling
+
+Sterling is a web-based visualization for Alloy, providing more customizable
+visualizations than the built-in Alloy visualizer. Additionally, the Sterling
+architecture is designed in a way that allows other model checking tools to
+easily make use of its visualization capabilities.
+
+## Setting up a development environment
+
+To set up the Sterling development environment from scratch, run the following
+commands
+
+```bash
+# Clone the repository
+git clone https://github.com/alloy-js/sterling-ui.git
+
+# Move in to the repository directory
+cd sterling-ui
+
+# Install all required libraries
+npm install
+```
+
+To initiate a development environment using Sterling (the Alloy fork), you'll
+need to start up Sterling *before* starting up the dev scripts.
+
+Next, spin up the app in development mode by running
+
+```bash
+npm start
+```
+
+Note that if you do not have Sterling already running, you'll need to rerun
+this script in order for 
+
+---
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
