@@ -8,7 +8,7 @@ import { ISterlingUIView, SterlingConnection } from './SterlingTypes';
 interface ISterlingProps {
     connection: SterlingConnection,
     message?: string,
-    metadata: null | SterlingMetadata | ((data: any) => SterlingMetadata),
+    metadata?: SterlingMetadata | ((data: any) => SterlingMetadata),
     views: ISterlingUIView[]
 }
 
