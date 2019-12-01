@@ -1,13 +1,13 @@
 import React from 'react';
 import { ISterlingViewProps, ViewSide } from '../../../SterlingTypes';
-import GraphViewSidebar from './GraphViewSidebar';
-import GraphViewStage from './GraphViewStage';
+import TreeViewSidebar from './TreeViewSidebar';
+import TreeViewStage from './TreeViewStage';
 
-interface IGraphViewState {
+interface ITreeViewState {
     sidebarSide: ViewSide
 }
 
-class GraphView extends React.Component<ISterlingViewProps, IGraphViewState> {
+class TreeView extends React.Component<ISterlingViewProps, ITreeViewState> {
 
     constructor (props: ISterlingViewProps) {
 
@@ -26,13 +26,13 @@ class GraphView extends React.Component<ISterlingViewProps, IGraphViewState> {
         const state = this.state;
 
         const sidebar = (
-            <GraphViewSidebar
+            <TreeViewSidebar
                 dataset={null}
                 side={state.sidebarSide}/>
         );
 
         const stage = (
-            <GraphViewStage/>
+            <TreeViewStage/>
         );
 
         return (
@@ -45,5 +45,4 @@ class GraphView extends React.Component<ISterlingViewProps, IGraphViewState> {
 
 }
 
-export default GraphView;
-
+export default TreeView;

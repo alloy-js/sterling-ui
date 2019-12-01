@@ -9,6 +9,10 @@ import Table, { TableSortFn } from './Table';
 import TableViewSidebar from './TableViewSidebar';
 import TableViewStage from './TableViewStage';
 
+interface ITableViewProps extends ISterlingViewProps{
+    data: Table[]
+}
+
 export interface ITableViewState {
     collapseData: boolean,
     collapseLayout: boolean,
@@ -17,13 +21,13 @@ export interface ITableViewState {
     removeEmpty: boolean,
     sidebarSide: ViewSide,
     sortPrimary: TableSortFn,
-    sortSecondary: TableSortFn,
+    sortSecondary: TableSortFn
     tableAlignment: HorizontalAlignment
 }
 
-class TableView extends React.Component<ISterlingViewProps, ITableViewState> {
+class TableView extends React.Component<ITableViewProps, ITableViewState> {
 
-    constructor (props: ISterlingViewProps) {
+    constructor (props: ITableViewProps) {
 
         super(props);
 
@@ -42,6 +46,8 @@ class TableView extends React.Component<ISterlingViewProps, ITableViewState> {
     }
 
     render (): React.ReactNode {
+
+        if (!this.props.visible) return null;
 
         const props = this.props;
         const state = this.state;

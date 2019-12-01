@@ -1,7 +1,7 @@
 import { AlloyInstance } from 'alloy-ts';
 import Table from '../views/generic/table-view/Table';
 
-export default function alloyTables (instance: AlloyInstance | null): Table[] {
+function alloyTables (instance: AlloyInstance | null): Table[] {
 
     if (instance === null) return [];
 
@@ -28,3 +28,5 @@ export default function alloyTables (instance: AlloyInstance | null): Table[] {
     return [...sigs, ...flds];
 
 }
+
+export default alloyTables;

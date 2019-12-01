@@ -5,7 +5,8 @@ import React from 'react';
  * All Sterling views components must use props that extend this interface
  */
 export interface ISterlingViewProps {
-    data: any
+    data: any,
+    visible?: boolean
 }
 
 /**

@@ -1,12 +1,9 @@
 import { NonIdealState } from '@blueprintjs/core';
 import { IconName } from '@blueprintjs/icons';
 import React from 'react';
-import SterlingNavbar from './SterlingNavbar';
 import { SterlingMetadata } from './SterlingMetadata';
+import SterlingNavbar from './SterlingNavbar';
 import { ISterlingUIView, SterlingConnection } from './SterlingTypes';
-import GraphView from './views/generic/graph-view/GraphView';
-import GraphViewStage from './views/generic/graph-view/GraphViewStage';
-import TableView from './views/generic/table-view/TableView';
 
 interface ISterlingProps {
     connection: SterlingConnection,
@@ -17,7 +14,8 @@ interface ISterlingProps {
 
 interface ISterlingState {
     connected: boolean,
-    data: any | null,
+    dataRaw: any,
+    dataTransformed: any[],
     ready: boolean,
     view: string
 }
@@ -30,7 +28,8 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
 
         this.state = {
             connected: false,
-            data: null,
+            dataRaw: null,
+            dataTransformed: [],
             ready: false,
             view: props.views.length ? props.views[0].name : ''
         };
@@ -43,19 +42,7 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
 
         const props = this.props;
         const state = this.state;
-
-        // The metadata associated with the current dataset
-        const meta = getMeta(props, state);
-
-        // The currently selected view
-        const View = getCurrentView(props, state);
-
-        // The function that will transform the current data in
-        // to a form that is useable by the current view
-        const trns = getCurrentTransform(props, state);
-
-        // The transformed data
-        const data = trns ? trns(state.data) : state.data;
+        const meta = this._metadata();
 
         return (
             <div className={'sterling'}>
@@ -68,22 +55,26 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
                     view={state.view}
                     views={props.views}/>
                 {
-                    state.data === null
-                        ? <NonIdealState
-                            icon={getIcon(state.view, props.views) || 'lightbulb'}
-                            title={'Welcome to Sterling'}
-                            description={props.message}/>
-                        : <div className={'sterling-view'}>
-                            {
-                                View &&
-                                <View data={data}/>
-                            }
-                          </div>
+                    state.dataTransformed.length
+                        ? this._views()
+                        : this._placeholder()
                 }
             </div>
         )
 
     }
+
+    /**
+     * Get the icon associated with the currently selected view
+     * @private
+     */
+    private _currentIcon = (): IconName | null => {
+
+        const curr = this.state.view;
+        const view = this.props.views.find(v => v.name === curr);
+        return view ? view.icon : null;
+
+    };
 
     /**
      * Initialize the connection with the data provider.
@@ -108,13 +99,43 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
                 this.setState({connected: false});
             })
             .onData((data: any) => {
+                const transforms = this.props.views.map(view => view.transform);
+                const transformed = transforms.map(t => t ? t(data) : data);
                 this.setState({
                     ready: this.state.connected,
-                    data: data
+                    dataRaw: data,
+                    dataTransformed: transformed
                 });
             })
             .connect();
 
+    };
+
+    /**
+     * Get the current metadata
+     * @private
+     */
+    private _metadata = () => {
+
+        const meta = this.props.metadata;
+        if (!meta) return new SterlingMetadata();
+        if (typeof meta === 'function') return meta(this.state.dataRaw);
+        return meta;
+
+    };
+
+    /**
+     * Get the placeholder view that is used when there is no data
+     * @private
+     */
+    private _placeholder = (): React.ReactNode => {
+
+        const props = this.props;
+
+        return <NonIdealState
+            icon={this._currentIcon()}
+            title={'Welcome to Sterling'}
+            description={props.message}/>;
     };
 
     /**
@@ -135,6 +156,33 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
     };
 
     /**
+     * Get all views for display
+     * @private
+     */
+    private _views = (): React.ReactNode => {
+
+        const props = this.props;
+        const state = this.state;
+
+        return <div className={'sterling-view'}>
+            {
+                props.views.map((view: ISterlingUIView, i: number) => {
+
+                    const View = view.view;
+                    const data = state.dataTransformed[i];
+
+                    return <View
+                        key={view.name}
+                        data={data}
+                        visible={state.view === view.name}/>
+
+                })
+            }
+        </div>;
+
+    };
+
+    /**
      * Sets the view that is visible to the user.
      * @param view The view to make visible to the user
      * @private
@@ -144,38 +192,6 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
         this.setState({view: view});
 
     };
-
-}
-
-function getCurrentTransform (props: ISterlingProps, state: ISterlingState): ((data: any) => any) | null {
-
-    const name = state.view;
-    const views = props.views;
-    const view = views.find(view => view.name === name);
-    return view ? view.transform || null : null;
-
-}
-
-function getCurrentView (props: ISterlingProps, state: ISterlingState): React.ComponentType<any> | null {
-
-    const name = state.view;
-    const views = props.views;
-    const view = views.find(view => view.name === name);
-    return view ? view.view : null;
-
-}
-
-function getIcon (view: string, views: ISterlingUIView[]): IconName | null {
-    const v = views.find(curr => curr.name === view);
-    return v ? v.icon : null;
-}
-
-function getMeta (props: ISterlingProps, state: ISterlingState): SterlingMetadata {
-
-    const meta = props.metadata;
-    if (!meta) return new SterlingMetadata();
-    if (typeof meta === 'function') return meta(state.data);
-    return meta;
 
 }
 

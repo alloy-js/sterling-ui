@@ -11,10 +11,10 @@ export class AlloyConnection implements SterlingConnection {
     _heartbeat_latency: DOMHighResTimeStamp;
     _heartbeat_timestamp: DOMHighResTimeStamp;
 
-    _on_connected_cb: Function;
-    _on_disconnected_cb: Function;
-    _on_error_cb: Function;
-    _on_instance_cb: Function;
+    _on_connected_cb: (() => void)[];
+    _on_data_cb: ((data: any) => void)[];
+    _on_disconnected_cb: (() => void)[];
+    _on_error_cb: ((error: Event) => void)[];
 
     _auto_reconnect: boolean;
     _auto_reconnect_interval: number;
@@ -28,10 +28,10 @@ export class AlloyConnection implements SterlingConnection {
         this._heartbeat_latency = 0;
         this._heartbeat_timestamp = 0;
 
-        this._on_connected_cb = () => {};
-        this._on_disconnected_cb = () => {};
-        this._on_error_cb = () => {};
-        this._on_instance_cb = () => {};
+        this._on_connected_cb = [];
+        this._on_disconnected_cb = [];
+        this._on_error_cb = [];
+        this._on_data_cb = [];
 
         this._auto_reconnect = false;
         this._auto_reconnect_interval = 5000;
@@ -67,22 +67,22 @@ export class AlloyConnection implements SterlingConnection {
     }
 
     onConnected (callback: () => void): AlloyConnection {
-        this._on_connected_cb = callback;
+        this._on_connected_cb.push(callback);
         return this;
     }
 
     onData (callback: (data: any) => void): AlloyConnection {
-        this._on_instance_cb = callback;
+        this._on_data_cb.push(callback);
         return this;
     }
 
     onError (callback: () => void): AlloyConnection {
-        this._on_error_cb = callback;
+        this._on_error_cb.push(callback);
         return this;
     }
 
     onDisconnected (callback: () => void): SterlingConnection {
-        this._on_disconnected_cb = callback;
+        this._on_disconnected_cb.push(callback);
         return this;
     }
 
@@ -97,7 +97,7 @@ export class AlloyConnection implements SterlingConnection {
     _on_open (e: Event) {
 
         this._reset_heartbeat();
-        if (this._on_connected_cb) this._on_connected_cb();
+        this._on_connected_cb.forEach(cb => cb());
 
     }
 
@@ -105,14 +105,14 @@ export class AlloyConnection implements SterlingConnection {
 
         this._ws = null;
         if (this._auto_reconnect) this._reconnect();
-        if (this._on_disconnected_cb) this._on_disconnected_cb();
+        this._on_disconnected_cb.forEach(cb => cb());
 
     }
 
     _on_error (e: Event) {
 
         if (this._auto_reconnect) this._reconnect();
-        if (this._on_error_cb) this._on_error_cb(e);
+        this._on_error_cb.forEach(cb => cb(e));
 
     }
 
@@ -132,7 +132,7 @@ export class AlloyConnection implements SterlingConnection {
             case 'XML:':
                 if (data.length) {
                     let instance = new AlloyInstance(data);
-                    if (this._on_instance_cb) this._on_instance_cb(instance);
+                    this._on_data_cb.forEach(cb => cb(instance));
                 }
                 break;
 
