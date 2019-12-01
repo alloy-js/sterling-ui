@@ -6,8 +6,9 @@ import * as serviceWorker from './serviceWorker';
 import { AlloyConnection } from './alloy/AlloyConnection';
 import { alloyMetadata } from './alloy/alloyMetadata';
 import alloyTables from './alloy/alloyTables';
-import Sterling from './Sterling';
+import Sterling  from './Sterling';
 import { ISterlingUIView } from './SterlingTypes';
+import GraphView from './views/generic/graph-view/GraphView';
 import TableView from './views/generic/table-view/TableView';
 
 // Create the object that will be used to communicate with an external tool
@@ -21,13 +22,22 @@ const tableView: ISterlingUIView = {
     transform: alloyTables
 };
 
+const graphView: ISterlingUIView = {
+    name: 'Graph',
+    icon: 'graph',
+    view: GraphView
+};
+
 // Create Sterling
 const sterling = (
     <Sterling
         connection={alloy}
         message={'Use Alloy to generate an instance.'}
         metadata={alloyMetadata}
-        views={[tableView]}/>
+        views={[
+            tableView,
+            graphView
+        ]}/>
 );
 
 // Tell React to render the Sterling UI

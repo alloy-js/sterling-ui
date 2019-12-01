@@ -4,6 +4,9 @@ import React from 'react';
 import SterlingNavbar from './SterlingNavbar';
 import { SterlingMetadata } from './SterlingMetadata';
 import { ISterlingUIView, SterlingConnection } from './SterlingTypes';
+import GraphView from './views/generic/graph-view/GraphView';
+import GraphViewStage from './views/generic/graph-view/GraphViewStage';
+import TableView from './views/generic/table-view/TableView';
 
 interface ISterlingProps {
     connection: SterlingConnection,
