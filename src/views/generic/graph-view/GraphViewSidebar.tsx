@@ -1,46 +1,27 @@
 import React from 'react';
-import { SterlingMetadata } from '../../../SterlingMetadata';
-import { ViewSide } from '../../../SterlingTypes';
 import SterlingSidebar from '../../SterlingSidebar';
+import { IGraphViewState } from './GraphView';
 
-interface IGraphViewSidebarProps {
-    dataset: SterlingMetadata | null,
-    side: ViewSide
+interface IGraphViewSidebarProps extends IGraphViewState {
+    onToggleCollapseSidebar: () => void,
+    visible: boolean
 }
 
-interface IGraphViewSidebarState {
-    collapsed: boolean
-}
-
-class GraphViewSidebar extends React.Component<IGraphViewSidebarProps, IGraphViewSidebarState> {
-
-    constructor (props: IGraphViewSidebarProps) {
-
-        super(props);
-
-        this.state = {
-            collapsed: false
-        };
-
-    }
+class GraphViewSidebar extends React.Component<IGraphViewSidebarProps> {
 
     render (): React.ReactNode {
 
         const props = this.props;
-        const state = this.state;
 
         return (
             <SterlingSidebar
-                collapsed={state.collapsed}
-                onToggleCollapse={this.onToggleCollapse}
-                sidebarSide={props.side}
-                title={'Graph View Settings'}/>
+                collapsed={props.collapseSidebar}
+                onToggleCollapse={props.onToggleCollapseSidebar}
+                sidebarSide={props.sidebarSide}
+                title={'Graph View Settings'}
+                visible={props.visible}/>
         );
 
-    }
-
-    private onToggleCollapse = () => {
-        this.setState({collapsed: !this.state.collapsed});
     }
 
 }

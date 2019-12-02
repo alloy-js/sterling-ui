@@ -1,19 +1,26 @@
 import React from 'react';
 import { ISterlingViewProps, ViewSide } from '../../../SterlingTypes';
+import { Graph } from './Graph';
 import GraphViewSidebar from './GraphViewSidebar';
 import GraphViewStage from './GraphViewStage';
 
-interface IGraphViewState {
+interface IGraphViewProps extends ISterlingViewProps {
+    data: Graph
+}
+
+export interface IGraphViewState {
+    collapseSidebar: boolean,
     sidebarSide: ViewSide
 }
 
-class GraphView extends React.Component<ISterlingViewProps, IGraphViewState> {
+class GraphView extends React.Component<IGraphViewProps, IGraphViewState> {
 
     constructor (props: ISterlingViewProps) {
 
         super(props);
 
         this.state = {
+            collapseSidebar: false,
             sidebarSide: ViewSide.Left
         };
 
@@ -21,18 +28,20 @@ class GraphView extends React.Component<ISterlingViewProps, IGraphViewState> {
 
     render (): React.ReactNode {
 
-        if (!this.props.visible) return null;
-
         const state = this.state;
+        const visible = !!this.props.visible;
 
         const sidebar = (
             <GraphViewSidebar
-                dataset={null}
-                side={state.sidebarSide}/>
+                {...state}
+                onToggleCollapseSidebar={this._onToggleCollapseSidebar}
+                visible={visible}/>
         );
 
         const stage = (
-            <GraphViewStage/>
+            <GraphViewStage
+                graph={this.props.data}
+                visible={visible}/>
         );
 
         return (
@@ -42,6 +51,11 @@ class GraphView extends React.Component<ISterlingViewProps, IGraphViewState> {
         );
 
     }
+
+    private _onToggleCollapseSidebar = () => {
+        const curr = this.state.collapseSidebar;
+        this.setState({collapseSidebar: !curr});
+    };
 
 }
 

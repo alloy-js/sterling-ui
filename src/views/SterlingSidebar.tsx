@@ -52,7 +52,8 @@ export interface ISterlingSidebarProps {
     collapsed: boolean,
     onToggleCollapse: () => void,
     sidebarSide: ViewSide,
-    title: string
+    title: string,
+    visible?: boolean
 }
 
 class SterlingSidebar extends React.Component<ISterlingSidebarProps> {
@@ -62,6 +63,7 @@ class SterlingSidebar extends React.Component<ISterlingSidebarProps> {
     render(): React.ReactNode {
 
         const props = this.props;
+        const style = {display: props.visible === false ? 'none' : 'block'};
 
         const openIcon = props.sidebarSide === ViewSide.Left
             ? 'menu-open'
@@ -86,7 +88,7 @@ class SterlingSidebar extends React.Component<ISterlingSidebarProps> {
         }
 
         return (
-            <div className={`sterling-sidebar ${props.sidebarSide} bp3-dark`}>
+            <div className={`sterling-sidebar ${props.sidebarSide} bp3-dark`} style={style}>
                 <div className='header'>
                     <div className='title'>
                         {props.title}

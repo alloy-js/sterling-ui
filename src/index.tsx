@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './scss/index.scss';
 import { AlloyConnection } from './alloy/AlloyConnection';
+import alloyGraph from './alloy/alloyGraph';
 import alloyMetadata from './alloy/alloyMetadata';
 import alloySources from './alloy/alloySources';
 import alloyTables from './alloy/alloyTables';
@@ -21,6 +22,7 @@ const alloy = new AlloyConnection();
 const graph: ISterlingUIView = {
     name: 'Graph',
     icon: 'graph',
+    transform: alloyGraph,
     view: GraphView
 };
 
