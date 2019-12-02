@@ -5,21 +5,8 @@ visualizations than the built-in Alloy visualizer. Additionally, the Sterling
 architecture is designed in a way that allows other model checking tools to
 easily make use of its visualization capabilities.
 
-## Nomenclature
-
-From the end-user's perspective, Sterling is a Java executable that looks
-almost identical to [Alloy](http://alloytools.org/), but has the added feature
-that visualizations can be performed in the web browser. From the developer's
-perspective, Sterling is composed of two main components, each of which
-resides in its own GitHub repository.
-
-* [Sterling](https://github.com/alloy-js/sterling) - This is a fork of Alloy and
-is where the end-user's JAR file comes from. In this documentation, when we
-refer to Sterling, this is what we're talking about.
-* [Sterling UI](https://github.com/alloy-js/sterling-ui) - This is where you are
-right now, and is where the entire web-browser user interface is created. In
-this documentation, when we refer to the Sterling UI, this is what we're talking
-about. 
+Please refer to the [wiki](https://github.com/alloy-js/sterling-ui/wiki) for 
+complete documentation regarding both the development and usage of Sterling UI.
 
 ## Setting up a development environment
 
