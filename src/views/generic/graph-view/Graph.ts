@@ -2,6 +2,8 @@ class Node {
 
     public x: number = 0;
     public y: number = 0;
+    public fx?: number;
+    public fy?: number;
     public name: string = '';
     public id: string = '';
 

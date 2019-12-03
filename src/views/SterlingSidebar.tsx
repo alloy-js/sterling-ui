@@ -8,6 +8,14 @@ export interface ISterlingSidebarSectionProps {
     title?: string
 }
 
+export interface ISterlingSidebarProps {
+    collapsed: boolean,
+    onToggleCollapse: () => void,
+    sidebarSide: ViewSide,
+    title: string,
+    visible?: boolean
+}
+
 class Section extends React.Component<ISterlingSidebarSectionProps> {
 
     render (): React.ReactNode {
@@ -46,14 +54,6 @@ class Section extends React.Component<ISterlingSidebarSectionProps> {
 
     }
 
-}
-
-export interface ISterlingSidebarProps {
-    collapsed: boolean,
-    onToggleCollapse: () => void,
-    sidebarSide: ViewSide,
-    title: string,
-    visible?: boolean
 }
 
 class SterlingSidebar extends React.Component<ISterlingSidebarProps> {

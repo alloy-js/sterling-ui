@@ -1,6 +1,7 @@
 import React from 'react';
 import * as d3 from 'd3';
 import { Edge, Graph, Node } from './Graph';
+import { position_nodes } from './graph/positioning';
 
 interface IGraphViewStageProps {
     graph: Graph
@@ -15,7 +16,10 @@ class GraphViewStage extends React.Component<IGraphViewStageProps> {
     private _ngr: d3.Selection<SVGGElement, any, null, undefined> | null;
     private _egr: d3.Selection<SVGGElement, any, null, undefined> | null;
     private _sim: d3.Simulation<Node, Edge> | null;
+
     private _rendered: Graph | null;
+    private _renderedNodes: Node[];
+    private _renderedEdges: Edge[];
 
     constructor (props: IGraphViewStageProps) {
 
@@ -26,7 +30,10 @@ class GraphViewStage extends React.Component<IGraphViewStageProps> {
         this._ngr = null;
         this._egr = null;
         this._sim = null;
+
         this._rendered = null;
+        this._renderedNodes = [];
+        this._renderedEdges = [];
 
     }
 
@@ -48,6 +55,9 @@ class GraphViewStage extends React.Component<IGraphViewStageProps> {
             .force('collide', forceCollide)
             .force('center', forceCenter)
             .stop();
+
+        this._svg.call(d3.zoom<SVGSVGElement, any>()
+            .on('zoom', () => this._top!.attr('transform', d3.event.transform)));
 
         this._render(this.props.graph);
 
@@ -77,7 +87,6 @@ class GraphViewStage extends React.Component<IGraphViewStageProps> {
         if (graph === this._rendered) return;
 
         const svg = this._svg!;
-        const top = this._top!;
         const node = this._ngr!;
         const edge = this._egr!;
         const sim = this._sim!;
@@ -91,10 +100,11 @@ class GraphViewStage extends React.Component<IGraphViewStageProps> {
         const edges = graph.edges();
         const nodes = filter_disconnected(graph.nodes(), edges);
 
-        // Run the simulation
-        sim.nodes(nodes);
-        const n = Math.ceil(Math.log(sim.alphaMin()) / Math.log(1 - sim.alphaDecay()));
-        sim.tick(n);
+        // Position the nodes
+        position_nodes(sim, nodes, this._renderedNodes);
+
+        // Create the transition
+        const transition = d3.transition().duration(450);
 
         // Join with visual elements
         const gn = node.selectAll<Element, Node>('g')
@@ -105,15 +115,10 @@ class GraphViewStage extends React.Component<IGraphViewStageProps> {
             .data(edges, d => d.id)
             .join('g');
 
-        render_nodes(gn);
+        render_nodes(gn, transition);
         render_edges(ge);
 
-        // Add interactivity
-        svg.call(d3.zoom<SVGSVGElement, any>()
-            .on('zoom', () => {
-                top.attr('transform', d3.event.transform);
-            }));
-
+        // Make nodes draggable
         function dragged (this: any, d: Node) {
             d.x = d3.event.x;
             d.y = d3.event.y;
@@ -128,7 +133,10 @@ class GraphViewStage extends React.Component<IGraphViewStageProps> {
 
         gn.call(drag);
 
+        // Keep track of what is currently rendered
         this._rendered = graph;
+        this._renderedNodes = nodes;
+        this._renderedEdges = edges;
 
     }
 
@@ -150,19 +158,29 @@ function render_edges (g: d3.Selection<Element, Edge, Element, Edge>): void {
 
 }
 
-function render_nodes (g: d3.Selection<Element, Node, Element, Node>): void {
+function render_nodes (g: d3.Selection<Element, Node, Element, Node>, transition?: any): void {
 
     g.attr('transform', d => `translate(${d.x} ${d.y})`);
 
     g.selectAll<Element, Node>('circle')
         .data(node => [node])
-        .join('circle')
-        .attr('cx', 0)
-        .attr('cy', 0)
-        .attr('r', 50)
-        .attr('stroke', '#222')
-        .attr('stroke-width', 1)
-        .attr('fill', 'white');
+        .join(
+            enter => enter.append('circle')
+                .attr('cx', 0)
+                .attr('cy', 0)
+                .attr('r', 10)
+                .attr('stroke', '#222')
+                .attr('stroke-width', 1)
+                .attr('fill', 'white')
+                .call(enter => enter
+                    .transition(transition)
+                    .attr('r', 50)),
+            update => update,
+            exit => exit
+                .call(exit => exit
+                    .transition(transition)
+                    .attr('r', 0))
+        );
 
     g.selectAll<Element, Node>('text')
         .data(node => [node])
