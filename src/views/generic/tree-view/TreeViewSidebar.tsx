@@ -1,20 +1,14 @@
 import React from 'react';
-import { SterlingMetadata } from '../../../SterlingMetadata';
-import { ViewSide } from '../../../SterlingTypes';
 import SterlingSidebar from '../../SterlingSidebar';
-
-interface ITreeViewSidebarProps {
-    dataset: SterlingMetadata | null,
-    side: ViewSide
-}
+import { ITreeViewState } from './TreeView';
 
 interface ITreeViewSidebarState {
     collapsed: boolean
 }
 
-class TreeViewSidebar extends React.Component<ITreeViewSidebarProps, ITreeViewSidebarState> {
+class TreeViewSidebar extends React.Component<ITreeViewState, ITreeViewSidebarState> {
 
-    constructor (props: ITreeViewSidebarProps) {
+    constructor (props: ITreeViewState) {
 
         super(props);
 
@@ -33,7 +27,7 @@ class TreeViewSidebar extends React.Component<ITreeViewSidebarProps, ITreeViewSi
             <SterlingSidebar
                 collapsed={state.collapsed}
                 onToggleCollapse={this.onToggleCollapse}
-                sidebarSide={props.side}
+                sidebarSide={props.sidebarSide}
                 title={'Tree View Settings'}/>
         );
 

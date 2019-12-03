@@ -3,7 +3,7 @@ import { ISterlingViewProps, ViewSide } from '../../../SterlingTypes';
 import TreeViewSidebar from './TreeViewSidebar';
 import TreeViewStage from './TreeViewStage';
 
-interface ITreeViewState {
+export interface ITreeViewState {
     sidebarSide: ViewSide
 }
 
@@ -26,9 +26,7 @@ class TreeView extends React.Component<ISterlingViewProps, ITreeViewState> {
         const state = this.state;
 
         const sidebar = (
-            <TreeViewSidebar
-                dataset={null}
-                side={state.sidebarSide}/>
+            <TreeViewSidebar {...state}/>
         );
 
         const stage = (
