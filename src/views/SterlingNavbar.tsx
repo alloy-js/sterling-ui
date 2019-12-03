@@ -1,20 +1,17 @@
 import {
-    Alignment,
     Button,
-    Classes, IconName,
+    Classes,
+    IconName,
     Navbar,
     NavbarDivider,
-    NavbarHeading,
-    Tag
+    NavbarHeading
 } from '@blueprintjs/core';
 import React from 'react';
+import SterlingConnection from '../SterlingConnection';
 
-interface ISterlingNavbarProps {
-    connected: boolean,
-    command: string,
-    onRequestNext: () => void,
+export interface ISterlingNavbarProps {
+    connection: SterlingConnection,
     onRequestView: (view: string) => void,
-    ready: boolean,
     view: string,
     views: {
         name: string,
@@ -49,26 +46,9 @@ class SterlingNavbar extends React.Component<ISterlingNavbarProps> {
                     }
                     <NavbarDivider/>
                 </Navbar.Group>
-                <Navbar.Group className='collapsing' align={Alignment.RIGHT}>
-                    {
-                        props.command.length > 0 &&
-                        <Tag
-                            minimal={true}>
-                            {props.command}
-                        </Tag>
-                    }
-                    {
-                        props.command.length > 0 &&
-                        <Navbar.Divider />
-                    }
-                    <Button
-                        large={true}
-                        disabled={!props.ready}
-                        intent={props.connected ? 'success' : 'danger'}
-                        rightIcon='circle-arrow-right'
-                        text='Next'
-                        onClick={() => props.onRequestNext()}/>
-                </Navbar.Group>
+                {
+                    props.children
+                }
             </Navbar>
         )
 

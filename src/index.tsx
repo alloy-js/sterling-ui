@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './scss/index.scss';
-import { AlloyConnection } from './alloy/AlloyConnection';
+import AlloyConnection from './alloy/AlloyConnection';
 import alloyGraph from './alloy/alloyGraph';
-import alloyMetadata from './alloy/alloyMetadata';
 import alloySources from './alloy/alloySources';
 import alloyTables from './alloy/alloyTables';
+import './scss/index.scss';
 import * as serviceWorker from './serviceWorker';
 import Sterling from './Sterling';
 import { ISterlingUIView } from './SterlingTypes';
+import AlloyNavbar from './views/alloy/AlloyNavbar';
 import GraphView from './views/generic/graph-view/GraphView';
 import SourceView from './views/generic/source-view/SourceView';
 import TableView from './views/generic/table-view/TableView';
@@ -50,8 +50,8 @@ const source: ISterlingUIView = {
 const sterling = (
     <Sterling
         connection={alloy}
+        navbar={AlloyNavbar}
         message={'Use Alloy to generate an instance.'}
-        metadata={alloyMetadata}
         views={[graph, table, tree, source]}/>
 );
 

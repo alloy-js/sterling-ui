@@ -1,12 +1,16 @@
 import { IconName } from '@blueprintjs/core';
 import React from 'react';
+import SterlingConnection from './SterlingConnection';
 
 /**
- * All Sterling views components must use props that extend this interface
+ * All Sterling view components must use props that extend this interface.
+ * Additional props may not be added, but the connection and data props
+ * may be overridden to more specific types.
  */
 export interface ISterlingViewProps {
+    connection: SterlingConnection,
     data: any,
-    visible?: boolean
+    visible: boolean
 }
 
 /**
@@ -18,19 +22,6 @@ export interface ISterlingUIView {
     icon: IconName,
     view: React.ComponentType<ISterlingViewProps>,
     transform?: (data: any) => any
-}
-
-/**
- * This interface allows Sterling to communicate with an external tool that
- * provides data displayed in Sterling, such as Alloy.
- */
-export interface SterlingConnection {
-    connect(): void,
-    onConnected(callback: () => void): SterlingConnection,
-    onData(callback: (data: any) => void): SterlingConnection,
-    onDisconnected(callback: () => void): SterlingConnection,
-    requestCurrent(): void,
-    requestNext(): void
 }
 
 /**

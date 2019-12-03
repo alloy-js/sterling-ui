@@ -1,9 +1,11 @@
 import { AlloyInstance } from 'alloy-ts';
-import { SterlingConnection } from '../SterlingTypes';
+import SterlingConnection from '../SterlingConnection';
 
-export class AlloyConnection implements SterlingConnection {
+class AlloyConnection extends SterlingConnection {
 
     _ws: WebSocket | null;
+    _cb: Map<string, ((...args: any[]) => void)[]>;
+    _rq: Map<string, () => void>;
 
     _heartbeat_count: number;
     _heartbeat_id: number;
@@ -11,30 +13,28 @@ export class AlloyConnection implements SterlingConnection {
     _heartbeat_latency: DOMHighResTimeStamp;
     _heartbeat_timestamp: DOMHighResTimeStamp;
 
-    _on_connected_cb: (() => void)[];
-    _on_data_cb: ((data: any) => void)[];
-    _on_disconnected_cb: (() => void)[];
-    _on_error_cb: ((error: Event) => void)[];
-
     _auto_reconnect: boolean;
     _auto_reconnect_interval: number;
 
     constructor () {
 
+        super();
+
         this._ws = null;
+        this._cb = new Map();
+        this._rq = new Map();
+
         this._heartbeat_count = 0;
         this._heartbeat_id = 0;
         this._heartbeat_interval = 15000;
         this._heartbeat_latency = 0;
         this._heartbeat_timestamp = 0;
 
-        this._on_connected_cb = [];
-        this._on_disconnected_cb = [];
-        this._on_error_cb = [];
-        this._on_data_cb = [];
-
         this._auto_reconnect = false;
         this._auto_reconnect_interval = 5000;
+
+        this._rq.set('current', () => this._request('current'));
+        this._rq.set('next', () => this._request('next'));
 
     }
 
@@ -61,43 +61,37 @@ export class AlloyConnection implements SterlingConnection {
             this._ws.onerror = this._on_error.bind(this);
             this._ws.onmessage = this._on_message.bind(this);
         } catch (e) {
-            console.log('caught error');
+
+            if (this._cb.has('error'))
+                this._cb.get('error')!.forEach(e);
+
         }
 
     }
 
-    onConnected (callback: () => void): AlloyConnection {
-        this._on_connected_cb.push(callback);
-        return this;
+    on (event: string, callback: (...args: any[]) => void): void {
+
+        if (!this._cb.has(event)) {
+            this._cb.set(event, []);
+        }
+
+        this._cb.get(event)!.push(callback);
+
     }
 
-    onData (callback: (data: any) => void): AlloyConnection {
-        this._on_data_cb.push(callback);
-        return this;
-    }
+    request (request: string): void {
 
-    onError (callback: () => void): AlloyConnection {
-        this._on_error_cb.push(callback);
-        return this;
-    }
+        if (this._rq.has(request))
+            this._rq.get(request)!();
 
-    onDisconnected (callback: () => void): SterlingConnection {
-        this._on_disconnected_cb.push(callback);
-        return this;
-    }
-
-    requestCurrent (): void {
-        if (this._ws) this._ws.send('current');
-    }
-
-    requestNext (): void {
-        if (this._ws) this._ws.send('next');
     }
 
     _on_open (e: Event) {
 
         this._reset_heartbeat();
-        this._on_connected_cb.forEach(cb => cb());
+        if (this._cb.has('connect')) {
+            this._cb.get('connect')!.forEach(cb => cb());
+        }
 
     }
 
@@ -105,14 +99,18 @@ export class AlloyConnection implements SterlingConnection {
 
         this._ws = null;
         if (this._auto_reconnect) this._reconnect();
-        this._on_disconnected_cb.forEach(cb => cb());
+        if (this._cb.has('disconnect')) {
+            this._cb.get('disconnect')!.forEach(cb => cb());
+        }
 
     }
 
     _on_error (e: Event) {
 
         if (this._auto_reconnect) this._reconnect();
-        this._on_error_cb.forEach(cb => cb(e));
+        if (this._cb.has('error')) {
+            this._cb.get('error')!.forEach(cb => cb(e));
+        }
 
     }
 
@@ -130,9 +128,9 @@ export class AlloyConnection implements SterlingConnection {
                 break;
 
             case 'XML:':
-                if (data.length) {
+                if (data.length && this._cb.has('instance')) {
                     let instance = new AlloyInstance(data);
-                    this._on_data_cb.forEach(cb => cb(instance));
+                    this._cb.get('instance')!.forEach(cb => cb(instance));
                 }
                 break;
 
@@ -146,6 +144,13 @@ export class AlloyConnection implements SterlingConnection {
     _reconnect () {
 
         window.setTimeout(this.connect.bind(this), this._auto_reconnect_interval);
+
+    }
+
+    _request (request: string): void {
+
+        if (this._ws)
+            this._ws.send(request);
 
     }
 
@@ -166,3 +171,5 @@ export class AlloyConnection implements SterlingConnection {
     }
 
 }
+
+export default AlloyConnection;

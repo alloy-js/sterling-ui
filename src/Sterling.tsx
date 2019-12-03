@@ -1,22 +1,19 @@
 import { NonIdealState } from '@blueprintjs/core';
 import { IconName } from '@blueprintjs/icons';
 import React from 'react';
-import { SterlingMetadata } from './SterlingMetadata';
-import SterlingNavbar from './SterlingNavbar';
-import { ISterlingUIView, SterlingConnection } from './SterlingTypes';
+import SterlingConnection from './SterlingConnection';
+import { ISterlingUIView } from './SterlingTypes';
+import { ISterlingNavbarProps } from './views/SterlingNavbar';
 
 interface ISterlingProps {
     connection: SterlingConnection,
-    message?: string,
-    metadata?: SterlingMetadata | ((data: any) => SterlingMetadata),
-    views: ISterlingUIView[]
+    navbar: React.ComponentType<ISterlingNavbarProps>,
+    views: ISterlingUIView[],
+    message?: string
 }
 
 interface ISterlingState {
-    connected: boolean,
-    dataRaw: any,
-    dataTransformed: any[],
-    ready: boolean,
+    data: any[],
     view: string
 }
 
@@ -27,12 +24,13 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
         super(props);
 
         this.state = {
-            connected: false,
-            dataRaw: null,
-            dataTransformed: [],
-            ready: false,
+            data: [],
             view: props.views.length ? props.views[0].name : ''
         };
+
+    }
+
+    componentDidMount (): void {
 
         this._initializeConnection();
 
@@ -42,20 +40,17 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
 
         const props = this.props;
         const state = this.state;
-        const meta = this._metadata();
+        const Navbar = props.navbar;
 
         return (
             <div className={'sterling'}>
-                <SterlingNavbar
-                    connected={state.connected}
-                    command={meta.attr('command') || ''}
-                    onRequestNext={this._requestNext}
+                <Navbar
+                    connection={props.connection}
                     onRequestView={this._setView}
-                    ready={state.ready}
                     view={state.view}
                     views={props.views}/>
                 {
-                    state.dataTransformed.length
+                    state.data.length
                         ? this._views()
                         : this._placeholder()
                 }
@@ -91,36 +86,15 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
         const connection = this.props.connection;
 
         connection
-            .onConnected(() => {
-                this.setState({connected: true});
-                connection.requestCurrent();
-            })
-            .onDisconnected(() => {
-                this.setState({connected: false});
-            })
-            .onData((data: any) => {
+            .on('instance', (instance: any) => {
                 const transforms = this.props.views.map(view => view.transform);
-                const transformed = transforms.map(t => t ? t(data) : data);
+                const transformed = transforms.map(t => t ? t(instance) : instance);
                 this.setState({
-                    ready: this.state.connected,
-                    dataRaw: data,
-                    dataTransformed: transformed
+                    data: transformed
                 });
-            })
-            .connect();
+            });
 
-    };
-
-    /**
-     * Get the current metadata
-     * @private
-     */
-    private _metadata = () => {
-
-        const meta = this.props.metadata;
-        if (!meta) return new SterlingMetadata();
-        if (typeof meta === 'function') return meta(this.state.dataRaw);
-        return meta;
+        connection.connect();
 
     };
 
@@ -139,23 +113,6 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
     };
 
     /**
-     * Request the next dataset from the data provider.
-     *
-     * @remarks
-     * Sets the 'ready' state to false, deactivating the 'Next' button. The
-     * 'ready' state will remain false until we receive a dataset from the
-     * provider.
-     *
-     * @private
-     */
-    private _requestNext = () => {
-
-        this.setState({ready: false});
-        this.props.connection.requestNext();
-
-    };
-
-    /**
      * Get all views for display
      * @private
      */
@@ -169,10 +126,11 @@ class Sterling extends React.Component<ISterlingProps, ISterlingState> {
                 props.views.map((view: ISterlingUIView, i: number) => {
 
                     const View = view.view;
-                    const data = state.dataTransformed[i];
+                    const data = state.data[i];
 
                     return <View
                         key={view.name}
+                        connection={props.connection}
                         data={data}
                         visible={state.view === view.name}/>
 
