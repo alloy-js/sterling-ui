@@ -1,7 +1,9 @@
 import React from 'react';
 import * as d3 from 'd3';
 import { Edge, Graph, Node } from './Graph';
+import { curve_bundle_left } from './graph/curve';
 import { position_nodes } from './graph/positioning';
+import { render } from './graph/render';
 
 interface IGraphViewStageProps {
     graph: Graph
@@ -103,35 +105,37 @@ class GraphViewStage extends React.Component<IGraphViewStageProps> {
         // Position the nodes
         position_nodes(sim, nodes, this._renderedNodes);
 
-        // Create the transition
-        const transition = d3.transition().duration(450);
+        render(nodes, edges, node, edge);
 
-        // Join with visual elements
-        const gn = node.selectAll<Element, Node>('g')
-            .data(nodes, d => d.id)
-            .join('g');
-
-        const ge = edge.selectAll<Element, Edge>('g')
-            .data(edges, d => d.id)
-            .join('g');
-
-        render_nodes(gn, transition);
-        render_edges(ge);
-
-        // Make nodes draggable
-        function dragged (this: any, d: Node) {
-            d.x = d3.event.x;
-            d.y = d3.event.y;
-            d3.select(this)
-                .attr('transform', `translate(${d.x} ${d.y})`);
-            ge.filter(e => e.source === d).call(render_edges);
-            ge.filter(e => e.target === d).call(render_edges);
-        }
-
-        const drag = d3.drag<Element, Node>()
-            .on('drag', dragged);
-
-        gn.call(drag);
+        // // Create the transition
+        // const transition = d3.transition().duration(450);
+        //
+        // // Join with visual elements
+        // const gn = node.selectAll<Element, Node>('g')
+        //     .data(nodes, d => d.id)
+        //     .join('g');
+        //
+        // const ge = edge.selectAll<Element, Edge>('g')
+        //     .data(edges, d => d.id)
+        //     .join('g');
+        //
+        // render_nodes(gn, transition);
+        // render_edges(ge);
+        //
+        // // Make nodes draggable
+        // function dragged (this: any, d: Node) {
+        //     d.x = d3.event.x;
+        //     d.y = d3.event.y;
+        //     d3.select(this)
+        //         .attr('transform', `translate(${d.x} ${d.y})`);
+        //     ge.filter(e => e.source === d).call(render_edges);
+        //     ge.filter(e => e.target === d).call(render_edges);
+        // }
+        //
+        // const drag = d3.drag<Element, Node>()
+        //     .on('drag', dragged);
+        //
+        // gn.call(drag);
 
         // Keep track of what is currently rendered
         this._rendered = graph;
@@ -144,17 +148,24 @@ class GraphViewStage extends React.Component<IGraphViewStageProps> {
 
 function render_edges (g: d3.Selection<Element, Edge, Element, Edge>): void {
 
-    g
-        .attr('stroke', '#999')
-        .attr('stroke-width', 1.5);
+    const line = curve_bundle_left(0.5);
 
-    g.selectAll<Element, Edge>('line')
+    g.selectAll<Element, Edge>('path')
         .data(edge => [edge], d => d.id)
-        .join('line')
-        .attr('x1', d => d.source.x)
-        .attr('y1', d => d.source.y)
-        .attr('x2', d => d.target.x)
-        .attr('y2', d => d.target.y);
+        .join('path')
+        .attr('stroke', '#999')
+        .attr('stroke-width', 1.5)
+        .attr('fill', 'none')
+        .attr('d', line);
+
+    g.selectAll<Element, Edge>('text')
+        .data(edge => [edge], d => d.id)
+        .join('text').attr('text-anchor', 'middle')
+        .attr('dy', '0.31em')
+        .attr('x', d => (d.source.x + d.target.x) / 2)
+        .attr('y', d => (d.source.y + d.target.y) / 2)
+        .style('user-select', 'none')
+        .text(d => d.name);
 
 }
 

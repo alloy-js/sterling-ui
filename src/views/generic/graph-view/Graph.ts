@@ -2,10 +2,12 @@ class Node {
 
     public x: number = 0;
     public y: number = 0;
-    public fx?: number;
-    public fy?: number;
     public name: string = '';
     public id: string = '';
+
+    public fx?: number;
+    public fy?: number;
+    public shape?: 'circle' | 'rectangle'
 
 }
 
@@ -15,6 +17,7 @@ class Edge {
     public target: Node;
     public name: string = '';
     public id: string = '';
+    public color?: string;
 
     constructor (source: Node, target: Node) {
 

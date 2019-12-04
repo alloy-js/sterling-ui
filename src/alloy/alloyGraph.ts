@@ -14,26 +14,33 @@ function alloyGraph (instance: AlloyInstance): Graph {
 
     const find = (atom: AlloyAtom) => nodes.find(curr => curr.id === atom.id());
 
-    const edges = instance.tuples().map(tuple => {
+    const edges: Edge[] = [];
 
-        const atoms = tuple.atoms();
-        const first = find(atoms[0]);
-        const last = find(atoms[atoms.length-1]);
+    instance.fields().forEach(field => {
 
-        if (first && last) {
+        const name = field.name();
 
-            const edge = new Edge(first, last);
-            edge.id = tuple.id();
-            edge.name = tuple.name();
-            return edge;
+        field.tuples().forEach(tuple => {
 
-        }
+            const atoms = tuple.atoms();
+            const first = find(atoms[0]);
+            const last = find(atoms[atoms.length-1]);
+            const mid = atoms.slice(1, atoms.length-1);
 
-        return null;
+            if (first && last) {
 
-    }).filter(edge => edge !== null);
+                const edge = new Edge(first, last);
+                edge.id = tuple.id();
+                edge.name = name + (mid.length ? ` [${mid.join(', ')}]` : '');
+                edges.push(edge);
 
-    return new Graph().nodes(nodes).edges(edges as Edge[]);
+            }
+
+        });
+
+    });
+
+    return new Graph().nodes(nodes).edges(edges);
 
 }
 
