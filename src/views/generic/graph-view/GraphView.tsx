@@ -1,6 +1,6 @@
 import React from 'react';
 import { ISterlingViewProps, ViewSide } from '../../../SterlingTypes';
-import { Graph } from './Graph';
+import { Graph } from './graph/types/Graph';
 import GraphViewSidebar from './GraphViewSidebar';
 import GraphViewStage from './GraphViewStage';
 

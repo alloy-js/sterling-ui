@@ -1,46 +1,59 @@
 import { AlloyAtom, AlloyInstance } from 'alloy-ts';
-import { Edge, Graph, Node } from '../views/generic/graph-view/Graph';
+import { EdgeGroup } from '../views/generic/graph-view/graph/types/EdgeGroup';
+import { Graph } from '../views/generic/graph-view/graph/types/Graph';
+import { Node } from '../views/generic/graph-view/graph/types/Node';
+import { NodeGroup } from '../views/generic/graph-view/graph/types/NodeGroup';
 
 function alloyGraph (instance: AlloyInstance): Graph {
 
-    const nodes = instance.atoms().map(atom => {
+    const nodes: Node[] = instance.atoms().map(atom => {
 
-        const node = new Node();
-        node.id = atom.id();
-        node.name = atom.name();
-        return node;
+        return {
+            id: atom.id(),
+            name: atom.name(),
+            x: 0,
+            y: 0
+        };
 
     });
 
     const find = (atom: AlloyAtom) => nodes.find(curr => curr.id === atom.id());
 
-    const edges: Edge[] = [];
-
-    instance.fields().forEach(field => {
-
-        const name = field.name();
-
-        field.tuples().forEach(tuple => {
-
-            const atoms = tuple.atoms();
-            const first = find(atoms[0]);
-            const last = find(atoms[atoms.length-1]);
-            const mid = atoms.slice(1, atoms.length-1);
-
-            if (first && last) {
-
-                const edge = new Edge(first, last);
-                edge.id = tuple.id();
-                edge.name = name + (mid.length ? ` [${mid.join(', ')}]` : '');
-                edges.push(edge);
-
+    const nodegroups: NodeGroup[] = instance.signatures()
+        .filter(sig => sig.id() !== 'seq/Int')
+        .map(sig => {
+            return {
+                id: sig.id(),
+                name: sig.name(),
+                shape: 'circle',
+                nodes: sig.atoms().map(atom => find(atom)!)
             }
-
         });
 
+    const edgegroups: EdgeGroup[] = instance.fields().map(fld => {
+        return {
+            id: fld.id(),
+            name: fld.name(),
+            edges: fld.tuples().map(tuple => {
+                const atoms = tuple.atoms().map(atom => find(atom)!);
+                const first = atoms[0];
+                const last = atoms[atoms.length-1];
+                const mid = atoms.slice(1, atoms.length-1);
+                return {
+                    id: tuple.id(),
+                    name: fld.name() + (mid.length ? ` [${mid.map(n => n.name).join(', ')}]` : ''),
+                    source: first!,
+                    target: last!
+
+                }
+            })
+        }
     });
 
-    return new Graph().nodes(nodes).edges(edges);
+    return {
+        nodeGroups: nodegroups,
+        edgeGroups: edgegroups
+    }
 
 }
 

@@ -1,9 +1,12 @@
-import React from 'react';
 import * as d3 from 'd3';
-import { Edge, Graph, Node } from './Graph';
-import { curve_bundle_left } from './graph/curve';
+import React from 'react';
 import { position_nodes } from './graph/positioning';
 import { render } from './graph/render';
+import { Edge } from './graph/types/Edge';
+import { EdgeGroup } from './graph/types/EdgeGroup';
+import { Graph } from './graph/types/Graph';
+import { Node } from './graph/types/Node';
+import { NodeGroup } from './graph/types/NodeGroup';
 
 interface IGraphViewStageProps {
     graph: Graph
@@ -21,7 +24,6 @@ class GraphViewStage extends React.Component<IGraphViewStageProps> {
 
     private _rendered: Graph | null;
     private _renderedNodes: Node[];
-    private _renderedEdges: Edge[];
 
     constructor (props: IGraphViewStageProps) {
 
@@ -35,7 +37,6 @@ class GraphViewStage extends React.Component<IGraphViewStageProps> {
 
         this._rendered = null;
         this._renderedNodes = [];
-        this._renderedEdges = [];
 
     }
 
@@ -46,9 +47,9 @@ class GraphViewStage extends React.Component<IGraphViewStageProps> {
         this._egr = this._top.append('g');
         this._ngr = this._top.append('g');
 
-        const forceLink = d3.forceLink<Node, Edge>().distance(25);
+        const forceLink = d3.forceLink<Node, Edge>().distance(0);
         const forceCharge = d3.forceManyBody<Node>().strength(-1);
-        const forceCollide = d3.forceCollide<Node>(50);
+        const forceCollide = d3.forceCollide<Node>(100);
         const forceCenter = d3.forceCenter(0, 0);
 
         this._sim = d3.forceSimulation<Node>()
@@ -99,120 +100,37 @@ class GraphViewStage extends React.Component<IGraphViewStageProps> {
         svg.attr('viewBox', `-${width/2} -${height/2} ${width} ${height}`);
 
         // Retrieve the nodes and edges
-        const edges = graph.edges();
-        const nodes = filter_disconnected(graph.nodes(), edges);
+        const edgegroups = graph.edgeGroups;
+        const nodegroups = graph.nodeGroups;
+        filter_disconnected(nodegroups, edgegroups);
+        const nodes = nodegroups.map(group => group.nodes)
+            .reduce((acc, cur) => acc.concat(cur), []);
 
         // Position the nodes
         position_nodes(sim, nodes, this._renderedNodes);
 
-        render(nodes, edges, node, edge);
-
-        // // Create the transition
-        // const transition = d3.transition().duration(450);
-        //
-        // // Join with visual elements
-        // const gn = node.selectAll<Element, Node>('g')
-        //     .data(nodes, d => d.id)
-        //     .join('g');
-        //
-        // const ge = edge.selectAll<Element, Edge>('g')
-        //     .data(edges, d => d.id)
-        //     .join('g');
-        //
-        // render_nodes(gn, transition);
-        // render_edges(ge);
-        //
-        // // Make nodes draggable
-        // function dragged (this: any, d: Node) {
-        //     d.x = d3.event.x;
-        //     d.y = d3.event.y;
-        //     d3.select(this)
-        //         .attr('transform', `translate(${d.x} ${d.y})`);
-        //     ge.filter(e => e.source === d).call(render_edges);
-        //     ge.filter(e => e.target === d).call(render_edges);
-        // }
-        //
-        // const drag = d3.drag<Element, Node>()
-        //     .on('drag', dragged);
-        //
-        // gn.call(drag);
+        render(node, edge, nodegroups, edgegroups);
 
         // Keep track of what is currently rendered
         this._rendered = graph;
         this._renderedNodes = nodes;
-        this._renderedEdges = edges;
 
     }
 
 }
 
-function render_edges (g: d3.Selection<Element, Edge, Element, Edge>): void {
-
-    const line = curve_bundle_left(0.5);
-
-    g.selectAll<Element, Edge>('path')
-        .data(edge => [edge], d => d.id)
-        .join('path')
-        .attr('stroke', '#999')
-        .attr('stroke-width', 1.5)
-        .attr('fill', 'none')
-        .attr('d', line);
-
-    g.selectAll<Element, Edge>('text')
-        .data(edge => [edge], d => d.id)
-        .join('text').attr('text-anchor', 'middle')
-        .attr('dy', '0.31em')
-        .attr('x', d => (d.source.x + d.target.x) / 2)
-        .attr('y', d => (d.source.y + d.target.y) / 2)
-        .style('user-select', 'none')
-        .text(d => d.name);
-
-}
-
-function render_nodes (g: d3.Selection<Element, Node, Element, Node>, transition?: any): void {
-
-    g.attr('transform', d => `translate(${d.x} ${d.y})`);
-
-    g.selectAll<Element, Node>('circle')
-        .data(node => [node])
-        .join(
-            enter => enter.append('circle')
-                .attr('cx', 0)
-                .attr('cy', 0)
-                .attr('r', 10)
-                .attr('stroke', '#222')
-                .attr('stroke-width', 1)
-                .attr('fill', 'white')
-                .call(enter => enter
-                    .transition(transition)
-                    .attr('r', 50)),
-            update => update,
-            exit => exit
-                .call(exit => exit
-                    .transition(transition)
-                    .attr('r', 0))
-        );
-
-    g.selectAll<Element, Node>('text')
-        .data(node => [node])
-        .join('text')
-        .attr('text-anchor', 'middle')
-        .attr('dy', '0.31em')
-        .style('user-select', 'none')
-        .text(d => d.name);
-
-}
-
-function filter_disconnected (nodes: Node[], edges: Edge[]): Node[] {
-
+function filter_disconnected (nodegroups: NodeGroup[], edgegroups: EdgeGroup[]) {
     const ids = new Set();
-    edges.forEach(edge => {
-        ids.add(edge.source.id);
-        ids.add(edge.target.id);
+    edgegroups.forEach(group => {
+        group.edges.forEach(edge => {
+            ids.add(edge.source.id);
+            ids.add(edge.target.id);
+        })
     });
-
-    return nodes.filter(node => ids.has(node.id));
-
+    nodegroups.forEach(group => {
+        group.nodes = group.nodes.filter(node => ids.has(node.id));
+    })
 }
+
 
 export default GraphViewStage;

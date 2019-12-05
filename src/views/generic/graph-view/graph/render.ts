@@ -1,90 +1,157 @@
 import * as d3 from 'd3';
-import { Node, Edge } from '../Graph';
-import { curve_bundle_left } from './curve';
+import { EdgeBundler } from './edge/EdgeBundler';
+import { edgeLabel } from './labels/edgeLabel';
+import { nodeLabel } from './labels/nodeLabel';
+import { arrow } from './shapes/arrow';
+import { Edge } from './types/Edge';
+import { EdgeGroup } from './types/EdgeGroup';
+import { EdgeIndexer } from './edge/EdgeIndexer';
+import { Node } from './types/Node';
+import { NodeGroup } from './types/NodeGroup';
 import { circle } from './shapes/circle';
-import { E } from './shapes/edge';
-
-interface N {
-    node: Node,
-    shape: (...args: any) => void
-}
-
-interface EG {
-    source: Node,
-    target: Node,
-    edges: E[]
-}
+import { path } from './shapes/path';
+import { NodeShapeFn } from './shapes/ShapeFn';
 
 function render (
-    nodes: Node[],
-    edges: Edge[],
-    node_group: d3.Selection<SVGGElement, any, null, undefined>,
-    edge_group: d3.Selection<SVGGElement, any, null, undefined>
+    gNodes: d3.Selection<SVGGElement, any, null, any>,
+    gEdges: d3.Selection<SVGGElement, any, null, any>,
+    node_groups: NodeGroup[],
+    edge_groups: EdgeGroup[]
 ) {
 
-    // Assign a shape function to each Node
-    const ns: N[] = nodes.map(node => {
-        return {
-            node: node,
-            shape: circle()
-        }
-    });
+    // // Set up the SVG and various SVG groups
+    // const s: d3.Selection<SVGSVGElement, any, null, undefined> = d3.select(svg);
+    // const g: d3.Selection<SVGGElement, any, null, any> = s.append('g');
+    // const width = parseInt(s.style('width'));
+    // const height = parseInt(s.style('height'));
+    //
+    // s.attr('viewBox', `-${width/2} -${height/2} ${width} ${height}`)
+    //     .attr("preserveAspectRatio", "xMidYMid slice");
+    //
+    // s.call(d3.zoom<SVGSVGElement, any>()
+    //     .on('zoom', () => g.attr('transform', d3.event.transform)));
+    //
+    // const gEdges: d3.Selection<SVGGElement, any, null, any> = g.append('g');
+    // const gNodes: d3.Selection<SVGGElement, any, null, any> = g.append('g');
 
-    // Find common edges and assign a line function to each Edge
-    const egs: EG[] = [];
-    edges.forEach(edge => {
+    // Transform any shapes from strings to functions
+    node_groups.forEach(group => group.shape = buildShape(group.shape));
 
-        const source = edge.source;
-        const target = edge.target;
-        const eg = egs.find(e => e.source === source && e.target === target);
-        if (eg) {
+    // Create the indexer (counts total number of edges
+    // between each node and assigns and index to each edge)
+    const edgeIndexer = EdgeIndexer.fromGroups(edge_groups);
 
-            eg.edges.push({
-                edge: edge,
-                line: curve_bundle_left(0.5)
+    // Create the bundler and path shape that will be used to render edges
+    const bundler = new EdgeBundler(edgeIndexer);
+
+    // Create the drag event handler
+    const drag = d3.drag<SVGGElement, Node>()
+        .on('drag', dragged);
+
+    function dragged (this: any, d: Node) {
+
+        // Move the dragged node
+        d.x = d3.event.x;
+        d.y = d3.event.y;
+        d3.select(this)
+            .attr('transform', `translate(${d.x} ${d.y})`);
+
+        // Redraw any edges attached to the dragged node
+        gEdges
+            .selectAll<SVGGElement, EdgeGroup>('g')
+            .selectAll<SVGGElement, Edge>('g')
+            .filter(edge => edge.source === d || edge.target === d)
+            .each(function (this: SVGGElement, edge: Edge) {
+
+                const shape = edge.shape!;
+                const arrowShape = edge.arrowShape!;
+                const labelShape = edge.labelShape!;
+                d3.select<SVGGElement, Edge>(this)
+                    .call(shape)
+                    .call(arrowShape)
+                    .call(labelShape);
+
             });
 
-        } else {
-
-            egs.push({
-                source: source,
-                target: target,
-                edges: [{
-                    edge: edge,
-                    line: curve_bundle_left(0.5)
-                }]
-            });
-
-        }
-
-    });
-
-    // Join with groups
-    const gn = node_group.selectAll<Element, N>('g')
-        .data(ns, n => n.node.id)
-        .join('g');
-
-    const ge = edge_group.selectAll<Element, EG>('g')
-        .data(egs, eg => eg.source.id + eg.target.id)
-        .join('g');
+    }
 
     // Render nodes
-    gn.attr('transform', d => `translate(${d.node.x} ${d.node.y})`);
-    gn.each(function (datum) {
-        d3.select(this).call(datum.shape);
-    });
+    gNodes
+        .selectAll<SVGGElement, NodeGroup>('g')
+        .data(node_groups, d => d.id)
+        .join('g')
+        .attr('id', group => group.id)
+        .each(renderNodeGroup);
 
     // Render edges
-    ge.each(function (eg) {
+    gEdges
+        .selectAll<SVGGElement, EdgeGroup>('g')
+        .data(edge_groups, d => d.id)
+        .join('g')
+        .attr('id', group => group.id)
+        .each(renderEdgeGroup);
+
+    function renderEdgeGroup (this: SVGGElement, group: EdgeGroup) {
+
+        const shape = path()
+            .bundler(bundler)
+            .curve(d3.curveBasis)
+            .styles(group.edgeStyles);
+
+        const arrowShape = arrow()
+            .styles(group.arrowStyles);
+
+        const labelShape = edgeLabel()
+            .styles(group.labelStyles);
+
+        group.edges.forEach(edge => {
+            edge.shape = shape;
+            edge.arrowShape = arrowShape;
+            edge.labelShape = labelShape;
+        });
+
         d3.select(this)
-            .selectAll<Element, E>('path')
-            .data(eg.edges, d => d.edge.id)
-            .join('path')
-            .attr('stroke', '#999')
-            .attr('stroke-width', 1.5)
-            .attr('fill', 'none')
-            .attr('d', d => d.line(d.edge));
-    })
+            .selectAll<SVGGElement, Edge>('g')
+            .data(group.edges, edge => edge.id)
+            .join('g')
+            .attr('id', edge => edge.id)
+            .call(shape)
+            .call(arrowShape)
+            .call(labelShape);
+
+    }
+
+    function renderNodeGroup (this: SVGGElement, group: NodeGroup) {
+
+        const shape = (group.shape as NodeShapeFn)
+            .styles(group.shapeStyles);
+
+        const label = nodeLabel()
+            .styles(group.labelStyles);
+
+        d3.select(this)
+            .selectAll<SVGGElement, Node>('g')
+            .data(group.nodes, node => node.id)
+            .join('g')
+            .attr('id', node => node.id)
+            .attr('transform', node => `translate(${node.x} ${node.y})`)
+            .call(shape)
+            .call(label)
+            .call(drag);
+
+    }
+
+}
+
+function buildShape (shape: 'circle' | 'rectangle' | NodeShapeFn): NodeShapeFn {
+
+    if (typeof shape === 'function') return shape;
+
+    if (shape === 'circle') {
+        return circle();
+    }
+
+    return circle();
 
 }
 

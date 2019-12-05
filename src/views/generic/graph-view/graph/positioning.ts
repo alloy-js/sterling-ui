@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
-import { Edge, Node } from '../Graph';
+import { Edge } from './types/Edge';
+import { Node } from './types/Node'
 
 
 /**

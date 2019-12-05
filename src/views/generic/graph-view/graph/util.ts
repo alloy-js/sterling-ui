@@ -1,7 +1,22 @@
-function find_angle (p1: {x: number, y: number}, p2: {x: number, y: number}): number {
-    return Math.atan2(p1.y - p2.y, p1.x - p2.x) * (180 / Math.PI);
+import * as d3 from 'd3';
+
+function applyStyles (selection: d3.Selection<any, any, any, any>, styles: {[key: string]: any}) {
+    for (let key in styles) {
+        if (styles.hasOwnProperty(key)) {
+            selection.style(key, styles[key]);
+        }
+    }
+}
+
+function mergeStyles (oldStyles: {[key: string]: any}, newStyles: {[key: string]: any} | undefined) {
+    for (let key in newStyles) {
+        if (newStyles.hasOwnProperty(key)) {
+            oldStyles[key] = newStyles[key];
+        }
+    }
 }
 
 export {
-    find_angle
+    applyStyles,
+    mergeStyles
 }
