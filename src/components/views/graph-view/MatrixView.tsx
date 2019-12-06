@@ -68,8 +68,13 @@ class MatrixView extends React.Component<IMatrixViewProps> {
         const y = (d: Cell) => -matrixHeight/2 + d.col * size;
         const color = (d: Cell) => {
             const tokens = d.atom.name().split('$');
-            if (tokens[0] === 'Value') return 'steelblue';
-            return 'red';
+            if (tokens[0] === 'Value') return '#0fa067';
+            return 'white';
+        };
+        const textcolor = (d: Cell) => {
+            const tokens = d.atom.name().split('$');
+            if (tokens[0] === 'Value') return 'white';
+            return '#222';
         };
         const name = (d: Cell) => {
             const tokens = d.atom.name().split('$');
@@ -85,6 +90,8 @@ class MatrixView extends React.Component<IMatrixViewProps> {
             .attr('height', size)
             .attr('x', x)
             .attr('y', y)
+            .style('stroke', '#555')
+            .style('stroke-width', 0.5)
             .style('fill', color);
 
         svg.selectAll('rect.border')
@@ -102,6 +109,7 @@ class MatrixView extends React.Component<IMatrixViewProps> {
             .attr('x', d => x(d) + size/2)
             .attr('y', d => y(d) + size/2)
             .attr('dy', '0.31em')
+            .style('fill', textcolor)
             .text(name);
 
     }

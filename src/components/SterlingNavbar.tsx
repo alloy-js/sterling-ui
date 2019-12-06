@@ -35,7 +35,7 @@ class SterlingNavbar extends React.Component<INavBarProps> {
                     <NavbarDivider/>
                     <Button
                         className={Classes.MINIMAL}
-                        active={this.props.view === 'graph'}
+                        active={this.props.view === 'null'}
                         large={true}
                         icon='graph'
                         text='Graph'
@@ -56,11 +56,11 @@ class SterlingNavbar extends React.Component<INavBarProps> {
                         onClick={() => this.props.onRequestView(ViewType.Tree)}/>
                     <Button
                         className={Classes.MINIMAL}
-                        active={this.props.view === 'source'}
+                        active={this.props.view === 'graph'}
                         large={true}
-                        icon='document'
-                        text='Source'
-                        onClick={() => this.props.onRequestView(ViewType.Source)}/>
+                        icon='grid'
+                        text='Matrix'
+                        onClick={() => this.props.onRequestView(ViewType.Graph)}/>
                     <NavbarDivider/>
                     <Tooltip
                         content='Sterling Settings'
