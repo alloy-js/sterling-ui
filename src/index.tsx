@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import AlloyConnection from './alloy/AlloyConnection';
-import alloyGraph from './alloy/alloyGraph';
 import alloySources from './alloy/alloySources';
 import alloyTables from './alloy/alloyTables';
 import './scss/index.scss';
@@ -9,23 +8,15 @@ import * as serviceWorker from './serviceWorker';
 import Sterling from './Sterling';
 import { ISterlingUIView } from './SterlingTypes';
 import AlloyNavbar from './views/alloy/AlloyNavbar';
-import GraphView from './views/generic/graph-view/GraphView';
+import MeshView from './views/alloy/mesh-view/MeshView';
 import SourceView from './views/generic/source-view/SourceView';
 import TableView from './views/generic/table-view/TableView';
-import TreeView from './views/generic/tree-view/TreeView';
 
 // Create the object that will be used to communicate
 // with an external data provider
 const alloy = new AlloyConnection();
 
 // Create views
-const graph: ISterlingUIView = {
-    name: 'Graph',
-    icon: 'graph',
-    transform: alloyGraph,
-    view: GraphView
-};
-
 const table: ISterlingUIView = {
     name: 'Table',
     icon: 'th',
@@ -33,10 +24,10 @@ const table: ISterlingUIView = {
     view: TableView
 };
 
-const tree: ISterlingUIView = {
-    name: 'Tree',
-    icon: 'diagram-tree',
-    view: TreeView
+const mesh: ISterlingUIView = {
+    name: 'Mesh',
+    icon: 'delta',
+    view: MeshView
 };
 
 const source: ISterlingUIView = {
@@ -52,7 +43,7 @@ const sterling = (
         connection={alloy}
         navbar={AlloyNavbar}
         message={'Use Alloy to generate an instance.'}
-        views={[graph, table, tree, source]}/>
+        views={[mesh, table, source]}/>
 );
 
 // Tell React to render the Sterling UI
