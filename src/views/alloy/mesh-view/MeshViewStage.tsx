@@ -87,6 +87,7 @@ class MeshViewStage extends React.Component<IMeshViewStageProps, IMeshViewState>
         // Make sure this was actually a mesh instance
         if (!meshes) return;
 
+        // Set up the SVG
         const svg = this._svg!;
         const width = parseFloat(svg.style('width'));
         const height = parseFloat(svg.style('height'));
@@ -96,6 +97,7 @@ class MeshViewStage extends React.Component<IMeshViewStageProps, IMeshViewState>
             .attr('viewBox', `${-hw} ${-hh} ${width} ${height}`)
             .attr('preserveAspectRatio', 'xMidYMid slice');
 
+        // Layout each mesh
         const rectangles = build_rectangles(meshes.length, width, height);
         meshes.forEach((mesh, i: number) => {
 
@@ -110,12 +112,14 @@ class MeshViewStage extends React.Component<IMeshViewStageProps, IMeshViewState>
 
         });
 
+        // Render mesh groups
         const groups = svg.selectAll<SVGGElement, RenderableMesh>('.mesh')
             .data(meshes, mesh => mesh.id)
             .join('g')
             .attr('class', 'mesh')
             .attr('id', mesh => mesh.id);
 
+        // Render links
         const line = d3.line<RenderableNode>()
             .x(d => d.x)
             .y(d => d.y);
@@ -128,6 +132,44 @@ class MeshViewStage extends React.Component<IMeshViewStageProps, IMeshViewState>
             .style('stroke-width', 1.5)
             .style('fill', 'none')
             .attr('d', line);
+
+        // Render nodes
+        groups.selectAll('.node')
+            .data(mesh => mesh.nodes)
+            .join('circle')
+            .attr('class', 'node')
+            .attr('id', node => node.node.id())
+            .attr('cx', node => node.x)
+            .attr('cy', node => node.y)
+            .attr('r', 13);
+
+        // Render node labels
+        groups.selectAll('.nodelabel')
+            .data(mesh => mesh.nodes)
+            .join('text')
+            .attr('class', 'nodelabel')
+            .attr('x', node => node.x)
+            .attr('y', node => node.y)
+            .attr('dy', '0.31em')
+            .style('font-family', 'monospace')
+            .style('text-anchor', 'middle')
+            .style('text-shadow', '-1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333, 1px 1px 0 #333')
+            .style('fill', 'white')
+            .text(node => node.node.name().replace('ertex$', ''));
+
+        // Render element labels
+        const centroid_x = (element: RenderableElement) => element.nodes.reduce((s, n) => s + n.x, 0) / element.nodes.length;
+        const centroid_y = (element: RenderableElement) => element.nodes.reduce((s, n) => s + n.y, 0) / element.nodes.length;
+        groups.selectAll('.elementlabel')
+            .data(mesh => mesh.elements)
+            .join('text')
+            .attr('class', 'elementlabel')
+            .attr('x', centroid_x)
+            .attr('y', centroid_y)
+            .attr('dy', '0.31em')
+            .style('font-family', 'monospace')
+            .style('text-anchor', 'middle')
+            .text(element => element.id);
 
         this._rendered = this.props.instance;
 
@@ -207,7 +249,7 @@ class MeshViewStage extends React.Component<IMeshViewStageProps, IMeshViewState>
                         });
 
                     meshElements.push({
-                        id: element.id(),
+                        id: element.name(),
                         nodes: Array.from(elementNodeMap.values()),
                         edges: elementEdges
                     });
