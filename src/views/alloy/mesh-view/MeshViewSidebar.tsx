@@ -1,6 +1,8 @@
 import React from 'react';
 import SterlingSidebar from '../../SterlingSidebar';
 import { IMeshViewState } from './MeshView';
+import LabelsSection from './sidebar-components/LabelsSection';
+import LayoutSection from './sidebar-components/LayoutSection';
 
 interface IMeshViewSidebarProps extends IMeshViewState {
     onToggleCollapseSidebar: () => void,
@@ -19,7 +21,12 @@ class MeshViewSidebar extends React.Component<IMeshViewSidebarProps> {
                 onToggleCollapse={props.onToggleCollapseSidebar}
                 sidebarSide={props.sidebarSide}
                 title={'Mesh View Settings'}
-                visible={props.visible}/>
+                visible={props.visible}>
+
+                <LayoutSection/>
+                <LabelsSection/>
+
+            </SterlingSidebar>
         );
 
     }

@@ -153,7 +153,6 @@ class MeshViewStage extends React.Component<IMeshViewStageProps, IMeshViewState>
             .attr('dy', '0.31em')
             .style('font-family', 'monospace')
             .style('text-anchor', 'middle')
-            .style('text-shadow', '-1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333, 1px 1px 0 #333')
             .style('fill', 'white')
             .text(node => node.node.name().replace('ertex$', ''));
 
@@ -169,7 +168,7 @@ class MeshViewStage extends React.Component<IMeshViewStageProps, IMeshViewState>
             .attr('dy', '0.31em')
             .style('font-family', 'monospace')
             .style('text-anchor', 'middle')
-            .text(element => element.id);
+            .text(element => element.id.replace('$', ''));
 
         this._rendered = this.props.instance;
 
